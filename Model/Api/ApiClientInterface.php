@@ -72,10 +72,10 @@ interface ApiClientInterface
      * @param string
      * @return bool|string
      */
-//    public function putResource(
-//        string $requestUrl = '', string $requestPath = '',
-//        string $header = null, array $credentials = null, string $postData = ''
-//    );
+    public function putResource(
+        string $requestUrl = '', string $requestPath = '',
+        string $header = null, array $credentials = null, string $postData = ''
+    );
 
     public function deleteResource(
         string $requestUrl = '', string $requestPath = '',
