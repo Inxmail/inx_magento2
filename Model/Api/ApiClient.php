@@ -524,6 +524,7 @@ class ApiClient implements ApiClientInterface
      */
     public function getResponseStatusCode(): int
     {
+        var_dump("status code");
         return (int)self::$_responseInfo['http_code'];
     }
 

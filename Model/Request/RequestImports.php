@@ -70,8 +70,8 @@ class RequestImports extends AbstractRequest
             $client->setRequestMethod(\Zend_Http_Client::POST);
             $header = array(
                 'Accept: application/hal+json,application/problem+json',
-                'Content-Type: multipart/form-data;charset=UTF-8',
-                'Content-Disposition: form-data; name="file"; filename="subscriberImport.csv"'
+                'Content-Disposition: form-data; name="file"; filename="datafile.csv"',
+                'Content-Type: multipart/form-data; boundary=----Inxmail'
             );
             $client->setHeader($header);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
@@ -85,24 +85,6 @@ class RequestImports extends AbstractRequest
         }
 
         return false;
-    }
-
-    public function getCurlValue($filename, $contentType, $postname)
-    {
-        var_dump('there');
-        // PHP 5.5 introduced a CurlFile object that deprecates the old @filename syntax
-        // See: https://wiki.php.net/rfc/curl-file-upload
-//        if (function_exists('curl_file_create')) {
-//            return curl_file_create($filename, $contentType, $postname);
-//        }
-
-        // Use the old style if using an older version of PHP
-        $value = "@{$filename};filename=" . $postname;
-        if ($contentType) {
-            $value .= ';type=' . $contentType;
-        }
-var_dump($value);
-        return $value;
     }
 
     /**
@@ -119,8 +101,26 @@ var_dump($value);
         );
     }
 
-    public function setRequestFile($file) {
-        var_dump("here", $file);
-        $this->_file = $file;
+    public function setRequestFile(array $recipients) {
+        $csvData = '';
+        foreach ($recipients as $value){
+            array_walk($value, function(&$item, $key){
+                $item = '"'.$item.'"';
+            });
+            $csvData .= implode(';', $value).PHP_EOL;
+        }
+
+        // form field separator
+        $delimiter = '----' . 'Inxmail';
+        $data = '';
+
+        $data .= "--" . $delimiter . "\r\n";
+        $data .= 'Content-Disposition: form-data; name="file"; filename="datafile.csv"' . "\r\n";
+        $data .= 'Content-Type: text/csv' . "\r\n";
+        $data .= "\r\n";
+        $data .= $csvData . "\r\n";
+        $data .= "--" . $delimiter . "--";
+
+        $this->_file = $data;
     }
 }

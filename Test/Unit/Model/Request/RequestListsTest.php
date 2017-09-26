@@ -106,6 +106,7 @@ class RequestListsTest extends \PHPUnit\Framework\TestCase
 //        $this->assertEquals(201, $result, "list was not created");
 //        $this->assertEquals($name, $this->requestClient->getResponseArray()['name'], "list name wrong");
 //        self::$testListId =  $this->requestClient->getResponseArray()['id'];
+//        var_dump(self::$testListId);
         // {"id":5,"creationDate":"2017-09-25T08:38:33Z","name":"test","description":"testing create list","type":"STANDARD","senderAddress":"testing@example.com","senderName":"Sender Doe","replyToAddress":"testing@example.com","replyToName":"Return Doe","_links":{"self":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/lists/5"}}}
     }
 

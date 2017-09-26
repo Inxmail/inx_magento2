@@ -4,15 +4,18 @@ namespace Flagbit\Inxmail\Model\Request;
 use Flagbit\Inxmail\Helper\Config;
 use Flagbit\Inxmail\Model\Api\ApiClientFactory;
 
-class RequestRecipients extends AbstractRequest
+class RequestBounces extends AbstractRequest
 {
     const REQUEST_PATH = 'bounces/';
-    const REQUEST_ALL_ATTRIBUTES = '?allAttributes';
+
+    const CATEGORY_BOUNCE_SOFT = 'SOFT';
+    const CATEGORY_BOUNCE_HARD = 'HARD';
+    const CATEGORY_BOUNCE_UNKNOWN = 'UNKNOWN';
 
     const REQUEST_LIST_ID = 'listId';
     const REQUEST_START_DATE = 'startDate';
     const REQUEST_END_DATE = 'endDate';
-    const REQUEST_TYPES = 'types';
+    const REQUEST_CATEGORY = 'bounceCategory';
 
     public function __construct(Config $config, ApiClientFactory $factory)
     {
@@ -30,12 +33,6 @@ class RequestRecipients extends AbstractRequest
         $this->_response = $client->getResource('','',null,null, false);
 
         return json_decode($this->_response, true);
-    }
-
-    public function requestWithAllAttributes(int $id) {
-        $this->_requestParam = implode('/',explode('/',$this->_requestParam));
-        $this->_requestParam .= $id.self::REQUEST_ALL_ATTRIBUTES;
-        return $this->sendRequest();
     }
 
     public function requestWithAttributes(int $id, array $attributes) {
