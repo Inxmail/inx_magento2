@@ -6,6 +6,7 @@ use \Magento\Framework\Data\Form\Element\AbstractElement;
 
 /**
  * Class BasicLabel
+ *
  * @package Flagbit\Inxmail\Block\Adminhtml\System\Config
  * @method string _getElementHtml(AbstractElement $element)
  * @method string _decorateRowHtml(AbstractElement $element, $html)

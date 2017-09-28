@@ -5,47 +5,48 @@ namespace Flagbit\Inxmail\Model\Config;
 use \Flagbit\Inxmail\Helper\Config;
 /**
  * Class SystemConfig
+ *
  * @package Flagbit\Inxmail\Model\Config
  */
 class SystemConfig
 {
     /**
-     *
+     * Contains the path of the inxmail configuration for the api url
      */
     const CONFIG_PATH_URL = 'inxmail/general/api_url';
     /**
-     *
+     * Contains the path of the inxmail configuration for the api user
      */
     const CONFIG_PATH_API_USER = 'inxmail/general/api_user';
     /**
-     *
+     * Contains the path of the inxmail configuration for the api secret
      */
     const CONFIG_PATH_API_KEY = 'inxmail/general/api_password';
     /**
-     *
+     * Contains the path of the inxmail configuration for the list to sync to
      */
     const CONFIG_PATH_API_LIST = 'inxmail/general/api_listid';
 
     /**
-     *
+     * Datafield key
      */
     const CONFIG_FIELD_URL = 'apiUrl';
     /**
-     *
+     * Datafield key
      */
     const CONFIG_FIELD_USER = 'apiUser';
     /**
-     *
+     * Datafield key
      */
     const CONFIG_FIELD_KEY = 'apiKey';
     /**
-     *
+     * Datafield key
      */
     const CONFIG_FIELD_LIST = 'apiList';
 
-    /** @var SystemConfig */
+    /** @var \Flagbit\Inxmail\Model\Config\SystemConfig */
     protected static $_config;
-    /** @var Config|null */
+    /** @var \Flagbit\Inxmail\Helper\Config|null */
     protected $_helper;
 
     /** @var array */
@@ -53,35 +54,24 @@ class SystemConfig
 
     /**
      * SystemConfig constructor.
-     * @param Config $helper
-     * @param string|null $apiUrl
-     * @param string|null $apiUser
-     * @param string|null $apiKey
-     * @param string|null $apiList
-     * @param string|null $apiList
+     *
+     * @param \Flagbit\Inxmail\Helper\Config $helper
      */
-    protected function __construct(Config $helper, string $apiUrl = null, string $apiUser = null, string $apiKey = null, string $apiList = null)
+    protected function __construct(Config $helper)
     {
         $this->_helper = $helper;
-        $this->_data[self::CONFIG_FIELD_URL] = $apiUrl;
-        $this->_data[self::CONFIG_FIELD_USER] = $apiUser;
-        $this->_data[self::CONFIG_FIELD_KEY] = $apiKey;
-        $this->_data[self::CONFIG_FIELD_LIST] = $apiList;
     }
 
     /**
-     * @param Config $helper
-     * @param string|null $apiUrl
-     * @param string|null $apiUser
-     * @param string|null $apiKey
-     * @param string|null $apiList
+     * Singelton
+     *
+     * @param \Flagbit\Inxmail\Helper\Config $helper
      * @return SystemConfig
      */
-    public static function getSystemConfig(
-        Config $helper, string $apiUrl = null, string $apiUser = null, string $apiKey = null, string $apiList = null): SystemConfig
+    public static function getSystemConfig(Config $helper): SystemConfig
     {
         if (self::$_config === null) {
-            self::$_config = new self($helper, $apiUrl, $apiUser, $apiKey, $apiList);
+            self::$_config = new self($helper);
         }
 
         return self::$_config;

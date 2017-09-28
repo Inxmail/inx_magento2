@@ -67,11 +67,11 @@ class ApiClient implements ApiClientInterface
     private static $requestObject;
 
     /**
-     * Request accept header types
+     * Request allowed header accept types
      *
      * @var array
      */
-    protected $_allowedAcceptTypes = array(
+    protected static $_allowedAcceptTypes = array(
         'application/hal+json',
         'application/problem+json',
         'multipart/form-data',
@@ -86,7 +86,7 @@ class ApiClient implements ApiClientInterface
      *
      * @var array
      */
-    protected $_allowedPostTypes = array(
+    protected static $_allowedPostTypes = array(
         'default' => 'application/hal+json',
         'fallback' => 'application/json'
     );
@@ -111,6 +111,7 @@ class ApiClient implements ApiClientInterface
 
     /**
      * Provide default header for post/put/delete requests
+     *
      * @var array
      */
     protected $_defaultPostHeader = array(
@@ -129,7 +130,7 @@ class ApiClient implements ApiClientInterface
     /**
      * Implements singleton
      *
-     * @return ApiClient
+     * @return \Flagbit\Inxmail\Model\ApiClient
      */
     public static function getApiClient(): ApiClient
     {
@@ -148,7 +149,7 @@ class ApiClient implements ApiClientInterface
     {
         if (!empty($header)) {
             $this->_header = $header;
-        } else if (empty($this->_header) || $this->_header == $this->_defaultPostHeader || $this->_header == $this->_defaultHeader) {
+        } else if (empty($this->_header) || $this->_header === $this->_defaultPostHeader || $this->_header === $this->_defaultHeader) {
             switch ($this->_requestMethod) {
                 case \Zend_Http_Client::GET:
                     $this->_header = $this->_defaultHeader;
@@ -168,7 +169,7 @@ class ApiClient implements ApiClientInterface
 
     /**
      * @param string $method
-     * @throws InvalidArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setRequestMethod(string $method)
     {
@@ -185,7 +186,7 @@ class ApiClient implements ApiClientInterface
      * Can be omitted when provided to request function. Must not be empty.
      *
      * @param array $credentials
-     * @throws InvalidArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setCredentials(array $credentials)
     {
@@ -219,7 +220,7 @@ class ApiClient implements ApiClientInterface
      * Setting the url can be omitted when given to the request method itself
      *
      * @param string $requestUrl
-     * @throws InvalidArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setRequestUrl(string $requestUrl)
     {
@@ -238,7 +239,7 @@ class ApiClient implements ApiClientInterface
      * Setting the request path may be omitted when provided on request method itself
      *
      * @param string $requestPath
-     * @throws InvalidArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setRequestPath(string $requestPath)
     {
@@ -277,10 +278,12 @@ class ApiClient implements ApiClientInterface
      * @param string|null $header
      * @param array|null $credentials
      * @param bool $dryrun
+     *
      * @return bool|string
-     * @throws InvalidAuthenticationException
-     * @throws MissingArgumentException
-     * @throws InvalidArgumentException
+     *
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidAuthenticationException
+     * @throws \Flagbit\Inxmail\Exception\Api\MissingArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function getResource(
         string $requestUrl = '', string $requestPath = '',
@@ -356,9 +359,11 @@ class ApiClient implements ApiClientInterface
      * @param array|null $credentials
      * @param string $postData
      * @param bool $dryrun
+     *
      * @return bool|string
-     * @throws InvalidAuthenticationException
-     * @throws MissingArgumentException
+     *
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidAuthenticationException
+     * @throws \Flagbit\Inxmail\Exception\Api\MissingArgumentException
      */
     public function postResource(
         string $requestUrl = '', string $requestPath = '',
@@ -435,12 +440,15 @@ class ApiClient implements ApiClientInterface
     }
 
     /**
+     * Put data to server
+     *
      * @param string $requestUrl
      * @param string $requestPath
      * @param string|null $header
      * @param array|null $credentials
      * @param string $postData
      * @param bool $dryrun
+     *
      * @return bool|string
      */
     public function putResource(
@@ -452,11 +460,14 @@ class ApiClient implements ApiClientInterface
     }
 
     /**
+     * Delete request to server
+     *
      * @param string $requestUrl
      * @param string $requestPath
      * @param string|null $header
      * @param array|null $credentials
      * @param bool $dryrun
+     *
      * @return bool|string
      */
     public function deleteResource(
@@ -476,6 +487,7 @@ class ApiClient implements ApiClientInterface
      * @param int $current
      * @param int $uploadExpected
      * @param int $currentUpload
+     *
      * @return int
      */
     public static function setResponseInformation($curl, int $expected, int $current, int $uploadExpected, int $currentUpload): int
@@ -524,7 +536,6 @@ class ApiClient implements ApiClientInterface
      */
     public function getResponseStatusCode(): int
     {
-        var_dump("status code");
         return (int)self::$_responseInfo['http_code'];
     }
 
@@ -534,6 +545,18 @@ class ApiClient implements ApiClientInterface
     public function getResponseInfo(): array
     {
         return self::$_responseInfo;
+    }
+
+    /**
+     * Only http and https are allowed
+     *
+     * @param string $url
+     * @return bool
+     */
+    private function validateProtocol(string $url): bool
+    {
+        $test = explode(':', $url);
+        return (count($test) > 1 && in_array(strtolower($test[0]), array('http', 'https')));
     }
 
     /**
@@ -611,17 +634,5 @@ Set-Cookie: JSESSIONID=6F0DD77B42E5CF11EFEFAD140BCD4F7A; Path=/inxmail3; HttpOnl
             'download_content_length' => '-1',
             'upload_content_length' => '-1'
         );
-    }
-
-    /**
-     * Only http and https are allowed
-     *
-     * @param string $url
-     * @return bool
-     */
-    private function validateProtocol(string $url): bool
-    {
-        $test = explode(':', $url);
-        return (count($test) > 1 && in_array(strtolower($test[0]), array('http', 'https'))) ? true : false;
     }
 }

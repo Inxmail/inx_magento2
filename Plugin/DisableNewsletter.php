@@ -1,6 +1,8 @@
 <?php
 namespace Flagbit\Inxmail\Plugin;
 
+use \Magento\Customer\Block\Form\Register;
+
 class DisableNewsletter {
     /**
      * @see \Magento\Customer\Block\Form\Register isNewsletterEnabled()
@@ -8,7 +10,8 @@ class DisableNewsletter {
      * @param \Closure $proceed
      * @return boolean
      */
-    public function aroundIsNewsletterEnabled(\Magento\Customer\Block\Form\Register $register, \Closure $proceed) {
+    public function aroundIsNewsletterEnabled(Register $register, \Closure $proceed): bool
+    {
         return false;
     }
 }

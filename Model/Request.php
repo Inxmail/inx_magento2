@@ -1,6 +1,15 @@
 <?php
 namespace Flagbit\Inxmail\Model;
 
+use \Flagbit\Inxmail\Model\Request\RequestLists;
+use \Flagbit\Inxmail\Model\Request\RequestImports;
+use \Flagbit\Inxmail\Model\Request\RequestBounces;
+use \Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
+use \Flagbit\Inxmail\Model\Request\RequestUnsubscriptionRecipients;
+use \Flagbit\Inxmail\Model\Request\RequestRecipientAttributes;
+use \Flagbit\Inxmail\Model\Request\RequestRecipients;
+use \Flagbit\Inxmail\Model\Request\RequestFactory;
+
 /**
  * Class Request
  * @package Flagbit\Inxmail\Model\Request
@@ -8,13 +17,13 @@ namespace Flagbit\Inxmail\Model;
 class Request
 {
     /**
-     * @var RequestFactory
+     * @var \Flagbit\Inxmail\Model\Request\RequestFactory
      */
     private $requestFactory;
 
     /**
      * Request constructor.
-     * @param RequestFactory $factory
+     * @param \Flagbit\Inxmail\Model\Request\RequestFactory $factory
      */
     public function __construct(RequestFactory $factory)
     {
@@ -22,7 +31,7 @@ class Request
     }
 
     /**
-     * @return RequestLists
+     * @return \Flagbit\Inxmail\Model\Request\RequestLists
      */
     public function getListClient(): RequestLists
     {
@@ -30,7 +39,7 @@ class Request
     }
 
     /**
-     * @return RequestRecipientAttributes
+     * @return \Flagbit\Inxmail\Model\Request\RequestRecipientAttributes
      */
     public function getAttributesClient(): RequestRecipientAttributes
     {
@@ -38,7 +47,7 @@ class Request
     }
 
     /**
-     * @return RequestRecipients
+     * @return \Flagbit\Inxmail\Model\Request\RequestRecipients
      */
     public function getRecipientsClient(): RequestRecipients
     {
@@ -46,7 +55,7 @@ class Request
     }
 
     /**
-     * @return RequestSubscriptionRecipients
+     * @return \Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients
      */
     public function getSubscriptionsClient(): RequestSubscriptionRecipients
     {
@@ -54,26 +63,26 @@ class Request
     }
 
     /**
-     * @return RequestUnsubscriptionRecipients
+     * @return \Flagbit\Inxmail\Model\Request\RequestUnsubscriptionRecipients
      */
     public function getUnsubscriptionsClient(): RequestUnsubscriptionRecipients
     {
-        $this->requestFactory->create(RequestUnsubscriptionRecipients::class);
+        return $this->requestFactory->create(RequestUnsubscriptionRecipients::class);
     }
 
     /**
-     * @return RequestImports
+     * @return \Flagbit\Inxmail\Model\Request\RequestImports
      */
     public function getImportClient(): RequestImports
     {
-        $this->requestFactory->create(RequestImports::class);
+        return $this->requestFactory->create(RequestImports::class);
     }
 
     /**
-     * @return RequestBounces
+     * @return \Flagbit\Inxmail\Model\Request\RequestBounces
      */
     public function getBouncesClient(): RequestBounces
     {
-        $this->requestFactory->create(RequestBounces::class);
+        return $this->requestFactory->create(RequestBounces::class);
     }
 }

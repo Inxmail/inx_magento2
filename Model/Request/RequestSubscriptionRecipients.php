@@ -53,18 +53,42 @@ class RequestSubscriptionRecipients extends AbstractRequest
         return json_decode($this->_response, true);
     }
 
+//    public function writeRequest()
+//    {
+//        if (!empty($this->postData)) {
+//            $client = $this->getApiClient();
+//            $client->setCredentials($this->getCredentials());
+//            $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
+//            $client->setRequestMethod(\Zend_Http_Client::POST);
+//            $client->setRequestUrl($this->_systemConfig->getApiUrl());
+//            $client->setPostData( is_array($this->_requestData) ? json_encode($this->_requestData) : $this->requestData);
+//            // ToDo: remove dryrun
+//            $this->_response = $client->postResource('', '', null, null, '');
+//
+//            return $client->getResponseStatusCode();
+//        }
+//
+//        return false;
+//    }
     public function writeRequest()
     {
-        if (!empty($this->postData)) {
+        if (!empty($this->_requestData) || !empty($this->_file)) {
             $client = $this->getApiClient();
             $client->setCredentials($this->getCredentials());
-            $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
+            $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
             $client->setRequestMethod(\Zend_Http_Client::POST);
+//            $header = array(
+//                'Accept: application/hal+json,application/problem+json',
+//                'Content-Disposition: form-data; name="file"; filename="datafile.csv"',
+//                'Content-Type: multipart/form-data; boundary=----Inxmail'
+//            );
+            $client->setHeader();
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
-            $client->setPostData( is_array($this->_requestData) ? json_encode($this->_requestData) : $this->requestData);
-            // ToDo: remove dryrun
-            $this->_response = $client->postResource('', '', null, null, '');
+//            $client->setPostData( 'file='. (is_array($this->_requestData) ? implode(PHP_EOL, $this->_requestData) : $this->_requestData));
+            $client->setPostData( $this->_requestData);
+            $this->_response = $client->postResource('', '', null, null, '', false);
 
+            var_dump($this->_response);
             return $client->getResponseStatusCode();
         }
 
@@ -91,6 +115,26 @@ class RequestSubscriptionRecipients extends AbstractRequest
             'listId' => 0,
             'email' => '',
             'attributes' => array ()
+        );
+    }
+
+    public static function getStandardAttributes(): array
+    {
+        return array(
+            'email' => 'email',
+            'Vorname' => 'firstName',
+            'Nachname' => 'lastName',
+            'magentoSubscriberId' => 'subscriberId',
+            'magentoSubscriberToken' => 'subscriberToken',
+            'magentoWebsiteName' => 'websiteName',
+            'magentoWebsiteId' => 'websiteId',
+            'magentoStoreName' => 'storeName',
+//            'magentoStoreId' => 'storeId',
+            'magentoStoreViewName' => 'storeViewName',
+//            'magentoStoreViewId' => 'storeViewId',
+            'Geburtsdatum' => 'birthday',
+//            'magentoCustomerGroup' => 'group',
+            'Geschlecht' => 'gender'
         );
     }
 }
