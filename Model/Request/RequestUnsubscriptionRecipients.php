@@ -53,32 +53,21 @@ class RequestUnsubscriptionRecipients extends AbstractRequest
 
     public function writeRequest()
     {
-        if (!empty($this->postData)) {
+        if (!empty($this->_requestData)) {
             $client = $this->getApiClient();
             $client->setCredentials($this->getCredentials());
             $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
             $client->setRequestMethod(\Zend_Http_Client::POST);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
-            $client->setPostData( is_array($this->_requestData) ? json_encode($this->_requestData) : $this->requestData);
+
+            $client->setPostData( $this->_requestData);
             // ToDo: remove dryrun
-            $this->_response = $client->postResource('', '', null, null, '');
+            $this->_response = $client->postResource('', '', null, null, '', false);
 
             return $client->getResponseStatusCode();
         }
 
         return false;
-    }
-
-    public function requestWithAllAttributes(int $id) {
-        $this->_requestParam = implode('/',explode('/',$this->_requestParam));
-        $this->_requestParam .= $id.self::REQUEST_ALL_ATTRIBUTES;
-        return $this->sendRequest();
-    }
-
-    public function requestWithAttributes(int $id, array $attributes) {
-        $this->_requestParam = implode('/',explode('/',$this->_requestParam));
-        $this->_requestParam .= $id.'?'.implode('&',$attributes);
-        return $this->sendRequest();
     }
 
     public function getStandardOptions(): array

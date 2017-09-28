@@ -12,6 +12,6 @@ class DisableNewsletter {
      */
     public function aroundIsNewsletterEnabled(Register $register, \Closure $proceed): bool
     {
-        return false;
+        return true;
     }
 }

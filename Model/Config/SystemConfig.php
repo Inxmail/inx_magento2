@@ -141,4 +141,17 @@ class SystemConfig
 
         return $this->_data;
     }
+
+    /**
+     * @return bool
+     */
+    public function getInxDebug(): bool
+    {
+
+        if (empty($this->_data[self::CONFIG_FIELD_LIST]) || $refresh) {
+            $this->_data[self::CONFIG_FIELD_LIST] = $this->_helper->getConfig('inxmail/general/debug');
+        }
+
+        return (bool)$this->_data[self::CONFIG_FIELD_LIST];
+    }
 }

@@ -2,7 +2,6 @@
 
 namespace Flagbit\Inxmail\Helper;
 
-use \Flagbit\Inxmail\Model\Request;
 use \Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
 use \Magento\Framework\App\Helper\Context;
 use \Magento\Framework\App\Helper\AbstractHelper;
@@ -14,10 +13,16 @@ use \Magento\Newsletter\Model\Subscriber;
  * Class Config
  * @package Flagbit\Inxmail\Helper
  */
-class SubscriptionData extends AbstractHelper{
+class SubscriptionData extends AbstractHelper
+{
 
+    /**
+     * @var \Magento\Customer\Model\ResourceModel\CustomerRepository
+     */
     protected $_customerRepository;
-    protected $_request;
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
 
     /**
@@ -27,12 +32,10 @@ class SubscriptionData extends AbstractHelper{
     public function __construct(
         Context $context,
         CustomerRepository $customerRepository,
-        Request $request,
         StoreManagerInterface $storeManager
     )
     {
         $this->_customerRepository = $customerRepository;
-        $this->_request = $request;
         $this->_storeManager = $storeManager;
 
         parent::__construct($context);
@@ -59,6 +62,9 @@ class SubscriptionData extends AbstractHelper{
         return $result;
     }
 
+    /**
+     * @return array
+     */
     public function getMapping(): array
     {
         $map = RequestSubscriptionRecipients::getStandardAttributes();
@@ -85,6 +91,10 @@ class SubscriptionData extends AbstractHelper{
         return array_merge($data, $storeData, $customerData);
     }
 
+    /**
+     * @param int $storeId
+     * @return array
+     */
     private function getStoreData(int $storeId): array
     {
         $data = array();
@@ -104,6 +114,10 @@ class SubscriptionData extends AbstractHelper{
         return $data;
     }
 
+    /**
+     * @param int $customerId
+     * @return array
+     */
     private function getCustomerData(int $customerId): array
     {
         $data = array();
@@ -120,6 +134,10 @@ class SubscriptionData extends AbstractHelper{
         return $data;
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
     private function cleanData(array $data): array
     {
         foreach ($data as $key => $value)

@@ -227,7 +227,8 @@ class AbstractRequest implements RequestInterface
      */
     public function getResponseArray(): array
     {
-        return json_decode($this->_response, true);
+        var_dump($this->_response);
+        return json_decode($this->_response, true) ;
     }
 
 }

@@ -367,7 +367,7 @@ class ApiClient implements ApiClientInterface
      */
     public function postResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null, string $postData = '', bool $dryrun = true
+        string $header = null, array $credentials = null, string $postData = '', bool $dryrun = false
     )
     {
         if ((!empty($requestUrl) || !empty($this->_requestUrl)) && (!empty($this->_postData) || !empty($postData))) {
@@ -414,6 +414,7 @@ class ApiClient implements ApiClientInterface
             }
 
             $url = $this->_requestUrl . $this->_requestPath;
+            var_dump($this->_postData, $this->_requestMethod, $url);
             $this->_requestClient->write(
                 $this->_requestMethod,
                 $url,
@@ -421,8 +422,9 @@ class ApiClient implements ApiClientInterface
                 $requestHeader,
                 $this->_postData
             );
-            var_dump($url, $this->_postData, $this->_header);
+//            var_dump($url, $this->_postData, $this->_header);
             // ToDo: activate for real server testing
+            $response = '';
             if (!$dryrun) {
                 var_dump("real: " . $url);
 
@@ -433,6 +435,7 @@ class ApiClient implements ApiClientInterface
 
             $this->_responseBody = \Zend_Http_Response::extractBody($response);
             $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
+            var_dump($response, $this->_responseBody);
             return $this->_responseBody;
         } else {
             throw new MissingArgumentException(__('URL Parameter missing or no data to post/put'));
