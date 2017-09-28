@@ -79,4 +79,8 @@ class RequestRecipientAttributesTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(is_array($this->requestResponse), 'Not an array');
         $this->assertArrayHasKey('name', $this->requestResponse);
     }
+
+    public function testCreateRecipientAttribute(){
+        // {"name":"testattrib","id":19,"type":"INTEGER","_links":{"self":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/attributes/19"}}}
+    }
 }

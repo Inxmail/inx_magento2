@@ -67,11 +67,11 @@ class ApiClient implements ApiClientInterface
     private static $requestObject;
 
     /**
-     * Request accept header types
+     * Request allowed header accept types
      *
      * @var array
      */
-    protected $_allowedAcceptTypes = array(
+    protected static $_allowedAcceptTypes = array(
         'application/hal+json',
         'application/problem+json',
         'multipart/form-data',
@@ -86,7 +86,7 @@ class ApiClient implements ApiClientInterface
      *
      * @var array
      */
-    protected $_allowedPostTypes = array(
+    protected static $_allowedPostTypes = array(
         'default' => 'application/hal+json',
         'fallback' => 'application/json'
     );
@@ -111,6 +111,7 @@ class ApiClient implements ApiClientInterface
 
     /**
      * Provide default header for post/put/delete requests
+     *
      * @var array
      */
     protected $_defaultPostHeader = array(
@@ -129,7 +130,7 @@ class ApiClient implements ApiClientInterface
     /**
      * Implements singleton
      *
-     * @return ApiClient
+     * @return \Flagbit\Inxmail\Model\ApiClient
      */
     public static function getApiClient(): ApiClient
     {
@@ -148,24 +149,27 @@ class ApiClient implements ApiClientInterface
     {
         if (!empty($header)) {
             $this->_header = $header;
-        } else if (empty($this->_header)) {
-            if ($this->_requestMethod === \Zend_Http_Client::GET) {
-                $this->_header = $this->_defaultHeader;
-            } else if (in_array($this->_requestMethod, $this->_allowedMethods)) {
-                $this->_header = $this->_defaultPostHeader;
+        } else if (empty($this->_header) || $this->_header === $this->_defaultPostHeader || $this->_header === $this->_defaultHeader) {
+            switch ($this->_requestMethod) {
+                case \Zend_Http_Client::GET:
+                    $this->_header = $this->_defaultHeader;
+                    break;
+                case \Zend_Http_Client::DELETE:
+                    $this->_header = $this->_defaultHeader;
+                    break;
+                case \Zend_Http_Client::POST:
+                    $this->_header = $this->_defaultPostHeader;
+                    break;
+                case \Zend_Http_Client::PUT:
+                    $this->_header = $this->_defaultPostHeader;
+                    break;
             }
-        } else if ($this->_header === $this->_defaultPostHeader && ($this->_requestMethod === \Zend_Http_Client::GET ||
-                $this->_requestMethod === \Zend_Http_Client::DELETE)) {
-            $this->_header = $this->_defaultHeader;
-        } else if ($this->_header === $this->_defaultHeader && ($this->_requestMethod === \Zend_Http_Client::POST ||
-                $this->_requestMethod === \Zend_Http_Client::PUT)) {
-            $this->_header = $this->_defaultPostHeader;
         }
     }
 
     /**
      * @param string $method
-     * @throws InvalidArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setRequestMethod(string $method)
     {
@@ -182,7 +186,7 @@ class ApiClient implements ApiClientInterface
      * Can be omitted when provided to request function. Must not be empty.
      *
      * @param array $credentials
-     * @throws InvalidArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setCredentials(array $credentials)
     {
@@ -216,7 +220,7 @@ class ApiClient implements ApiClientInterface
      * Setting the url can be omitted when given to the request method itself
      *
      * @param string $requestUrl
-     * @throws InvalidArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setRequestUrl(string $requestUrl)
     {
@@ -235,14 +239,14 @@ class ApiClient implements ApiClientInterface
      * Setting the request path may be omitted when provided on request method itself
      *
      * @param string $requestPath
-     * @throws InvalidArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setRequestPath(string $requestPath)
     {
         $path = trim($requestPath);
         if (!empty($path)) {
-            $path = (strpos($path, '/') === 0) ? substr($path, 1) : $path;
-            $path .= (strpos($path, '/') === (strlen($path)-1)) ? '' : '/';
+//            $path = (strpos($path, '/') === 0) ? substr($path, 1) : $path;
+//            $path .= (strpos($path, '/') === (strlen($path)-1)) ? '' : '/';
 
             $this->_requestPath = $path;
         } else {
@@ -274,10 +278,12 @@ class ApiClient implements ApiClientInterface
      * @param string|null $header
      * @param array|null $credentials
      * @param bool $dryrun
+     *
      * @return bool|string
-     * @throws InvalidAuthenticationException
-     * @throws MissingArgumentException
-     * @throws InvalidArgumentException
+     *
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidAuthenticationException
+     * @throws \Flagbit\Inxmail\Exception\Api\MissingArgumentException
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function getResource(
         string $requestUrl = '', string $requestPath = '',
@@ -292,20 +298,29 @@ class ApiClient implements ApiClientInterface
                 $this->setRequestPath($requestPath);
             }
 
-            $this->setRequestMethod(\Zend_Http_Client::GET);
+            if ($this->_requestMethod !== \Zend_Http_Client::GET && $this->_requestMethod !== \Zend_Http_Client::DELETE) {
+                $this->setRequestMethod(\Zend_Http_Client::GET);
+            }
+
             $this->setHeader($header);
 
+            $requestHeader = $this->_header;
             if (!empty($credentials)) {
                 $this->setCredentials($credentials);
                 if (!in_array('Authorization: Basic ' . base64_encode($this->_credentials), $this->_header)) {
-                    $this->_header[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
+                    $requestHeader[]  = 'Authorization: Basic ' . base64_encode($this->_credentials);
                 }
             } else if (!empty($this->_credentials)) {
                 if (!in_array('Authorization: Basic ' . base64_encode($this->_credentials), $this->_header)) {
-                    $this->_header[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
+                    $requestHeader[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
                 }
             } else {
                 throw new InvalidAuthenticationException(__('Credentials not provided'));
+            }
+
+            if ($this->_requestMethod === \Zend_Http_Client::DELETE) {
+                $this->_requestClient->addOption(CURLOPT_CUSTOMREQUEST, $this->_requestMethod);
+                $this->_requestClient->addOption(CURLOPT_RETURNTRANSFER, true);
             }
 
             $this->_requestClient->addOption(CURLOPT_PROGRESSFUNCTION, '\Flagbit\Inxmail\Model\Api\ApiClient::setResponseInformation');
@@ -314,7 +329,7 @@ class ApiClient implements ApiClientInterface
                 $this->_requestMethod,
                 $this->_requestUrl . $this->_requestPath,
                 \Zend_Http_Client::HTTP_1,
-                $this->_header
+                $requestHeader
             );
 
             // ToDo: activate for real server testing
@@ -344,16 +359,18 @@ class ApiClient implements ApiClientInterface
      * @param array|null $credentials
      * @param string $postData
      * @param bool $dryrun
+     *
      * @return bool|string
-     * @throws InvalidAuthenticationException
-     * @throws MissingArgumentException
+     *
+     * @throws \Flagbit\Inxmail\Exception\Api\InvalidAuthenticationException
+     * @throws \Flagbit\Inxmail\Exception\Api\MissingArgumentException
      */
     public function postResource(
         string $requestUrl = '', string $requestPath = '',
         string $header = null, array $credentials = null, string $postData = '', bool $dryrun = true
     )
     {
-        if ((!empty($requestUrl) || !empty($this->url)) && (!empty(!$this->_postData) || !empty($postData))) {
+        if ((!empty($requestUrl) || !empty($this->_requestUrl)) && (!empty($this->_postData) || !empty($postData))) {
             if (empty($this->_requestUrl)) {
                 $this->setRequestUrl($requestUrl);
             }
@@ -362,7 +379,7 @@ class ApiClient implements ApiClientInterface
                 $this->setRequestPath($requestPath);
             }
 
-            if (empty(!$this->_postData)) {
+            if (!empty($postData)) {
                 $this->setPostData($postData);
             }
 
@@ -372,14 +389,15 @@ class ApiClient implements ApiClientInterface
 
             $this->setHeader($header);
 
+            $requestHeader = $this->_header;
             if (!empty($credentials)) {
                 $this->setCredentials($credentials);
                 if (!in_array('Authorization: Basic'  . base64_encode($this->_credentials), $this->_header)) {
-                    $this->_header[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
+                    $requestHeader[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
                 }
             } else if (!empty($this->_credentials)) {
                 if (!in_array('Authorization: Basic '  . base64_encode($this->_credentials), $this->_header)) {
-                    $this->_header[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
+                    $requestHeader[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
                 }
             } else {
                 throw new InvalidAuthenticationException(__('Credentials not provided'));
@@ -387,17 +405,27 @@ class ApiClient implements ApiClientInterface
 
             $this->_requestClient->addOption(CURLOPT_PROGRESSFUNCTION, '\Flagbit\Inxmail\Model\Api\ApiClient::setResponseInformation');
             $this->_requestClient->addOption(CURLOPT_NOPROGRESS, FALSE);
+            $this->_requestClient->addOption(CURLINFO_HEADER_OUT, true);
+
+            if ($this->_requestMethod === \Zend_Http_Client::PUT) {
+                $this->_requestClient->addOption(CURLOPT_CUSTOMREQUEST, $this->_requestMethod);
+                $this->_requestClient->addOption(CURLOPT_POSTFIELDS, $this->_postData);
+                $this->_requestClient->addOption(CURLOPT_RETURNTRANSFER, true);
+            }
+
+            $url = $this->_requestUrl . $this->_requestPath;
             $this->_requestClient->write(
                 $this->_requestMethod,
-                $this->_requestUrl . $this->_requestPath,
+                $url,
                 \Zend_Http_Client::HTTP_1,
-                $this->_header,
+                $requestHeader,
                 $this->_postData
             );
-
+            var_dump($url, $this->_postData, $this->_header);
             // ToDo: activate for real server testing
             if (!$dryrun) {
-                var_dump("real: " . $this->_requestUrl . $this->_requestPath);
+                var_dump("real: " . $url);
+
                 $response = $this->_requestClient->read();
             } else {
                 $response = $this->getTestResponse();
@@ -405,13 +433,24 @@ class ApiClient implements ApiClientInterface
 
             $this->_responseBody = \Zend_Http_Response::extractBody($response);
             $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
-
             return $this->_responseBody;
         } else {
             throw new MissingArgumentException(__('URL Parameter missing or no data to post/put'));
         }
     }
 
+    /**
+     * Put data to server
+     *
+     * @param string $requestUrl
+     * @param string $requestPath
+     * @param string|null $header
+     * @param array|null $credentials
+     * @param string $postData
+     * @param bool $dryrun
+     *
+     * @return bool|string
+     */
     public function putResource(
         string $requestUrl = '', string $requestPath = '',
         string $header = null, array $credentials = null, string $postData = '', bool $dryrun = true
@@ -420,61 +459,24 @@ class ApiClient implements ApiClientInterface
         return $this->postResource($requestUrl, $requestPath, $header, $credentials, $postData, $dryrun);
     }
 
+    /**
+     * Delete request to server
+     *
+     * @param string $requestUrl
+     * @param string $requestPath
+     * @param string|null $header
+     * @param array|null $credentials
+     * @param bool $dryrun
+     *
+     * @return bool|string
+     */
     public function deleteResource(
         string $requestUrl = '', string $requestPath = '',
         string $header = null, array $credentials = null, $dryrun = true
     )
     {
-        if ((!empty($requestUrl) || !empty($this->url)) && (!empty($this->_requestPath) || !empty($requestPath))) {
-            if (empty($this->_requestUrl)) {
-                $this->setRequestUrl($requestUrl);
-            }
-
-            if (!empty($requestPath)) {
-                $this->setRequestPath($requestPath);
-            }
-
-            $this->setRequestMethod(\Zend_Http_Client::DELETE);
-            $this->setHeader($header);
-
-            if (!empty($credentials)) {
-                $this->setCredentials($credentials);
-                if (!in_array('Authorization: Basic ' . base64_encode($this->_credentials), $this->_header)) {
-                    $this->_header[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
-                }
-            } else if (!empty($this->_credentials)) {
-                if (!in_array('Authorization: Basic ' . base64_encode($this->_credentials), $this->_header)) {
-                    $this->_header[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
-                }
-            } else {
-                throw new InvalidAuthenticationException(__('Credentials not provided'));
-            }
-            $this->_requestClient->addOption(CURLOPT_PROGRESSFUNCTION, '\Flagbit\Inxmail\Model\Api\ApiClient::setResponseInformation');
-            $this->_requestClient->addOption(CURLOPT_NOPROGRESS, FALSE);
-            $this->_requestClient->write(
-                $this->_requestMethod,
-                $this->_requestUrl . $this->_requestPath,
-                \Zend_Http_Client::HTTP_1,
-                $this->_header
-            );
-
-            // ToDo: activate for real server testing
-            if (!$dryrun) {
-                var_dump("real: " . $this->_requestUrl . $this->_requestPath);
-                $response = $this->_requestClient->read();
-            } else {
-                $response = $this->getTestResponse();
-            }
-
-            $this->_responseBody = \Zend_Http_Response::extractBody($response);
-            $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
-
-//            $this->_responseHeader = substr($response, 0, strlen($response) - self::$_responseCurrentBytes);
-//            $this->_responseBody = substr($response, strlen($response) - self::$_responseCurrentBytes);
-            return $this->_responseBody;
-        } else {
-            throw new MissingArgumentException(__('URL Parameter missing or no data to post'));
-        }
+        $this->setRequestMethod(\Zend_Http_Client::DELETE);
+        return $this->getResource($requestUrl, $requestPath, $header, $credentials, $dryrun);
     }
 
     /**
@@ -485,6 +487,7 @@ class ApiClient implements ApiClientInterface
      * @param int $current
      * @param int $uploadExpected
      * @param int $currentUpload
+     *
      * @return int
      */
     public static function setResponseInformation($curl, int $expected, int $current, int $uploadExpected, int $currentUpload): int
@@ -542,6 +545,18 @@ class ApiClient implements ApiClientInterface
     public function getResponseInfo(): array
     {
         return self::$_responseInfo;
+    }
+
+    /**
+     * Only http and https are allowed
+     *
+     * @param string $url
+     * @return bool
+     */
+    private function validateProtocol(string $url): bool
+    {
+        $test = explode(':', $url);
+        return (count($test) > 1 && in_array(strtolower($test[0]), array('http', 'https')));
     }
 
     /**
@@ -619,17 +634,5 @@ Set-Cookie: JSESSIONID=6F0DD77B42E5CF11EFEFAD140BCD4F7A; Path=/inxmail3; HttpOnl
             'download_content_length' => '-1',
             'upload_content_length' => '-1'
         );
-    }
-
-    /**
-     * Only http and https are allowed
-     *
-     * @param string $url
-     * @return bool
-     */
-    private function validateProtocol(string $url): bool
-    {
-        $test = explode(':', $url);
-        return (count($test) > 1 && in_array(strtolower($test[0]), array('http', 'https'))) ? true : false;
     }
 }

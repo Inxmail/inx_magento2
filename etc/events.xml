@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!--<event name="controller_action_predispatch_newsletter_manage_save">-->
+    <event name="newsletter_subscriber_save_after">
+        <observer name="subscribe" instance="Flagbit\Inxmail\Observer\SubscriberSubscribe" />
+    </event>
+    <!--<event name="my_module_event_after">-->
+        <!--<observer name="subscribe" instance="Flagbit\Inxmail\Observer\SubscriberUnsubscribe" />-->
+    <!--</event>-->
+</config>

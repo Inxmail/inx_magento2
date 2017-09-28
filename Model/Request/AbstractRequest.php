@@ -25,9 +25,9 @@ class AbstractRequest implements RequestInterface
     /** @var array */
     protected $_credentials = array();
     /** @var string */
-    protected $requestParam = '';
+    protected $_requestParam = '';
     /** @var string */
-    protected $response = '';
+    protected $_response = '';
 
     /*
       * "type" : "about:blank", / 404
@@ -104,6 +104,9 @@ class AbstractRequest implements RequestInterface
         $this->_requestData[] = $params;
     }
 
+    /**
+     * @return ApiClientInterface
+     */
     protected function getApiClient(): ApiClientInterface
     {
         if (empty($this->_apiClient)) {
@@ -113,6 +116,9 @@ class AbstractRequest implements RequestInterface
         return $this->_apiClient;
     }
 
+    /**
+     * @return array
+     */
     protected function getCredentials(): array
     {
         if (empty($this->_credentials)){
@@ -124,6 +130,9 @@ class AbstractRequest implements RequestInterface
         return $this->_credentials;
     }
 
+    /**
+     * @return array
+     */
     public function sendRequest()
     {
         $result = null;
@@ -137,6 +146,9 @@ class AbstractRequest implements RequestInterface
         return json_decode($result, true);
     }
 
+    /**
+     * @return array
+     */
     public function writeRequest()
     {
         $result = null;
@@ -150,6 +162,24 @@ class AbstractRequest implements RequestInterface
         }
 
         return json_decode($result, true);
+    }
+
+    /**
+     * @param int $id
+     * @return bool|int
+     */
+    public function putRequest(int $id)
+    {
+        return false;
+    }
+
+    /**
+     * @param int $id
+     * @return bool|int
+     */
+    public function deleteRequest(int $id)
+    {
+        return false;
     }
 
     /**
@@ -173,15 +203,15 @@ class AbstractRequest implements RequestInterface
      */
     public function getRequestParam(): string
     {
-        return $this->requestParam;
+        return $this->_requestParam;
     }
 
     /**
-     * @param string $requestParam
+     * @param string $_requestParam
      */
-    public function setRequestParam(string $requestParam)
+    public function setRequestParam(string $_requestParam)
     {
-        $this->requestParam = $requestParam;
+        $this->_requestParam = $_requestParam;
     }
 
     /**
@@ -189,7 +219,7 @@ class AbstractRequest implements RequestInterface
      */
     public function getResponseJson(): string
     {
-        return $this->response;
+        return $this->_response;
     }
 
     /**
@@ -197,7 +227,7 @@ class AbstractRequest implements RequestInterface
      */
     public function getResponseArray(): array
     {
-        return json_decode($this->response, true);
+        return json_decode($this->_response, true);
     }
 
 }

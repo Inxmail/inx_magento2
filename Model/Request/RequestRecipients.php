@@ -9,6 +9,9 @@ class RequestRecipients extends AbstractRequest
     const REQUEST_PATH = 'recipients/';
     const REQUEST_ALL_ATTRIBUTES = '?allAttributes';
 
+    const REQUEST_PARAMETER_ATTRIBUTES = 'attributes';
+    const REQUEST_PARAMETER_SUBSCRIBED_TO = 'subscribedTo';
+    const REQUEST_PARAMETER_EMAIL = 'email';
 
     public function __construct(Config $config, ApiClientFactory $factory)
     {
@@ -19,54 +22,40 @@ class RequestRecipients extends AbstractRequest
     {
         $client = $this->getApiClient();
         $client->setCredentials($this->getCredentials());
-        $client->setRequestPath(self::REQUEST_PATH.$this->requestParam);
+        $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
         $client->setRequestMethod(\Zend_Http_Client::GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
         // ToDo: remove dryrun
-        $this->response = $client->getResource('','',null,null, false);
+        $this->_response = $client->getResource('','',null,null, false);
 
-        return json_decode($this->response, true);
-    }
-
-    public function writeRequest()
-    {
-        if (!empty($this->postData)) {
-            $client = $this->getApiClient();
-            $client->setCredentials($this->getCredentials());
-            $client->setRequestPath(self::REQUEST_PATH . $this->requestParam);
-            $client->setRequestMethod(\Zend_Http_Client::POST);
-            $client->setRequestUrl($this->_systemConfig->getApiUrl());
-            $client->setPostData( is_array($this->_requestData) ? json_encode($this->_requestData) : $this->_requestData);
-            // ToDo: remove dryrun
-            $this->response = $client->postResource('', '', null, null, '');
-
-            return $client->getResponseStatusCode();
-        }
-
-        return false;
-    }
-
-    public function deleteRequest(int $id)
-    {
-        $client = $this->getApiClient();
-        $client->setCredentials($this->getCredentials());
-        $client->setRequestPath(self::REQUEST_PATH . $this->requestParam);
-        $client->setRequestMethod(\Zend_Http_Client::DELETE);
-        $client->setRequestUrl($this->_systemConfig->getApiUrl());
-        $client->setPostData( is_array($this->_requestData) ? json_encode($this->_requestData) : $this->_requestData);
-        $this->response = $client->deleteResource('', '', null, null, '');
-        return $client->getResponseStatusCode();
+        return json_decode($this->_response, true);
     }
 
     public function requestWithAllAttributes(int $id) {
-        $this->requestParam = implode('/',explode('/',$this->requestParam));
-        $this->requestParam .= $id.self::REQUEST_ALL_ATTRIBUTES;
+        $this->_requestParam = implode('/',explode('/',$this->_requestParam));
+        $this->_requestParam .= $id.self::REQUEST_ALL_ATTRIBUTES;
         return $this->sendRequest();
     }
 
     public function requestWithAttributes(int $id, array $attributes) {
-        $this->requestParam = implode('/',explode('/',$this->requestParam));
-        $this->requestParam .= $id.'?'.implode('&',$attributes);
+        $this->_requestParam = implode('/',explode('/',$this->_requestParam));
+        $this->_requestParam .= $id.'?'.implode('&',$attributes);
         return $this->sendRequest();
+    }
+
+    public function deleteRequest(int $id)
+    {
+        $returnValue = false;
+
+        if (!empty($id)) {
+            $client = $this->getApiClient();
+            $client->setCredentials($this->getCredentials());
+            $client->setRequestPath(self::REQUEST_PATH . $id);
+            $client->setRequestMethod(\Zend_Http_Client::DELETE);
+            $client->setRequestUrl($this->_systemConfig->getApiUrl());
+            $this->_response = $client->deleteResource('', '', null, null, '', false);
+            $returnValue = $client->getResponseStatusCode();
+        }
+        return $returnValue;
     }
 }
