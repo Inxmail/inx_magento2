@@ -63,7 +63,7 @@ class SystemConfig
     }
 
     /**
-     * Singelton
+     * Singleton
      *
      * @param \Flagbit\Inxmail\Helper\Config $helper
      * @return SystemConfig
@@ -148,7 +148,7 @@ class SystemConfig
     public function getInxDebug(): bool
     {
 
-        if (empty($this->_data[self::CONFIG_FIELD_LIST]) || $refresh) {
+        if (empty($this->_data[self::CONFIG_FIELD_LIST])) {
             $this->_data[self::CONFIG_FIELD_LIST] = $this->_helper->getConfig('inxmail/general/debug');
         }
 

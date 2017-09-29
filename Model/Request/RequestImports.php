@@ -44,6 +44,8 @@ class RequestImports extends AbstractRequest
     const REQUEST_PARAMETER_TRUNCATE = 'truncate';
 
     private $_file;
+    private $isCompressed = false;
+
     public function __construct(Config $config, ApiClientFactory $factory)
     {
         parent::__construct($config, $factory);
@@ -68,12 +70,13 @@ class RequestImports extends AbstractRequest
             $client->setCredentials($this->getCredentials());
             $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
             $client->setRequestMethod(\Zend_Http_Client::POST);
-            $header = array(
-                'Accept: application/hal+json,application/problem+json',
-                'Content-Disposition: form-data; name="file"; filename="datafile.csv"',
-                'Content-Type: multipart/form-data; boundary=----Inxmail'
-            );
-            $client->setHeader($header);
+
+            if ($this->isCompressed) {
+                $this->setHeaderCompressed($client);
+            } else {
+                $this->setHeaderCsv($client);
+            }
+
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
 //            $client->setPostData( 'file='. (is_array($this->_requestData) ? implode(PHP_EOL, $this->_requestData) : $this->_requestData));
             var_dump($this->_file);
@@ -122,5 +125,48 @@ class RequestImports extends AbstractRequest
         $data .= "--" . $delimiter . "--";
 
         $this->_file = $data;
+    }
+
+    public function setRequestFileGz(array $recipients) {
+        $csvData = '';
+        foreach ($recipients as $value){
+            array_walk($value, function(&$item, $key){
+                $item = '"'.$item.'"';
+            });
+            $csvData .= implode(';', $value).PHP_EOL;
+        }
+
+        // form field separator
+        $delimiter = '----' . 'Inxmail';
+        $data = '';
+
+        $data .= "--" . $delimiter . "\r\n";
+        $data .= 'Content-Disposition: form-data; name="file"; filename="datafile.csv.gz"' . "\r\n";
+        $data .= 'Content-Encoding: gzip' . "\r\n";
+        $data .= 'Content-Type: application/gzip' . "\r\n";
+        $data .= "\r\n";
+        $data .= gzencode($csvData, 9) . "\r\n";
+        $data .= "--" . $delimiter . "--";
+
+        $this->_file = $data;
+        $this->isCompressed = true;
+    }
+
+    private function setHeaderCompressed($client){
+        $header = array(
+            'Accept: application/hal+json,application/problem+json',
+            'Content-Disposition: form-data; name="file"; filename="datafile.csv.gz"',
+            'Content-Type: multipart/form-data; boundary=----Inxmail'
+        );
+        $client->setHeader($header);
+    }
+
+    private function setHeaderCsv($client){
+        $header = array(
+            'Accept: application/hal+json,application/problem+json',
+            'Content-Disposition: form-data; name="file"; filename="datafile.csv"',
+            'Content-Type: multipart/form-data; boundary=----Inxmail'
+        );
+        $client->setHeader($header);
     }
 }

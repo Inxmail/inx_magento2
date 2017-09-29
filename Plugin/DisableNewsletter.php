@@ -12,6 +12,8 @@ class DisableNewsletter {
      */
     public function aroundIsNewsletterEnabled(Register $register, \Closure $proceed): bool
     {
+        // ToDo: question system-config for enabled inxmail && newsletter magento
+        // use before instead of around
         return true;
     }
 }

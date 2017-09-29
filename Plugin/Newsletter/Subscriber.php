@@ -4,7 +4,6 @@ namespace Flagbit\Inxmail\Plugin\Newsletter;
 
 use \Flagbit\Inxmail\Model\Request;
 use \Flagbit\Inxmail\Logger\Logger;
-use \Flagbit\Inxmail\Model\Request\RequestFactory;
 use \Flagbit\Inxmail\Model\Config\SystemConfig;
 use \Flagbit\Inxmail\Helper\Config;
 use \Flagbit\Inxmail\Helper\SubscriptionData;
@@ -28,18 +27,26 @@ class Subscriber
     /** @var bool */
     protected $inxEnabled = false;
 
+    /**
+     * Subscriber constructor.
+     *
+     * @param ScopeConfigInterface $scopeConfig
+     * @param SubscriptionData $subscriptionDataHelper
+     * @param Request $request
+     * @param Config $config
+     * @param Logger $logger
+     */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         SubscriptionData $subscriptionDataHelper,
         Request $request,
         Config $config,
-        RequestFactory $factory,
         Logger $logger
     ){
+        $this->scopeConfig = $scopeConfig;
         $this->subscriptionDataHelper = $subscriptionDataHelper;
         $this->request = $request;
         $this->systemConfig = SystemConfig::getSystemConfig($config);
-        $this->factory = $factory;
         $this->logger = $logger;
 
         $this->inxEnabled = $this->scopeConfig->getValue(
