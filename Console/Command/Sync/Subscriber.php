@@ -26,6 +26,8 @@ class Subscriber extends AbstractCommand
     private $logger;
     /** @var \Flagbit\Inxmail\Helper\SubscriberSync */
     private $subscriberSync;
+    /** @var \Flagbit\Inxmail\Model\Config\SystemConfig */
+    private $systemConfig;
 
     /**
      * Subscriber constructor.
@@ -45,8 +47,7 @@ class Subscriber extends AbstractCommand
         parent::__construct($state);
 
         $this->state = $state;
-        $this->config = $config;
-        $this->systemConfig = SystemConfig::getSystemConfig($this->config);
+        $this->systemConfig = SystemConfig::getSystemConfig($config);
         $this->subscriberSync = $subscriberSync;
         $this->logger = $logger;
     }
@@ -77,13 +78,13 @@ class Subscriber extends AbstractCommand
 
         $type = 'all';
         if (count($args) > 0) {
-            $type = isset($args[self::ARGUMENT_TYPE]) ? $args[self::ARGUMENT_TYPE] : self::ARG_TYPE_SUBSCRIBED;
+            $type = isset($args[self::ARGUMENT_TYPE]) ?? $this->subscriberSync::ARG_TYPE_SUBSCRIBED;
         }
 
         try {
             $this->subscriberSync->setOutputInterface($output);
             $this->subscriberSync->setListId($this->systemConfig->getApiList());
-            $this->subscriberSync->sync($type, ($compressed === null ? true : $compressed));
+            $this->subscriberSync->sync($type, ($compressed ?? true));
         } catch (Exception $e) {
             $this->logger->critical($e->getMessage(), $e->getTrace());
         }

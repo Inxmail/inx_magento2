@@ -3,7 +3,6 @@ namespace Flagbit\Inxmail\Helper;
 
 use \Flagbit\Inxmail\Model\Request;
 use \Flagbit\Inxmail\Logger\Logger;
-use \Flagbit\Inxmail\Helper\SubscriptionData;
 use \Symfony\Component\Console\Output\OutputInterface;
 use \Magento\Framework\App\Helper\AbstractHelper;
 use \Magento\Framework\App\Helper\Context;
@@ -12,6 +11,10 @@ use \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory;
 use \Magento\Newsletter\Model\Subscriber;
 
 
+/**
+ * Class SubscriberSync
+ * @package Flagbit\Inxmail\Helper
+ */
 class SubscriberSync extends AbstractHelper
 {
     const ARG_TYPE_ALL = 'all';
@@ -31,9 +34,9 @@ class SubscriberSync extends AbstractHelper
     /** @var \Symfony\Component\Console\Output\OutputInterface */
     private $output;
     /** @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory */
-    private $subcriberCollectionFactory;
+    private $subscriberCollectionFactory;
     /** @var \Magento\Customer\Model\ResourceModel\CustomerRepository */
-    private $customerRepsitory;
+    private $customerRepository;
     /** @var boolean */
     private $compressed;
 
@@ -41,15 +44,15 @@ class SubscriberSync extends AbstractHelper
         Context $context,
         Logger $logger,
         Request $request,
-        CollectionFactory $subcriberCollectionFactory,
+        CollectionFactory $subscriberCollectionFactory,
         CustomerRepository $customerRepository,
         SubscriptionData $subscriptionData
     ){
         $this->context = $context;
         $this->logger = $logger;
         $this->request = $request;
-        $this->subcriberCollectionFactory = $subcriberCollectionFactory;
-        $this->customerRepsitory = $customerRepository;
+        $this->subscriberCollectionFactory = $subscriberCollectionFactory;
+        $this->customerRepository = $customerRepository;
         $this->subscriptionData = $subscriptionData;
 
         parent::__construct($context);
@@ -71,6 +74,10 @@ class SubscriberSync extends AbstractHelper
         $this->listId = $listId;
     }
 
+    /**
+     * @param string $type
+     * @param bool $compressed
+     */
     public function sync(string $type, bool $compressed = true)
     {
         $this->compressed = $compressed;
@@ -111,11 +118,14 @@ class SubscriberSync extends AbstractHelper
         }
     }
 
-    private function getSubscriberData()
+    /**
+     * @return array
+     */
+    private function getSubscriberData(): array
     {
         $this->writeOutput('Get subscriber data');
         $result = array();
-        $subscriberColletion = $this->subcriberCollectionFactory->create()
+        $subscriberColletion = $this->subscriberCollectionFactory->create()
             ->addFilter('subscriber_status', Subscriber::STATUS_SUBSCRIBED);
 
         /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
@@ -128,12 +138,15 @@ class SubscriberSync extends AbstractHelper
         return $result;
     }
 
-    private function getUnsubscriberData()
+    /**
+     * @return array
+     */
+    private function getUnsubscriberData(): array
     {
         $this->writeOutput('Get unsubscribed data');
 
         $result = array();
-        $subscriberColletion = $this->subcriberCollectionFactory->create()
+        $subscriberColletion = $this->subscriberCollectionFactory->create()
             ->addFilter('subscriber_status', Subscriber::STATUS_UNSUBSCRIBED)
             ->addFilter('subscriber_status', Subscriber::STATUS_UNCONFIRMED)
             ->addFilter('subscriber_status', Subscriber::STATUS_NOT_ACTIVE);
@@ -148,6 +161,10 @@ class SubscriberSync extends AbstractHelper
         return $result;
     }
 
+    /**
+     * @param array $subscriberData
+     * @return array
+     */
     private function getCsvData(array $subscriberData): array
     {
         $result = array();
@@ -177,7 +194,11 @@ class SubscriberSync extends AbstractHelper
         return $result;
     }
 
-    private function sendData(array $subscribers)
+    /**
+     * @param array $subscribers
+     * @return int
+     */
+    private function sendData(array $subscribers): int
     {
 
         /** @var \Flagbit\Inxmail\Model\Request\RequestImports client */
@@ -191,10 +212,41 @@ class SubscriberSync extends AbstractHelper
             $client->setRequestFile($subscribers);
         }
 
-        $response = $client->writeRequest();
-        var_dump($response);
+        $response = 0;
+        try {
+            $response = $client->writeRequest();
+        } catch(Exception $e) {
+            $this->writeOutput('<error>Exception: Something went wrong, see log for information</error>');
+            $this->logger->alert('Inxmail Api Error'.PHP_EOL, array($e->getFile(), $e->getLine(), $e->getMessage(),$e->getTrace()));
+        }
+
+        if ($response !== 201) {
+            $this->writeOutput('<question>Info: Something went wrong, see log for information</question>');
+            $this->logger->alert('Inxmail Api Error'.PHP_EOL, array($client->getResponseHeader(), $client->getResponseArray()));
+        }
+
+        return $response > 0 ?? 0;
     }
 
+    /**
+     * @return bool
+     */
+    public function isCompressed(): bool
+    {
+        return $this->compressed;
+    }
+
+    /**
+     * @param bool $compressed
+     */
+    public function setCompressed(bool $compressed)
+    {
+        $this->compressed = $compressed;
+    }
+
+    /**
+     * @param string $message
+     */
     private function writeOutput(string $message)
     {
         if ($this->output !== null) {
