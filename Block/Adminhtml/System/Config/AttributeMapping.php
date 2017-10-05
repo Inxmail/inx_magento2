@@ -23,8 +23,8 @@ class AttributeMapping extends AbstractFieldArray
      */
     protected function _prepareToRender()
     {
-        $this->addColumn('magAttrib', ['label' => __('Magento Attribute'), 'renderer' => $this->getAttribSelectMag()]);
-        $this->addColumn('inxAttrib', ['label' => __('Inxmail Attribute'), 'renderer' => $this->getAttribSelectInx()]);
+        $this->addColumn('magAttrib', ['label' => __('Magento customer attribute'), 'renderer' => $this->getAttribSelectMag()]);
+        $this->addColumn('inxAttrib', ['label' => __('Inxmail Professional recipient attribute'), 'renderer' => $this->getAttribSelectInx()]);
 
         $this->_addAfter = false;
         $this->_addButtonLabel = __('Add');
