@@ -118,12 +118,12 @@ class SubscriberSync extends AbstractHelper
 
         if (isset($baseData['unsubscribed'])) {
             $this->writeOutput('Prepare csv data for other than subscribed users');
-            $csvData = $this->getCsvData($baseData['unsubscribed']);
+            $csvDataUnsub = $this->getCsvData($baseData['unsubscribed']);
         }
 
-        if (!empty($csvData)) {
+        if (!empty($csvDataUnsub)) {
             $this->writeOutput('Sending unsubscribed data');
-            $this->sendData($csvData);
+            $this->sendData($csvDataUnsub);
         }
     }
 
