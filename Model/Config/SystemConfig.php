@@ -35,6 +35,10 @@ class SystemConfig
      * Contains the path of the inxmail configuration for the list to sync to
      */
     const CONFIG_PATH_CUSTOMER_MAPPING = 'inxmail/mapcustomer/mapping';
+    /**
+     * Contains the path of the inxmail configuration for module enabled or not
+     */
+    const CONFIG_PATH_ENABLED = 'inxmail/general/enable';
 
     /** Datafield key */
     const CONFIG_FIELD_URL = 'apiUrl';
@@ -48,6 +52,8 @@ class SystemConfig
     const CONFIG_FIELD_DEBUG = 'debug';
     /** Datafield key */
     const CONFIG_FIELD_CUSTOMER_MAPPING = 'customerMapping';
+    /** Datafield key */
+    const CONFIG_FIELD_INXMAIL_ENABLED = 'enabled';
 
     /** @var \Flagbit\Inxmail\Model\Config\SystemConfig */
     protected static $_config;
@@ -176,5 +182,17 @@ class SystemConfig
 
         $data = unserialize($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING]) ?? [];
         return $data;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInxmailEnabled(): bool
+    {
+        if (empty($this->_data[self::CONFIG_FIELD_INXMAIL_ENABLED])) {
+            $this->_data[self::CONFIG_FIELD_INXMAIL_ENABLED] = $this->_helper->getConfig(self::CONFIG_PATH_ENABLED);
+        }
+
+        return $this->_data[self::CONFIG_FIELD_INXMAIL_ENABLED];
     }
 }
