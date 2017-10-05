@@ -1,4 +1,5 @@
 <?php
+
 namespace Flagbit\Inxmail\Console\Command\Sync;
 
 use \Flagbit\Inxmail\Console\Command\AbstractCommand;
@@ -14,6 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Class Subscriber
+ *
  * @package Flagbit\Inxmail\Console\Command\Sync
  */
 class Subscriber extends AbstractCommand
@@ -32,10 +34,10 @@ class Subscriber extends AbstractCommand
     /**
      * Subscriber constructor.
      *
-     * @param State $state
-     * @param Config $config
-     * @param SubscriberSync $subscriberSync
-     * @param Logger $logger
+     * @param \Magento\Framework\App\State $state
+     * @param \Flagbit\Inxmail\Helper\Config $config
+     * @param \Flagbit\Inxmail\Helper\SubscriberSync $subscriberSync
+     * @param \Flagbit\Inxmail\Logger\Logger $logger
      */
     public function __construct(
         State $state,
@@ -54,38 +56,32 @@ class Subscriber extends AbstractCommand
 
     /**
      * {@inheritdoc}
+     *
+     * @throws \InvalidArgumentException When the name is invalid
      */
     protected function configure()
     {
         $this->setName(self::COMMAND_NAME)
             ->setDescription(sprintf('Inxmail sync for subscribers'))
             ->addArgument(self::ARGUMENT_TYPE, InputArgument::OPTIONAL, '<comment>all, unsubscribed, subscribed</comment>')
-            ->addOption(self::OPTION_COMPRESSED, '-c',InputOption::VALUE_OPTIONAL,'<comment>[0|1] send compressed data upload - default = 1</comment>');
+            ->addOption(self::OPTION_COMPRESSED, '-c', InputOption::VALUE_OPTIONAL, '<comment>[0|1] send compressed data upload - default = 1</comment>');
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @throws \Exception
      */
     protected function _execute(InputInterface $input, OutputInterface $output)
     {
         $args = $input->getArgument(self::ARGUMENT_TYPE);
         $compressed = $input->getOption('compressed');
 
-        $type = 'all';
-        if (count($args) > 0) {
-            $type = isset($args[self::ARGUMENT_TYPE]) ?? $this->subscriberSync::ARG_TYPE_SUBSCRIBED;
-        }
+        $type = $args[self::ARGUMENT_TYPE] ?? $this->subscriberSync::ARG_TYPE_SUBSCRIBED;
 
         try {
             $this->subscriberSync->setOutputInterface($output);
             $this->subscriberSync->setListId($this->systemConfig->getApiList());
-            $this->subscriberSync->sync($type, ($compressed ?? true));
-        } catch (Exception $e) {
+            $this->subscriberSync->sync($type, $compressed ?? true);
+        } catch (\Exception $e) {
             $this->logger->critical($e->getMessage(), $e->getTrace());
         }
     }

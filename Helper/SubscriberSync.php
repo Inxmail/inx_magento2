@@ -1,4 +1,5 @@
 <?php
+
 namespace Flagbit\Inxmail\Helper;
 
 use \Flagbit\Inxmail\Model\Request;
@@ -13,6 +14,7 @@ use \Magento\Newsletter\Model\Subscriber;
 
 /**
  * Class SubscriberSync
+ *
  * @package Flagbit\Inxmail\Helper
  */
 class SubscriberSync extends AbstractHelper
@@ -23,8 +25,6 @@ class SubscriberSync extends AbstractHelper
 
     /** @var int */
     private $listId;
-    /** @var \Magento\Framework\App\Helper\Context */
-    private $context;
     /** @var \Flagbit\Inxmail\Logger\Logger */
     private $logger;
     /** @var \Flagbit\Inxmail\Model\Request */
@@ -35,11 +35,19 @@ class SubscriberSync extends AbstractHelper
     private $output;
     /** @var \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory */
     private $subscriberCollectionFactory;
-    /** @var \Magento\Customer\Model\ResourceModel\CustomerRepository */
-    private $customerRepository;
     /** @var boolean */
     private $compressed;
 
+    /**
+     * SubscriberSync constructor.
+     *
+     * @param Context $context
+     * @param Logger $logger
+     * @param Request $request
+     * @param CollectionFactory $subscriberCollectionFactory
+     * @param CustomerRepository $customerRepository
+     * @param SubscriptionData $subscriptionData
+     */
     public function __construct(
         Context $context,
         Logger $logger,
@@ -47,12 +55,11 @@ class SubscriberSync extends AbstractHelper
         CollectionFactory $subscriberCollectionFactory,
         CustomerRepository $customerRepository,
         SubscriptionData $subscriptionData
-    ){
-        $this->context = $context;
+    )
+    {
         $this->logger = $logger;
         $this->request = $request;
         $this->subscriberCollectionFactory = $subscriberCollectionFactory;
-        $this->customerRepository = $customerRepository;
         $this->subscriptionData = $subscriptionData;
 
         parent::__construct($context);
@@ -77,6 +84,8 @@ class SubscriberSync extends AbstractHelper
     /**
      * @param string $type
      * @param bool $compressed
+     *
+     * @throws \InvalidArgumentException When unknown output type is given
      */
     public function sync(string $type, bool $compressed = true)
     {
@@ -120,49 +129,56 @@ class SubscriberSync extends AbstractHelper
 
     /**
      * @return array
+     *
+     * @throws \InvalidArgumentException When unknown output type is given
      */
     private function getSubscriberData(): array
     {
         $this->writeOutput('Get subscriber data');
         $result = array();
-        $subscriberColletion = $this->subscriberCollectionFactory->create()
+        /** @var \Magento\Newsletter\Model\ResourceModel\Subscriber\Collection $subscriberCollection */
+        $subscriberCollection = $this->subscriberCollectionFactory->create()
             ->addFilter('subscriber_status', Subscriber::STATUS_SUBSCRIBED);
 
         /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
-        foreach ($subscriberColletion as $subscriber) {
+        foreach ($subscriberCollection as $subscriber) {
             $result[] = $this->subscriptionData->getSubscriptionFields($subscriber);
-            $result[count($result)-1]['email'] = $subscriber->getEmail();
+            $result[count($result) - 1]['email'] = $subscriber->getEmail();
         }
 
-        $this->writeOutput('Fetched '.count($result).' subscriber');
+        $this->writeOutput('Fetched ' . count($result) . ' subscriber');
         return $result;
     }
 
     /**
      * @return array
+     *
+     * @throws \InvalidArgumentException When unknown output type is given
      */
     private function getUnsubscriberData(): array
     {
         $this->writeOutput('Get unsubscribed data');
 
         $result = array();
-        $subscriberColletion = $this->subscriberCollectionFactory->create()
+        /** @var \Magento\Newsletter\Model\ResourceModel\Subscriber\Collection $subscriberCollection */
+        $subscriberCollection = $this->subscriberCollectionFactory->create()
             ->addFilter('subscriber_status', Subscriber::STATUS_UNSUBSCRIBED)
             ->addFilter('subscriber_status', Subscriber::STATUS_UNCONFIRMED)
             ->addFilter('subscriber_status', Subscriber::STATUS_NOT_ACTIVE);
 
         /** @var \Magento\Newsletter\Model\Subscriber $subscriber */
-        foreach ($subscriberColletion as $subscriber) {
+        foreach ($subscriberCollection as $subscriber) {
             $result[] = $this->subscriptionData->getSubscriptionFields($subscriber);
-            $result[count($result)-1]['email'] = $subscriber->getEmail();
+            $result[count($result) - 1]['email'] = $subscriber->getEmail();
         }
 
-        $this->writeOutput('Fetched '.count($result).' subscriber');
+        $this->writeOutput('Fetched ' . count($result) . ' subscriber');
         return $result;
     }
 
     /**
      * @param array $subscriberData
+     *
      * @return array
      */
     private function getCsvData(array $subscriberData): array
@@ -170,12 +186,13 @@ class SubscriberSync extends AbstractHelper
         $result = array();
 
         $mapData = $this->subscriptionData->getMapping();
+        $mapData['email'] = 'email';
         ksort($mapData);
         $fields = array_keys($mapData);
         $result[] = $fields;
 
         // check fields/amount
-        foreach ($fields as $key){
+        foreach ($fields as $key) {
             foreach ($subscriberData as $subKey => $subscriber) {
                 if (!array_key_exists($key, $subscriber)) {
                     $subscriberData[$subKey][$key] = '';
@@ -196,7 +213,10 @@ class SubscriberSync extends AbstractHelper
 
     /**
      * @param array $subscribers
+     *
      * @return int
+     *
+     * @throws \InvalidArgumentException When unknown output type is given
      */
     private function sendData(array $subscribers): int
     {
@@ -204,7 +224,7 @@ class SubscriberSync extends AbstractHelper
         /** @var \Flagbit\Inxmail\Model\Request\RequestImports client */
         $client = $this->request->getImportClient();
 
-        $client->setRequestParam('?listId='.$this->listId);
+        $client->setRequestParam('?listId=' . $this->listId);
 
         if ($this->compressed) {
             $client->setRequestFileGz($subscribers);
@@ -215,14 +235,14 @@ class SubscriberSync extends AbstractHelper
         $response = 0;
         try {
             $response = $client->writeRequest();
-        } catch(Exception $e) {
+        } catch (\Exception $e) {
             $this->writeOutput('<error>Exception: Something went wrong, see log for information</error>');
-            $this->logger->alert('Inxmail Api Error'.PHP_EOL, array($e->getFile(), $e->getLine(), $e->getMessage(),$e->getTrace()));
+            $this->logger->alert('Inxmail Api Error' . PHP_EOL, array($e->getFile(), $e->getLine(), $e->getMessage(), $e->getTrace()));
         }
 
         if ($response !== 201) {
             $this->writeOutput('<question>Info: Something went wrong, see log for information</question>');
-            $this->logger->alert('Inxmail Api Error'.PHP_EOL, array($client->getResponseHeader(), $client->getResponseArray()));
+            $this->logger->alert('Inxmail Api Error' . PHP_EOL, array($client->getResponseHeader(), $client->getResponseArray()));
         }
 
         return $response > 0 ?? 0;
@@ -246,11 +266,13 @@ class SubscriberSync extends AbstractHelper
 
     /**
      * @param string $message
+     *
+     * @throws \InvalidArgumentException When unknown output type is given
      */
     private function writeOutput(string $message)
     {
         if ($this->output !== null) {
-            $message = date('[Y-m-d H:i:s] ', time()).$message;
+            $message = date('[Y-m-d H:i:s] ', time()) . $message;
             $this->output->writeln($message);
         }
     }

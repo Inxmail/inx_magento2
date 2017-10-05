@@ -1,11 +1,14 @@
 <?php
-// ToDo: don't forget
-// The subscription response will return the recipient-ID of Inxmail. This ID should be saved.
 namespace Flagbit\Inxmail\Model\Request;
 
 use Flagbit\Inxmail\Helper\Config;
 use Flagbit\Inxmail\Model\Api\ApiClientFactory;
 
+/**
+ * Class RequestUnsubscriptionRecipients
+ *
+ * @package Flagbit\Inxmail\Model\Request
+ */
 class RequestUnsubscriptionRecipients extends AbstractRequest
 {
     const REQUEST_PATH = 'events/unsubscriptions/';
@@ -33,12 +36,21 @@ class RequestUnsubscriptionRecipients extends AbstractRequest
         'UNSUBSCRIPTION_INTERNAL_ERROR'
     );
 
+    /**
+     * RequestUnsubscriptionRecipients constructor
+     *
+     * @param \Flagbit\Inxmail\Helper\Config $config
+     * @param \Flagbit\Inxmail\Model\Api\ApiClientFactory $factory
+     */
     public function __construct(Config $config, ApiClientFactory $factory)
     {
         parent::__construct($config, $factory);
     }
 
-    public function sendRequest()
+    /**
+     * @return array
+     */
+    public function sendRequest(): array
     {
         $client = $this->getApiClient();
         $client->setCredentials($this->getCredentials());
@@ -51,7 +63,10 @@ class RequestUnsubscriptionRecipients extends AbstractRequest
         return json_decode($this->_response, true);
     }
 
-    public function writeRequest()
+    /**
+     * @return int
+     */
+    public function writeRequest(): int
     {
         if (!empty($this->_requestData)) {
             $client = $this->getApiClient();
@@ -67,9 +82,12 @@ class RequestUnsubscriptionRecipients extends AbstractRequest
             return $client->getResponseStatusCode();
         }
 
-        return false;
+        return 0;
     }
 
+    /**
+     * @return array
+     */
     public function getStandardOptions(): array
     {
         return array(

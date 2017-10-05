@@ -9,10 +9,13 @@ use \Flagbit\Inxmail\Helper\Config;
 use \Flagbit\Inxmail\Helper\SubscriptionData;
 use \Magento\Newsletter\Model\Subscriber as MageSubscriber;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
+use \Magento\Store\Model\ScopeInterface;
 
 
 /**
- * Class for Subscriber event handling
+ * Class Subscriber
+ *
+ * @package Flagbit\Inxmail\Plugin\Newsletter
  */
 class Subscriber
 {
@@ -30,11 +33,11 @@ class Subscriber
     /**
      * Subscriber constructor.
      *
-     * @param ScopeConfigInterface $scopeConfig
-     * @param SubscriptionData $subscriptionDataHelper
-     * @param Request $request
-     * @param Config $config
-     * @param Logger $logger
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Flagbit\Inxmail\Helper\SubscriptionData $subscriptionDataHelper
+     * @param \Flagbit\Inxmail\Model\Request $request
+     * @param \Flagbit\Inxmail\Helper\Config $config
+     * @param \Flagbit\Inxmail\Logger\Logger $logger
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
@@ -42,8 +45,8 @@ class Subscriber
         Request $request,
         Config $config,
         Logger $logger
-    ){
-        $this->scopeConfig = $scopeConfig;
+    )
+    {
         $this->subscriptionDataHelper = $subscriptionDataHelper;
         $this->request = $request;
         $this->systemConfig = SystemConfig::getSystemConfig($config);
@@ -51,7 +54,7 @@ class Subscriber
 
         $this->inxEnabled = $this->scopeConfig->getValue(
             'inxmail/general/enable',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            ScopeInterface::SCOPE_STORE
         );
     }
 
@@ -61,7 +64,7 @@ class Subscriber
      */
     public function aroundSendConfirmationRequestEmail(MageSubscriber $subscriber, callable $proceed)
     {
-        if ($this->inxEnabled){
+        if ($this->inxEnabled) {
             return;
         } else {
             $proceed();
@@ -74,7 +77,7 @@ class Subscriber
      */
     public function aroundSendConfirmationSuccessEmail(MageSubscriber $subscriber, callable $proceed)
     {
-        if ($this->inxEnabled){
+        if ($this->inxEnabled) {
             return;
         } else {
             $proceed();
@@ -87,7 +90,7 @@ class Subscriber
      */
     public function aroundSendUnsubscriptionEmail(MageSubscriber $subscriber, callable $proceed)
     {
-        if ($this->inxEnabled){
+        if ($this->inxEnabled) {
             return;
         } else {
             $proceed();
@@ -96,7 +99,8 @@ class Subscriber
 
     /**
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
-     * @return null
+     *
+     * @return \Magento\Newsletter\Model\Subscriber
      */
     public function afterSave(MageSubscriber $subscriber): MageSubscriber
     {
@@ -115,7 +119,7 @@ class Subscriber
                 }
             }
         } catch (Exception $e) {
-            $this->logger->critical('Errormessage: '.$e->getMessage(), $e);
+            $this->logger->critical('ErrorMessage: ' . $e->getMessage(), $e);
         }
 
         return $subscriber;
@@ -124,6 +128,7 @@ class Subscriber
 
     /**
      * @param MageSubscriber $subscriber
+     *
      * @return int
      */
     private function subscribeInxmail(MageSubscriber $subscriber): int
@@ -152,7 +157,7 @@ class Subscriber
             }
         } else {
             $this->logger->alert(
-                'Not Subscribed: '.$reqData['email'].
+                'Not Subscribed: ' . $reqData['email'] .
                 str_replace('%s', isset($result['type']) ?? 'Undefined', 'Inxmail API Error: %s'),
                 array($reqData, $result)
             );
@@ -163,6 +168,7 @@ class Subscriber
 
     /**
      * @param MageSubscriber $subscriber
+     *
      * @return int
      */
     private function unsubscribeInxmail(MageSubscriber $subscriber): int
@@ -188,12 +194,12 @@ class Subscriber
             }
         } else {
             $this->logger->alert(
-                'Not Unsubscribed: '.$reqData['email'].
+                'Not Unsubscribed: ' . $reqData['email'] .
                 str_replace('%s', isset($result['type']) ?? 'Undefined', 'Inxmail API Error: %s'),
                 array($reqData, $result)
             );
         }
 
-         return (int)$response;
+        return (int)$response;
     }
 }

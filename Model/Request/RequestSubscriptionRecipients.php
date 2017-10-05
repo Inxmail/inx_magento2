@@ -1,11 +1,15 @@
 <?php
-// ToDo: don't forget
-// The subscription response will return the recipient-ID of Inxmail. This ID should be saved.
+
 namespace Flagbit\Inxmail\Model\Request;
 
 use Flagbit\Inxmail\Helper\Config;
 use Flagbit\Inxmail\Model\Api\ApiClientFactory;
 
+/**
+ * Class RequestSubscriptionRecipients
+ *
+ * @package Flagbit\Inxmail\Model\Request
+ */
 class RequestSubscriptionRecipients extends AbstractRequest
 {
     const REQUEST_PATH = 'events/subscriptions/';
@@ -35,70 +39,97 @@ class RequestSubscriptionRecipients extends AbstractRequest
         'SUBSCRIPTION_INTERNAL_ERROR'
     );
 
+    /**
+     * RequestSubscriptionRecipients constructor
+     *
+     * @param \Flagbit\Inxmail\Helper\Config $config
+     * @param \Flagbit\Inxmail\Model\Api\ApiClientFactory $factory
+     */
     public function __construct(Config $config, ApiClientFactory $factory)
     {
         parent::__construct($config, $factory);
     }
 
-    public function sendRequest()
+    /**
+     * @return array
+     */
+    public function sendRequest(): array
     {
         $client = $this->getApiClient();
         $client->setCredentials($this->getCredentials());
-        $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
+        $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
         $client->setRequestMethod(\Zend_Http_Client::GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
         // ToDo: remove dryrun
-        $this->_response = $client->getResource('','',null,null, false);
+        $this->_response = $client->getResource('', '', null, null, false);
 
         return json_decode($this->_response, true);
     }
 
-    public function writeRequest()
+    /**
+     * @return int
+     */
+    public function writeRequest(): int
     {
         if (!empty($this->_requestData) || !empty($this->_file)) {
             $client = $this->getApiClient();
 
             $client->setCredentials($this->getCredentials());
-            $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
+            $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
             $client->setRequestMethod(\Zend_Http_Client::POST);
             $client->setHeader();
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
-            $client->setPostData( $this->_requestData);
+            $client->setPostData($this->_requestData);
 
             $this->_response = $client->postResource('', '', null, null, '', false);
 
             return $client->getResponseStatusCode();
         }
 
-        return false;
+        return 0;
     }
 
+    /**
+     * @return array
+     */
     public function getStandardOptions(): array
     {
         return array(
             'listId' => 0,
             'email' => '',
-            'attributes' => array ()
+            'attributes' => array()
         );
     }
 
+    /**
+     * @return array
+     */
     public static function getStandardAttributes(): array
     {
         return array(
             'email' => 'email',
+            'magentoSubscriberId' => 'subscriberId',
+            'magentoSubscriberToken' => 'subscriberToken'
+        );
+    }
+
+    /**
+     * @return array
+     */
+    public static function getMapableAttributes(): array
+    {
+        return array(
             'Vorname' => 'firstName',
             'Nachname' => 'lastName',
-            'magentoSubscriberId' => 'subscriberId',
-            'magentoSubscriberToken' => 'subscriberToken',
             'magentoWebsiteName' => 'websiteName',
             'magentoWebsiteId' => 'websiteId',
             'magentoStoreName' => 'storeName',
-//            'magentoStoreId' => 'storeId',
             'magentoStoreViewName' => 'storeViewName',
-//            'magentoStoreViewId' => 'storeViewId',
             'Geburtsdatum' => 'birthday',
-//            'magentoCustomerGroup' => 'group',
-            'Geschlecht' => 'gender'
+            'Geschlecht' => 'gender',
+            'magentoStoreId' => 'storeId',
+            'magentoStoreViewId' => 'storeViewId',
+            'magentoCustomerGroup' => 'group'
         );
     }
 }

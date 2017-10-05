@@ -3,6 +3,7 @@
 namespace Flagbit\Inxmail\Helper;
 
 use \Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
+use \Flagbit\Inxmail\Model\Config\SystemConfig;
 use \Magento\Framework\App\Helper\Context;
 use \Magento\Framework\App\Helper\AbstractHelper;
 use \Magento\Customer\Model\ResourceModel\CustomerRepository;
@@ -11,38 +12,49 @@ use \Magento\Newsletter\Model\Subscriber;
 
 /**
  * Class Config
+ *
  * @package Flagbit\Inxmail\Helper
  */
 class SubscriptionData extends AbstractHelper
 {
 
-    /**
-     * @var \Magento\Customer\Model\ResourceModel\CustomerRepository
-     */
+    /** @var \Magento\Customer\Model\ResourceModel\CustomerRepository */
     protected $_customerRepository;
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
+    /** @var \Magento\Store\Model\StoreManagerInterface */
     protected $_storeManager;
+
+    /** @var \Flagbit\Inxmail\Model\Config\SystemConfig */
+    protected $_sysConfig;
 
     /**
      * Config constructor.
-     * @param Context $context
+     *
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Magento\Customer\Model\ResourceModel\CustomerRepository $customerRepository
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Flagbit\Inxmail\Helper\Config $config
      */
     public function __construct(
         Context $context,
         CustomerRepository $customerRepository,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        Config $config
     )
     {
         $this->_customerRepository = $customerRepository;
         $this->_storeManager = $storeManager;
+        $this->_sysConfig = SystemConfig::getSystemConfig($config);
 
         parent::__construct($context);
     }
 
     /**
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
+     *
+     * @return array
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getSubscriptionFields(Subscriber $subscriber): array
     {
@@ -53,8 +65,11 @@ class SubscriptionData extends AbstractHelper
 
         $result = array();
         foreach ($map as $inxKey => $magKey) {
+            if ($inxKey === 'email') {
+                continue;
+            }
             $keys = array_keys($data);
-            if (in_array($magKey, $keys)){
+            if (in_array($magKey, $keys, true) && isset($data[$magKey])) {
                 $result[$inxKey] = $data[$magKey];
             }
         }
@@ -67,13 +82,30 @@ class SubscriptionData extends AbstractHelper
      */
     public function getMapping(): array
     {
-        $map = RequestSubscriptionRecipients::getStandardAttributes();
+        $defaults = RequestSubscriptionRecipients::getStandardAttributes();
+        unset($defaults['email']);
+        $map = array_merge(RequestSubscriptionRecipients::getMapableAttributes(), $defaults);
+        $addMap = $this->_sysConfig->getMapConfig();
+        $result = array();
 
-        return $map;
+        if (!empty($addMap)) {
+            foreach ($addMap as $attribute) {
+                if (in_array($attribute['magAttrib'], $map, true)) {
+                    $result[$attribute['inxAttrib']] = $attribute['magAttrib'];
+                }
+            }
+        }
+
+        return array_merge($defaults, $result);
     }
 
     /**
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
+     *
+     * @return array
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getSubscriptionStaticData(Subscriber $subscriber): array
     {
@@ -84,7 +116,7 @@ class SubscriptionData extends AbstractHelper
         $data['subscriberToken'] = $subscriber->getSubscriberConfirmCode();
 
         $customerId = $subscriber->getCustomerId();
-        $customerData= $this->getCustomerData($customerId);
+        $customerData = $this->getCustomerData($customerId);
 
         $data['storeId'] = $subscriber->getStoreId();
         $storeData = $this->getStoreData($data['storeId']);
@@ -93,7 +125,10 @@ class SubscriptionData extends AbstractHelper
 
     /**
      * @param int $storeId
+     *
      * @return array
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function getStoreData(int $storeId): array
     {
@@ -116,7 +151,11 @@ class SubscriptionData extends AbstractHelper
 
     /**
      * @param int $customerId
+     *
      * @return array
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getCustomerData(int $customerId): array
     {
@@ -136,12 +175,12 @@ class SubscriptionData extends AbstractHelper
 
     /**
      * @param array $data
+     *
      * @return array
      */
     private function cleanData(array $data): array
     {
-        foreach ($data as $key => $value)
-        {
+        foreach ($data as $key => $value) {
             $arr = is_array($value);
             if (!$arr && !empty($value)) {
                 $data[$key] = trim($value);

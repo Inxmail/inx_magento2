@@ -4,6 +4,7 @@ namespace Flagbit\Inxmail\Model\Api;
 
 /**
  * Interface ApiClientInterface
+ *
  * @package Flagbit\Inxmail\Model\Api
  */
 interface ApiClientInterface
@@ -43,6 +44,7 @@ interface ApiClientInterface
      * @param string $requestPath
      * @param string|null $header
      * @param array|null $credentials
+     *
      * @return bool|string
      */
     public function getResource(
@@ -57,6 +59,7 @@ interface ApiClientInterface
      * @param string|null $header
      * @param array|null $credentials
      * @param string
+     *
      * @return bool|string
      */
     public function postResource(
@@ -70,6 +73,7 @@ interface ApiClientInterface
      * @param string|null $header
      * @param array|null $credentials
      * @param string
+     *
      * @return bool|string
      */
     public function putResource(
@@ -77,6 +81,14 @@ interface ApiClientInterface
         string $header = null, array $credentials = null, string $postData = ''
     );
 
+    /**
+     * @param string $requestUrl
+     * @param string $requestPath
+     * @param string|null $header
+     * @param array|null $credentials
+     *
+     * @return bool|string
+     */
     public function deleteResource(
         string $requestUrl = '', string $requestPath = '',
         string $header = null, array $credentials = null

@@ -6,16 +6,13 @@ use Monolog\Logger;
 
 /**
  * Class DebugLog
+ *
  * @package Flagbit\Inxmail\Logger\Handler
  */
 class DebugLog extends Base
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     protected $fileName = '/var/log/inxmail.log';
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $loggerType = Logger::DEBUG;
 }

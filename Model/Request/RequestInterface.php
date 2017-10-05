@@ -3,24 +3,26 @@ namespace Flagbit\Inxmail\Model\Request;
 
 /**
  * Interface RequestInterface
+ *
  * @package Flagbit\Inxmail\Model\Request
  */
 interface RequestInterface {
     /**
      * @return array
      */
-    public function sendRequest();
+    public function sendRequest(): array;
 
     /**
-     * @return array
+     * @return int
      */
-    public function writeRequest();
+    public function writeRequest(): int;
 
     /**
      * @param int $id
-     * @return bool|int
+     *
+     * @return int
      */
-    public function putRequest(int $id);
+    public function putRequest(int $id): int;
 
     /**
      * @param int $id

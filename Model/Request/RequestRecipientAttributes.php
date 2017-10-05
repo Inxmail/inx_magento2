@@ -4,6 +4,11 @@ namespace Flagbit\Inxmail\Model\Request;
 use Flagbit\Inxmail\Helper\Config;
 use Flagbit\Inxmail\Model\Api\ApiClientFactory;
 
+/**
+ * Class RequestRecipientAttributes
+ *
+ * @package Flagbit\Inxmail\Model\Request
+ */
 class RequestRecipientAttributes extends AbstractRequest
 {
     const REQUEST_PATH = 'attributes/';
@@ -28,12 +33,21 @@ class RequestRecipientAttributes extends AbstractRequest
     /** max length of text attributes */
     const PARAMETER_MAX_LENGTH = 'maxLength';
 
+    /**
+     * RequestRecipientAttributes constructor
+     *
+     * @param \Flagbit\Inxmail\Helper\Config $config
+     * @param \Flagbit\Inxmail\Model\Api\ApiClientFactory $factory
+     */
     public function __construct(Config $config, ApiClientFactory $factory)
     {
         parent::__construct($config, $factory);
     }
 
-    public function sendRequest()
+    /**
+     * @return array
+     */
+    public function sendRequest(): array
     {
         $client = $this->getApiClient();
         $client->setCredentials($this->getCredentials());
@@ -45,7 +59,10 @@ class RequestRecipientAttributes extends AbstractRequest
         return json_decode($this->_response, true);
     }
 
-    public function writeRequest()
+    /**
+     * @return int
+     */
+    public function writeRequest(): int
     {
         if (!empty($this->_requestData)) {
             $client = $this->getApiClient();

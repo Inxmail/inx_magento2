@@ -9,15 +9,19 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class AbstractCommand
+ *
+ * @package Flagbit\Inxmail\Console\Command
+ */
 abstract class AbstractCommand extends Command
 {
-    /**
-     * @var State
-     */
+    /** @var State */
     protected $state;
 
     /**
      * @param State $state
+     *
      * @throws \LogicException
      */
     public function __construct(State $state)
@@ -28,7 +32,7 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * @param InputInterface  $input
+     * @param InputInterface $input
      * @param OutputInterface $output
      */
     abstract protected function _execute(InputInterface $input, OutputInterface $output);

@@ -1,9 +1,15 @@
 <?php
+
 namespace Flagbit\Inxmail\Model\Request;
 
 use Flagbit\Inxmail\Helper\Config;
 use Flagbit\Inxmail\Model\Api\ApiClientFactory;
 
+/**
+ * Class RequestImports
+ *
+ * @package Flagbit\Inxmail\Model\Request
+ */
 class RequestImports extends AbstractRequest
 {
     const REQUEST_PATH = '/imports/recipients/';
@@ -43,32 +49,46 @@ class RequestImports extends AbstractRequest
     const REQUEST_PARAMETER_RESUBSCRIBE = 'resubscribe';
     const REQUEST_PARAMETER_TRUNCATE = 'truncate';
 
+    /** @var string */
     private $_file;
+    /** @var bool */
     private $isCompressed = false;
 
+    /**
+     * RequestImports constructor
+     *
+     * @param Config $config
+     * @param \Flagbit\Inxmail\Model\Api\ApiClientFactory $factory
+     */
     public function __construct(Config $config, ApiClientFactory $factory)
     {
         parent::__construct($config, $factory);
     }
 
-    public function sendRequest()
+    /**
+     * @return array
+     */
+    public function sendRequest(): array
     {
         $client = $this->getApiClient();
         $client->setCredentials($this->getCredentials());
-        $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
+        $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
         $client->setRequestMethod(\Zend_Http_Client::GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
-        $this->_response = $client->getResource('','',null,null, false);
+        $this->_response = $client->getResource('', '', null, null, false);
 
         return json_decode($this->_response, true);
     }
 
-    public function writeRequest()
+    /**
+     * @return int
+     */
+    public function writeRequest(): int
     {
         if (!empty($this->_requestData) || !empty($this->_file)) {
             $client = $this->getApiClient();
             $client->setCredentials($this->getCredentials());
-            $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
+            $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
             $client->setRequestMethod(\Zend_Http_Client::POST);
 
             if ($this->isCompressed) {
@@ -78,95 +98,96 @@ class RequestImports extends AbstractRequest
             }
 
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
-//            $client->setPostData( 'file='. (is_array($this->_requestData) ? implode(PHP_EOL, $this->_requestData) : $this->_requestData));
-            var_dump($this->_file);
-            $client->setPostData( $this->_file);
+            $client->setPostData($this->_file);
             $this->_response = $client->postResource('', '', null, null, '', false);
 
-            var_dump($this->_response);
             return $client->getResponseStatusCode();
         }
 
-        return false;
+        return 0;
     }
 
     /**
-     * Returns minimal valid array for new list
-     *
-     * @return array
+     * @param array $recipients
      */
-    public function getStandardListOptions(): array
+    public function setRequestFile(array $recipients)
     {
-        return array(
-            self::PARAMETER_NAME => '',
-            self::PARAMETER_TYPE => self::LIST_TYPE_STANDARD,
-            self::PARAMETER_SENDER_ADDRESS => ''
-        );
-    }
-
-    public function setRequestFile(array $recipients) {
         $csvData = '';
-        foreach ($recipients as $value){
-            array_walk($value, function(&$item, $key){
-                $item = '"'.$item.'"';
+        foreach ($recipients as $value) {
+            array_walk($value, function (&$item) {
+                $item = '"' . $item . '"';
             });
-            $csvData .= implode(';', $value).PHP_EOL;
+            $csvData .= implode(';', $value) . PHP_EOL;
         }
 
         // form field separator
         $delimiter = '----' . 'Inxmail';
         $data = '';
 
-        $data .= "--" . $delimiter . "\r\n";
+        $data .= '--' . $delimiter . "\r\n";
         $data .= 'Content-Disposition: form-data; name="file"; filename="datafile.csv"' . "\r\n";
         $data .= 'Content-Type: text/csv' . "\r\n";
         $data .= "\r\n";
         $data .= $csvData . "\r\n";
-        $data .= "--" . $delimiter . "--";
+        $data .= '--' . $delimiter . '--';
 
         $this->_file = $data;
     }
 
-    public function setRequestFileGz(array $recipients) {
+    /**
+     * @param array $recipients
+     */
+    public function setRequestFileGz(array $recipients)
+    {
         $csvData = '';
-        foreach ($recipients as $value){
-            array_walk($value, function(&$item, $key){
-                $item = '"'.$item.'"';
+        foreach ($recipients as $value) {
+            array_walk($value, function (&$item) {
+                $item = '"' . $item . '"';
             });
-            $csvData .= implode(';', $value).PHP_EOL;
+            $csvData .= implode(';', $value) . PHP_EOL;
         }
 
         // form field separator
         $delimiter = '----' . 'Inxmail';
         $data = '';
 
-        $data .= "--" . $delimiter . "\r\n";
+        $data .= '--' . $delimiter . "\r\n";
         $data .= 'Content-Disposition: form-data; name="file"; filename="datafile.csv.gz"' . "\r\n";
         $data .= 'Content-Encoding: gzip' . "\r\n";
         $data .= 'Content-Type: application/gzip' . "\r\n";
         $data .= "\r\n";
         $data .= gzencode($csvData, 9) . "\r\n";
-        $data .= "--" . $delimiter . "--";
+        $data .= '--' . $delimiter . '--';
 
         $this->_file = $data;
         $this->isCompressed = true;
     }
 
-    private function setHeaderCompressed($client){
+    /**
+     * @param $client
+     */
+    private function setHeaderCompressed($client)
+    {
         $header = array(
             'Accept: application/hal+json,application/problem+json',
             'Content-Disposition: form-data; name="file"; filename="datafile.csv.gz"',
             'Content-Type: multipart/form-data; boundary=----Inxmail'
         );
+
         $client->setHeader($header);
     }
 
-    private function setHeaderCsv($client){
+    /**
+     * @param $client
+     */
+    private function setHeaderCsv($client)
+    {
         $header = array(
             'Accept: application/hal+json,application/problem+json',
             'Content-Disposition: form-data; name="file"; filename="datafile.csv"',
             'Content-Type: multipart/form-data; boundary=----Inxmail'
         );
+
         $client->setHeader($header);
     }
 }

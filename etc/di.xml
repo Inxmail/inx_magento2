@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Customer\Block\Form\Register">
-        <plugin name="disableNewsletter" type="\Flagbit\Inxmail\Plugin\DisableNewsletter" />
+        <plugin name="disableNewsletter" type="\Flagbit\Inxmail\Plugin\DisableNewsletter"/>
     </type>
     <type name="Magento\Newsletter\Model\Subscriber">
-        <plugin name="Inxmail::subscriber" type="Flagbit\Inxmail\Plugin\Newsletter\Subscriber" sortOrder="1" disabled="false"/>
+        <plugin name="Inxmail::subscriber" type="Flagbit\Inxmail\Plugin\Newsletter\Subscriber" sortOrder="1"
+                disabled="false"/>
     </type>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="inx_connect_test" xsi:type="object">Flagbit\Inxmail\Console\Command\Connect\Test</item>
                 <item name="inx_sync_subscriber" xsi:type="object">Flagbit\Inxmail\Console\Command\Sync\Subscriber</item>
             </argument>
         </arguments>
@@ -22,7 +23,7 @@
     <type name="Flagbit\Inxmail\Logger\Logger">
         <arguments>
             <argument name="name" xsi:type="string">inxmail</argument>
-            <argument name="handlers"  xsi:type="array">
+            <argument name="handlers" xsi:type="array">
                 <item name="system" xsi:type="object">Flagbit\Inxmail\Logger\Handler\DebugLog</item>
             </argument>
         </arguments>
