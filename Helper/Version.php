@@ -1,4 +1,5 @@
 <?php
+
 namespace Flagbit\Inxmail\Helper;
 
 use Magento\Framework\App\Helper\Context;
@@ -7,18 +8,15 @@ use \Magento\Framework\App\Helper\AbstractHelper;
 
 /**
  * Class Version
+ *
  * @package Flagbit\Inxmail\Helper
  */
 class Version extends AbstractHelper
 {
-    /**
-     * @var string
-     */
+    /** @var string */
     const MODULE_NAME = 'Flagbit_Inxmail';
 
-    /**
-     * @var \Magento\Framework\Module\ModuleListInterface
-     */
+    /** @var \Magento\Framework\Module\ModuleListInterface */
     protected $_moduleList;
 
     /**

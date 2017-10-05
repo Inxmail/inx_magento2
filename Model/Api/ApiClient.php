@@ -130,9 +130,9 @@ class ApiClient implements ApiClientInterface
     /**
      * Implements singleton
      *
-     * @return \Flagbit\Inxmail\Model\ApiClient
+     * @return \Flagbit\Inxmail\Model\Api\ApiClient
      */
-    public static function getApiClient(): ApiClient
+    public static function getApiClient(): self
     {
         if (self::$_apiClient === null) {
             self::$_apiClient = new self();
@@ -169,11 +169,12 @@ class ApiClient implements ApiClientInterface
 
     /**
      * @param string $method
+     *
      * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setRequestMethod(string $method)
     {
-        if (in_array($method, $this->_allowedMethods)) {
+        if (in_array($method, $this->_allowedMethods, true)) {
             $this->_requestMethod = $method;
         } else {
             throw new InvalidArgumentException(__('Parameter for method not allowed'));
@@ -186,6 +187,7 @@ class ApiClient implements ApiClientInterface
      * Can be omitted when provided to request function. Must not be empty.
      *
      * @param array $credentials
+     *
      * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setCredentials(array $credentials)
@@ -220,6 +222,7 @@ class ApiClient implements ApiClientInterface
      * Setting the url can be omitted when given to the request method itself
      *
      * @param string $requestUrl
+     *
      * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setRequestUrl(string $requestUrl)
@@ -239,6 +242,7 @@ class ApiClient implements ApiClientInterface
      * Setting the request path may be omitted when provided on request method itself
      *
      * @param string $requestPath
+     *
      * @throws \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
      */
     public function setRequestPath(string $requestPath)
@@ -307,11 +311,11 @@ class ApiClient implements ApiClientInterface
             $requestHeader = $this->_header;
             if (!empty($credentials)) {
                 $this->setCredentials($credentials);
-                if (!in_array('Authorization: Basic ' . base64_encode($this->_credentials), $this->_header)) {
+                if (!in_array('Authorization: Basic ' . base64_encode($this->_credentials), $this->_header, true)) {
                     $requestHeader[]  = 'Authorization: Basic ' . base64_encode($this->_credentials);
                 }
             } else if (!empty($this->_credentials)) {
-                if (!in_array('Authorization: Basic ' . base64_encode($this->_credentials), $this->_header)) {
+                if (!in_array('Authorization: Basic ' . base64_encode($this->_credentials), $this->_header, true)) {
                     $requestHeader[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
                 }
             } else {
@@ -334,7 +338,6 @@ class ApiClient implements ApiClientInterface
 
             // ToDo: activate for real server testing
             if (!$dryrun) {
-                var_dump("real: " . $this->_requestUrl . $this->_requestPath);
                 $response = $this->_requestClient->read();
                 $this->_responseBody = \Zend_Http_Response::extractBody($response);
                 $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
@@ -367,7 +370,7 @@ class ApiClient implements ApiClientInterface
      */
     public function postResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null, string $postData = '', bool $dryrun = true
+        string $header = null, array $credentials = null, string $postData = '', bool $dryrun = false
     )
     {
         if ((!empty($requestUrl) || !empty($this->_requestUrl)) && (!empty($this->_postData) || !empty($postData))) {
@@ -392,11 +395,11 @@ class ApiClient implements ApiClientInterface
             $requestHeader = $this->_header;
             if (!empty($credentials)) {
                 $this->setCredentials($credentials);
-                if (!in_array('Authorization: Basic'  . base64_encode($this->_credentials), $this->_header)) {
+                if (!in_array('Authorization: Basic'  . base64_encode($this->_credentials), $this->_header, true)) {
                     $requestHeader[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
                 }
             } else if (!empty($this->_credentials)) {
-                if (!in_array('Authorization: Basic '  . base64_encode($this->_credentials), $this->_header)) {
+                if (!in_array('Authorization: Basic '  . base64_encode($this->_credentials), $this->_header, true)) {
                     $requestHeader[] = 'Authorization: Basic ' . base64_encode($this->_credentials);
                 }
             } else {
@@ -414,6 +417,7 @@ class ApiClient implements ApiClientInterface
             }
 
             $url = $this->_requestUrl . $this->_requestPath;
+
             $this->_requestClient->write(
                 $this->_requestMethod,
                 $url,
@@ -421,11 +425,10 @@ class ApiClient implements ApiClientInterface
                 $requestHeader,
                 $this->_postData
             );
-            var_dump($url, $this->_postData, $this->_header);
-            // ToDo: activate for real server testing
-            if (!$dryrun) {
-                var_dump("real: " . $url);
 
+            // ToDo: activate for real server testing
+            $response = '';
+            if (!$dryrun) {
                 $response = $this->_requestClient->read();
             } else {
                 $response = $this->getTestResponse();
@@ -433,6 +436,7 @@ class ApiClient implements ApiClientInterface
 
             $this->_responseBody = \Zend_Http_Response::extractBody($response);
             $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
+
             return $this->_responseBody;
         } else {
             throw new MissingArgumentException(__('URL Parameter missing or no data to post/put'));
@@ -556,7 +560,7 @@ class ApiClient implements ApiClientInterface
     private function validateProtocol(string $url): bool
     {
         $test = explode(':', $url);
-        return (count($test) > 1 && in_array(strtolower($test[0]), array('http', 'https')));
+        return (count($test) > 1 && in_array(strtolower($test[0]), array('http', 'https'), true));
     }
 
     /**

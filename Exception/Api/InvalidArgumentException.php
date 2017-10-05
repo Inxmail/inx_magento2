@@ -5,7 +5,8 @@ namespace Flagbit\Inxmail\Exception\Api;
 use \Magento\Framework\Exception\LocalizedException;
 
 /**
- * Class \Flagbit\Inxmail\Exception\Api\InvalidArgumentException
+ * Class InvalidArgumentException
+ *
  * @package Flagbit\Inxmail\Exception\Api
  */
 class InvalidArgumentException extends LocalizedException

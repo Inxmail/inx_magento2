@@ -12,17 +12,17 @@ use \Flagbit\Inxmail\Model\Request\RequestFactory;
 
 /**
  * Class Request
+ *
  * @package Flagbit\Inxmail\Model\Request
  */
 class Request
 {
-    /**
-     * @var \Flagbit\Inxmail\Model\Request\RequestFactory
-     */
+    /** @var \Flagbit\Inxmail\Model\Request\RequestFactory $requestFactory */
     private $requestFactory;
 
     /**
-     * Request constructor.
+     * Request constructor
+     *
      * @param \Flagbit\Inxmail\Model\Request\RequestFactory $factory
      */
     public function __construct(RequestFactory $factory)

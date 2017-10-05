@@ -3,6 +3,7 @@
 namespace Flagbit\Inxmail\Model\Config;
 
 use \Flagbit\Inxmail\Helper\Config;
+
 /**
  * Class SystemConfig
  *
@@ -26,23 +27,27 @@ class SystemConfig
      * Contains the path of the inxmail configuration for the list to sync to
      */
     const CONFIG_PATH_API_LIST = 'inxmail/general/api_listid';
+    /**
+     * Contains the path of the inxmail configuration for debug setting
+     */
+    const CONFIG_PATH_DEBUG = 'inxmail/general/debug';
+    /**
+     * Contains the path of the inxmail configuration for the list to sync to
+     */
+    const CONFIG_PATH_CUSTOMER_MAPPING = 'inxmail/mapcustomer/mapping';
 
-    /**
-     * Datafield key
-     */
+    /** Datafield key */
     const CONFIG_FIELD_URL = 'apiUrl';
-    /**
-     * Datafield key
-     */
+    /** Datafield key */
     const CONFIG_FIELD_USER = 'apiUser';
-    /**
-     * Datafield key
-     */
+    /** Datafield key */
     const CONFIG_FIELD_KEY = 'apiKey';
-    /**
-     * Datafield key
-     */
+    /** Datafield key */
     const CONFIG_FIELD_LIST = 'apiList';
+    /** Datafield key */
+    const CONFIG_FIELD_DEBUG = 'debug';
+    /** Datafield key */
+    const CONFIG_FIELD_CUSTOMER_MAPPING = 'customerMapping';
 
     /** @var \Flagbit\Inxmail\Model\Config\SystemConfig */
     protected static $_config;
@@ -63,9 +68,10 @@ class SystemConfig
     }
 
     /**
-     * Singelton
+     * Singleton
      *
      * @param \Flagbit\Inxmail\Helper\Config $helper
+     *
      * @return SystemConfig
      */
     public static function getSystemConfig(Config $helper): SystemConfig
@@ -75,58 +81,6 @@ class SystemConfig
         }
 
         return self::$_config;
-    }
-
-    /**
-     * @param bool $refresh
-     * @return string
-     */
-    public function getApiUrl($refresh = false): string
-    {
-        if (empty($this->_data[self::CONFIG_FIELD_URL]) || $refresh) {
-            $this->_data[self::CONFIG_FIELD_URL] = $this->_helper->getConfig(self::CONFIG_PATH_URL);
-        }
-
-        return $this->_data[self::CONFIG_FIELD_URL];
-    }
-
-    /**
-     * @param bool $refresh
-     * @return string
-     */
-    public function getApiUser($refresh = false): string
-    {
-        if (empty($this->_data[self::CONFIG_FIELD_USER]) || $refresh) {
-            $this->_data[self::CONFIG_FIELD_USER] = $this->_helper->getConfig(self::CONFIG_PATH_API_USER);
-        }
-
-        return $this->_data[self::CONFIG_FIELD_USER];
-    }
-
-    /**
-     * @param bool $refresh
-     * @return string
-     */
-    public function getApiKey($refresh = false): string
-    {
-        if (empty($this->_data[self::CONFIG_FIELD_KEY]) || $refresh) {
-            $this->_data[self::CONFIG_FIELD_KEY] = $this->_helper->getConfig(self::CONFIG_PATH_API_KEY);
-        }
-
-        return $this->_data[self::CONFIG_FIELD_KEY];
-    }
-
-    /**
-     * @param bool $refresh
-     * @return string
-     */
-    public function getApiList($refresh = false): string
-    {
-        if (empty($this->_data[self::CONFIG_FIELD_LIST]) || $refresh) {
-            $this->_data[self::CONFIG_FIELD_LIST] = $this->_helper->getConfig(self::CONFIG_PATH_API_LIST);
-        }
-
-        return $this->_data[self::CONFIG_FIELD_LIST];
     }
 
     /**
@@ -140,5 +94,87 @@ class SystemConfig
         $this->getApiList();
 
         return $this->_data;
+    }
+
+    /**
+     * @param bool $refresh
+     *
+     * @return string
+     */
+    public function getApiUrl($refresh = false): string
+    {
+        if (empty($this->_data[self::CONFIG_FIELD_URL]) || $refresh) {
+            $this->_data[self::CONFIG_FIELD_URL] = $this->_helper->getConfig(self::CONFIG_PATH_URL);
+        }
+
+        return $this->_data[self::CONFIG_FIELD_URL];
+    }
+
+    /**
+     * @param bool $refresh
+     *
+     * @return string
+     */
+    public function getApiUser($refresh = false): string
+    {
+        if (empty($this->_data[self::CONFIG_FIELD_USER]) || $refresh) {
+            $this->_data[self::CONFIG_FIELD_USER] = $this->_helper->getConfig(self::CONFIG_PATH_API_USER);
+        }
+
+        return $this->_data[self::CONFIG_FIELD_USER];
+    }
+
+    /**
+     * @param bool $refresh
+     *
+     * @return string
+     */
+    public function getApiKey($refresh = false): string
+    {
+        if (empty($this->_data[self::CONFIG_FIELD_KEY]) || $refresh) {
+            $this->_data[self::CONFIG_FIELD_KEY] = $this->_helper->getConfig(self::CONFIG_PATH_API_KEY);
+        }
+
+        return $this->_data[self::CONFIG_FIELD_KEY];
+    }
+
+    /**
+     * @param bool $refresh
+     *
+     * @return string
+     */
+    public function getApiList($refresh = false): string
+    {
+        if (empty($this->_data[self::CONFIG_FIELD_LIST]) || $refresh) {
+            $this->_data[self::CONFIG_FIELD_LIST] = $this->_helper->getConfig(self::CONFIG_PATH_API_LIST);
+        }
+
+        return $this->_data[self::CONFIG_FIELD_LIST];
+    }
+
+    /**
+     * @return bool
+     */
+    public function getInxDebug(): bool
+    {
+
+        if (empty($this->_data[self::CONFIG_FIELD_DEBUG])) {
+            $this->_data[self::CONFIG_FIELD_DEBUG] = $this->_helper->getConfig(self::CONFIG_PATH_DEBUG);
+        }
+
+        return (bool)$this->_data[self::CONFIG_FIELD_DEBUG];
+    }
+
+    /**
+     * @return array
+     */
+    public function getMapConfig(): array
+    {
+        if (empty($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING])) {
+            $this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING] = $this->_helper->getConfig(self::CONFIG_PATH_CUSTOMER_MAPPING);
+        }
+
+        $data = unserialize($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING]) ?? [];
+        return $data;
     }
 }

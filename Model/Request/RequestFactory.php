@@ -1,4 +1,5 @@
 <?php
+
 namespace Flagbit\Inxmail\Model\Request;
 
 use \Magento\Framework\ObjectManagerInterface;
@@ -14,7 +15,7 @@ class RequestFactory
 
     /**
      * RequestFactory constructor.
-     * @param ObjectManager $objectManager
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
      */
     public function __construct(ObjectManagerInterface $objectManager)
     {
@@ -23,15 +24,11 @@ class RequestFactory
 
     /**
      * @param string $class
-     * @param array|null $params
-     * @return RequestInterface
+     *
+     * @return \Flagbit\Inxmail\Model\Request\RequestInterface
      */
     public function create(string $class): RequestInterface
     {
-        try{
-            return $this->objectManager->create($class);
-        } catch (Exception $e) {
-            var_dump($e->getMessage());
-        }
+        return $this->objectManager->create($class);
     }
 }
