@@ -451,7 +451,7 @@ class ApiClient implements ApiClientInterface
         string $header = null, array $credentials = null, string $postData = ''
     ){
         $this->setRequestMethod(\Zend_Http_Client::PUT);
-        return $this->postResource($requestUrl, $requestPath, $header, $credentials, $postData, $dryrun);
+        return $this->postResource($requestUrl, $requestPath, $header, $credentials, $postData);
     }
 
     /**

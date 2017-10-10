@@ -13,11 +13,9 @@
         >
     <testsuite name="Flagbit Inxmail Model">
         <directory suffix="Test.php">/var/www/html/app/code/Flagbit/Inxmail/Test/Unit/Model</directory>
-        <!--<directory suffix="Test.php">../../../app/code/*/*/Test/Unit</directory>-->
     </testsuite>
     <testsuite name="Flagbit Inxmail All">
         <directory suffix="Test.php">/var/www/html/app/code/Flagbit/Inxmail/Test/Unit</directory>
-        <!--<directory suffix="Test.php">../../../app/code/*/*/Test/Unit</directory>-->
     </testsuite>
     <php>
         <ini name="date.timezone" value="America/Los_Angeles"/>
@@ -36,18 +34,4 @@
             </exclude>
         </whitelist>
     </filter>
-    <logging>
-        <!--coverage_html_placeholder
-            <log type="coverage-html" target="{{coverage_dir}}/test-reports/coverage" charset="UTF-8" yui="true" highlight="true"/>
-        coverage_html_placeholder-->
-        <!--coverage_cov_placeholder
-            <log type="coverage-php" target="{{coverage_dir}}/test-reports/coverage.cov"/>
-        coverage_cov_placeholder-->
-        <!--coverage_clover_placeholder
-            <log type="coverage-clover" target="{{coverage_dir}}/test-reports/phpunit.coverage.xml"/>
-        coverage_clover_placeholder-->
-        <!--coverage_crap4j_placeholder
-            <log type="coverage-crap4j" target="{{coverage_dir}}/test-reports/phpunit.crap4j.xml"/>
-        coverage_crap4j_placeholder-->
-    </logging>
 </phpunit>

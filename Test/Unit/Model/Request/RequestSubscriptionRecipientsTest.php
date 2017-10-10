@@ -6,22 +6,14 @@
  * @link https://www.inxmail.de/
  * @copyright Copyright (c) 2017 Flagbit GmbH
  */
-
-/**
- * Created by PhpStorm.
- * User: peter_lelewel
- * Date: 21.09.17
- * Time: 12:59
- */
-
 namespace Flagbit\Inxmail\Test\Unit\Model\Request;
 
-use Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
 use \Flagbit\Inxmail\Model\Request;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Class RequestRecipientAttributesTest
+ *
  * @package Flagbit\Inxmail\Test\Unit\Model\Request
  * @runInSeparateProcess
  */
@@ -36,26 +28,24 @@ class RequestSubscriptionRecipientsTest extends TestCase
     {
 
         if (!$this->requestClient) {
-//            var_dump($this->requestClient);
-        $params = $_SERVER;
-        $bootstrap = \Magento\Framework\App\Bootstrap::create(BP, $params);
-        /** @var \Magento\Framework\App\Http $app */
-        $app = $bootstrap->createApplication('Magento\Framework\App\Http');
-        unset($app);
+            $params = $_SERVER;
+            $bootstrap = \Magento\Framework\App\Bootstrap::create(BP, $params);
+            /** @var \Magento\Framework\App\Http $app */
+            $app = $bootstrap->createApplication('Magento\Framework\App\Http');
+            unset($app);
 
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-        $this->om = $objectManager;
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $this->om = $objectManager;
 
-        $test = new Request(new \Flagbit\Inxmail\Model\Request\RequestFactory($this->om));
-        $this->requestClient = $test->getSubscriptionsClient();
-//        $this->requestClient = (new \Flagbit\Inxmail\Model\Request\RequestFactory($this->om))->create(RequestSubscriptionRecipients::class, array());
+            $test = new Request(new \Flagbit\Inxmail\Model\Request\RequestFactory($this->om));
+            $this->requestClient = $test->getSubscriptionsClient();
         }
     }
 
     public function testRequest(){
         $data = $this->requestClient->sendRequest();
-        var_dump($data);
-        $this->assertArrayHasKey('_links', $data);
+        $this->assertArrayHasKey('_links', $data, 'not an array or no valid content');
+        $this->assertEquals(200, $this->requestClient->getResponseCode(), 'wrong response code');
     }
 
 }

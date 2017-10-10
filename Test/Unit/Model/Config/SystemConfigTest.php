@@ -12,6 +12,7 @@ use Flagbit\Inxmail\Model\Config\SystemConfig;
 
 /**
  * Class SystemConfigTest
+ *
  * @package Flagbit\Inxmail\Test\Unit\Model\Config
  * @runTestsInSeparateProcesses
  */
