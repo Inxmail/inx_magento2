@@ -65,8 +65,8 @@ class RequestUnsubscriptionRecipients extends AbstractRequest
         $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
         $client->setRequestMethod(\Zend_Http_Client::GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
-        // ToDo: remove dryrun
-        $this->_response = $client->getResource('','',null,null, false);
+
+        $this->_response = $client->getResource('','',null,null);
 
         return json_decode($this->_response, true);
     }
@@ -84,8 +84,8 @@ class RequestUnsubscriptionRecipients extends AbstractRequest
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
 
             $client->setPostData( $this->_requestData);
-            // ToDo: remove dryrun
-            $this->_response = $client->postResource('', '', null, null, '', false);
+
+            $this->_response = $client->postResource('', '', null, null, '');
 
             return $client->getResponseStatusCode();
         }

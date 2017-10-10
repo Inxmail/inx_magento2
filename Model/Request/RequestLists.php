@@ -52,7 +52,7 @@ class RequestLists extends AbstractRequest
         $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
         $client->setRequestMethod(\Zend_Http_Client::GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
-        $this->_response = $client->getResource('', '', null, null, false);
+        $this->_response = $client->getResource('', '', null, null);
 
         return json_decode($this->_response, true);
     }
@@ -69,7 +69,7 @@ class RequestLists extends AbstractRequest
             $client->setRequestMethod(\Zend_Http_Client::POST);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
             $client->setPostData(is_array($this->_requestData) ? json_encode($this->_requestData) : $this->_requestData);
-            $this->_response = $client->postResource('', '', null, null, '', false);
+            $this->_response = $client->postResource('', '', null, null, '');
 
             return $client->getResponseStatusCode();
         }
@@ -91,7 +91,7 @@ class RequestLists extends AbstractRequest
             $client->setRequestMethod(\Zend_Http_Client::PUT);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
             $client->setPostData(is_array($this->_requestData) ? json_encode($this->_requestData) : $this->_requestData);
-            $this->_response = $client->putResource('', '', null, null, '', false);
+            $this->_response = $client->putResource('', '', null, null, '');
 
             return $client->getResponseStatusCode();
         }
@@ -114,7 +114,7 @@ class RequestLists extends AbstractRequest
             $client->setRequestPath(self::REQUEST_PATH . $id);
             $client->setRequestMethod(\Zend_Http_Client::DELETE);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
-            $this->_response = $client->deleteResource('', '', null, null, '', false);
+            $this->_response = $client->deleteResource('', '', null, null, '');
             $returnValue = $client->getResponseStatusCode();
         }
 

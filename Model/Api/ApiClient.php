@@ -288,7 +288,6 @@ class ApiClient implements ApiClientInterface
      * @param string $requestPath
      * @param string|null $header
      * @param array|null $credentials
-     * @param bool $dryrun
      *
      * @return bool|string
      *
@@ -298,7 +297,7 @@ class ApiClient implements ApiClientInterface
      */
     public function getResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null, bool $dryrun = true)
+        string $header = null, array $credentials = null)
     {
         if (!empty($requestUrl) || !empty($this->_requestUrl)) {
             if (empty($this->_requestUrl)) {
@@ -343,16 +342,9 @@ class ApiClient implements ApiClientInterface
                 $requestHeader
             );
 
-            // ToDo: activate for real server testing
-            if (!$dryrun) {
-                $response = $this->_requestClient->read();
-                $this->_responseBody = \Zend_Http_Response::extractBody($response);
-                $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
-            } else {
-                $response = $this->getTestResponse();
-                $this->_responseHeader = substr($response, 0, strlen($response) - self::$_responseCurrentBytes);
-                $this->_responseBody = substr($response, strlen($response) - self::$_responseCurrentBytes);
-            }
+            $response = $this->_requestClient->read();
+            $this->_responseBody = \Zend_Http_Response::extractBody($response);
+            $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
 
             return $this->_responseBody;
         } else {
@@ -368,7 +360,6 @@ class ApiClient implements ApiClientInterface
      * @param string|null $header
      * @param array|null $credentials
      * @param string $postData
-     * @param bool $dryrun
      *
      * @return bool|string
      *
@@ -377,7 +368,7 @@ class ApiClient implements ApiClientInterface
      */
     public function postResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null, string $postData = '', bool $dryrun = false
+        string $header = null, array $credentials = null, string $postData = ''
     )
     {
         if ((!empty($requestUrl) || !empty($this->_requestUrl)) && (!empty($this->_postData) || !empty($postData))) {
@@ -433,13 +424,7 @@ class ApiClient implements ApiClientInterface
                 $this->_postData
             );
 
-            // ToDo: activate for real server testing
-            $response = '';
-            if (!$dryrun) {
-                $response = $this->_requestClient->read();
-            } else {
-                $response = $this->getTestResponse();
-            }
+            $response = $this->_requestClient->read();
 
             $this->_responseBody = \Zend_Http_Response::extractBody($response);
             $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
@@ -458,13 +443,12 @@ class ApiClient implements ApiClientInterface
      * @param string|null $header
      * @param array|null $credentials
      * @param string $postData
-     * @param bool $dryrun
      *
      * @return bool|string
      */
     public function putResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null, string $postData = '', bool $dryrun = true
+        string $header = null, array $credentials = null, string $postData = ''
     ){
         $this->setRequestMethod(\Zend_Http_Client::PUT);
         return $this->postResource($requestUrl, $requestPath, $header, $credentials, $postData, $dryrun);
@@ -477,17 +461,16 @@ class ApiClient implements ApiClientInterface
      * @param string $requestPath
      * @param string|null $header
      * @param array|null $credentials
-     * @param bool $dryrun
      *
      * @return bool|string
      */
     public function deleteResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null, $dryrun = true
+        string $header = null, array $credentials = null
     )
     {
         $this->setRequestMethod(\Zend_Http_Client::DELETE);
-        return $this->getResource($requestUrl, $requestPath, $header, $credentials, $dryrun);
+        return $this->getResource($requestUrl, $requestPath, $header, $credentials);
     }
 
     /**
@@ -564,82 +547,5 @@ class ApiClient implements ApiClientInterface
     {
         $test = explode(':', $url);
         return (count($test) > 1 && in_array(strtolower($test[0]), array('http', 'https'), true));
-    }
-
-    /**
-     * @return string
-     */
-    private function getTestResponse(): string
-    {
-        $this->setTestResponseData();
-        return 'HTTP/1.1 200
-Date: Tue, 19 Sep 2017 12:31:53 GMT
-Server: Apache
-X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
-Cache-Control: no-cache, no-store, max-age=0, must-revalidate
-Pragma: no-cache
-Expires: 0
-X-Frame-Options: DENY
-X-RateLimit-Limit: 600
-X-RateLimit-Remaining: 598
-X-RateLimit-Reset: 34
-Content-Type: application/hal+json;charset=UTF-8
-Set-Cookie: JSESSIONID=81F3CC56B9781BB9E8994E7B1DB28F27; Path=/inxmail3; HttpOnly
-
-{"_links":{"inx:attributes":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/attributes"},"inx:recipients":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/recipients"},"inx:lists":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/lists"},"inx:recipient-imports":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/imports/recipients"},"inx:subscription-events":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/events/subscriptions"},"inx:unsubscription-events":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/events/unsubscriptions"},"inx:bounces":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/bounces"},"curies":[{"href":"https://apidocs.inxmail.com/xpro/rest/v1/relations/{rel}","name":"inx","templated":true}]}}';
-    }
-
-    /**
-     * @return string
-     */
-    private function getTestResponseBody(): string
-    {
-        $this->setTestResponseData();
-        return '{"_links":{"inx:attributes":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/attributes"},"inx:recipients":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/recipients"},"inx:lists":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/lists"},"inx:recipient-imports":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/imports/recipients"},"inx:subscription-events":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/events/subscriptions"},"inx:unsubscription-events":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/events/unsubscriptions"},"inx:bounces":{"href":"https://magento-dev.api.inxdev.de/magento-dev/rest/v1/bounces"},"curies":[{"href":"https://apidocs.inxmail.com/xpro/rest/v1/relations/{rel}","name":"inx","templated":true}]}}';
-    }
-
-    /**
-     * @return string
-     */
-    private function getTestResponseHeader():string
-    {
-        $this->setTestResponseData();
-        return 'HTTP/1.1 200
-Date: Tue, 19 Sep 2017 12:26:36 GMT
-Server: Apache
-X-Content-Type-Options: nosniff
-X-XSS-Protection: 1; mode=block
-Cache-Control: no-cache, no-store, max-age=0, must-revalidate
-Pragma: no-cache
-Expires: 0
-X-Frame-Options: DENY
-X-RateLimit-Limit: 600
-X-RateLimit-Remaining: 599
-X-RateLimit-Reset: 60
-Content-Type: application/hal+json;charset=UTF-8
-Set-Cookie: JSESSIONID=6F0DD77B42E5CF11EFEFAD140BCD4F7A; Path=/inxmail3; HttpOnly
-
-';
-    }
-
-    /**
-     * Provide testdata for dryrun option
-     */
-    private function setTestResponseData()
-    {
-        self::$_responseCurrentBytes = 813;
-        self::$_responseCode = 200;
-        self::$_responseInfo = array(
-            'url' => 'https://magento-dev.api.inxdev.de/magento-dev/rest/v1/',
-            'content_type' => 'application/hal+json;charset=UTF-8',
-            'http_code' => '200',
-            'header_size' => '488',
-            'request_size' => '313',
-            'filetime' => '-1',
-            'size_download' => '813',
-            'download_content_length' => '-1',
-            'upload_content_length' => '-1'
-        );
     }
 }
