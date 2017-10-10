@@ -1,5 +1,13 @@
 <?php
 /**
+ * Magento 2 Inxmail Module
+ *
+ * @link http://flagbit.de
+ * @link https://www.inxmail.de/
+ * @copyright Copyright (c) 2017 Flagbit GmbH
+ */
+
+/**
  * Created by PhpStorm.
  * User: peter_lelewel
  * Date: 21.09.17

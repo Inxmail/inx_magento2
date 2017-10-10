@@ -1,4 +1,12 @@
 <?xml version="1.0"?>
+<!--
+  ~ Magento 2 Inxmail Module
+  ~
+  ~ @link http://flagbit.de
+  ~ @link https://www.inxmail.de/
+  ~ @copyright Copyright (c) 2017 Flagbit GmbH
+  -->
+
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="customer-account-navigation-newsletter-subscriptions-link" remove="false"/>

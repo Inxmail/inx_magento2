@@ -1,4 +1,11 @@
 <?php
+/**
+ * Magento 2 Inxmail Module
+ *
+ * @link http://flagbit.de
+ * @link https://www.inxmail.de/
+ * @copyright Copyright (c) 2017 Flagbit GmbH
+ */
 
 namespace Flagbit\Inxmail\Model\Config;
 
@@ -11,34 +18,24 @@ use \Flagbit\Inxmail\Helper\Config;
  */
 class SystemConfig
 {
-    /**
-     * Contains the path of the inxmail configuration for the api url
-     */
+    /** Contains the path of the inxmail configuration for the api url */
     const CONFIG_PATH_URL = 'inxmail/general/api_url';
-    /**
-     * Contains the path of the inxmail configuration for the api user
-     */
+    /** Contains the path of the inxmail configuration for the api user */
     const CONFIG_PATH_API_USER = 'inxmail/general/api_user';
-    /**
-     * Contains the path of the inxmail configuration for the api secret
-     */
+    /** Contains the path of the inxmail configuration for the api secret */
     const CONFIG_PATH_API_KEY = 'inxmail/general/api_password';
-    /**
-     * Contains the path of the inxmail configuration for the list to sync to
-     */
+    /** Contains the path of the inxmail configuration for the list to sync to */
     const CONFIG_PATH_API_LIST = 'inxmail/general/api_listid';
-    /**
-     * Contains the path of the inxmail configuration for debug setting
-     */
+    /** Contains the path of the inxmail configuration for debug setting */
     const CONFIG_PATH_DEBUG = 'inxmail/general/debug';
-    /**
-     * Contains the path of the inxmail configuration for the list to sync to
-     */
+    /** Contains the path of the inxmail configuration for the list to sync to */
     const CONFIG_PATH_CUSTOMER_MAPPING = 'inxmail/mapcustomer/mapping';
-    /**
-     * Contains the path of the inxmail configuration for module enabled or not
-     */
+    /** Contains the path of the inxmail configuration for module enabled or not */
     const CONFIG_PATH_ENABLED = 'inxmail/general/enable';
+    /** Contains the path of the inxmail configuration for inxmail rest api user */
+    const CONFIG_PATH_REST_USER = 'inxmail/restauth/rest_user';
+    /** Contains the path of the inxmail configuration for inxmail rest api password */
+    const CONFIG_PATH_REST_PASSWORD = 'inxmail/restauth/rest_password';
 
     /** Datafield key */
     const CONFIG_FIELD_URL = 'apiUrl';
@@ -54,6 +51,10 @@ class SystemConfig
     const CONFIG_FIELD_CUSTOMER_MAPPING = 'customerMapping';
     /** Datafield key */
     const CONFIG_FIELD_INXMAIL_ENABLED = 'enabled';
+    /** Datafield key */
+    const CONFIG_FIELD_REST_USER = 'restUser';
+    /** Datafield key */
+    const CONFIG_FIELD_REST_PASSWORD = 'restPassword';
 
     /** @var \Flagbit\Inxmail\Model\Config\SystemConfig */
     protected static $_config;
@@ -180,8 +181,7 @@ class SystemConfig
             $this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING] = $this->_helper->getConfig(self::CONFIG_PATH_CUSTOMER_MAPPING);
         }
 
-        $data = unserialize($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING]) ?? [];
-        return $data;
+        return unserialize($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING]) ?? [];
     }
 
     /**
@@ -194,5 +194,29 @@ class SystemConfig
         }
 
         return $this->_data[self::CONFIG_FIELD_INXMAIL_ENABLED];
+    }
+
+    /**
+     * @return string
+     */
+    public function getRestApiUser(): string
+    {
+        if (empty($this->_data[self::CONFIG_FIELD_REST_USER])) {
+            $this->_data[self::CONFIG_FIELD_REST_USER] = $this->_helper->getConfig(self::CONFIG_PATH_REST_USER);
+        }
+
+        return $this->_data[self::CONFIG_FIELD_REST_USER];
+    }
+
+    /**
+     * @return string
+     */
+    public function getRestApiPassword(): string
+    {
+        if (empty($this->_data[self::CONFIG_FIELD_REST_PASSWORD])) {
+            $this->_data[self::CONFIG_FIELD_REST_PASSWORD] = $this->_helper->getConfig(self::CONFIG_PATH_REST_PASSWORD);
+        }
+
+        return $this->_data[self::CONFIG_FIELD_REST_PASSWORD];
     }
 }
