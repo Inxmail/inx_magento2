@@ -503,13 +503,9 @@ class ApiClient implements ApiClientInterface
      */
     public static function setResponseInformation($curl, int $expected, int $current, int $uploadExpected, int $currentUpload): int
     {
-//        curl_getinfo($curl, CURLINFO_HTTP_CODE);
-//        curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
-//        curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-//        curl_getinfo($curl, CURLINFO_TOTAL_TIME);
         self::$_responseContentLength = curl_getinfo($curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
         self::$_responseCode = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
-        self::$_responseInfo = curl_getInfo($curl);
+        self::$_responseInfo = curl_getinfo($curl);
         self::$_responseExpectedBytes = $expected;
         self::$_responseCurrentBytes = $current;
         self::$_responseUploadExpectedBytes = $uploadExpected;

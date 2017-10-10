@@ -1,4 +1,12 @@
 <?xml version="1.0"?>
+<!--
+  ~ Magento 2 Inxmail Module
+  ~
+  ~ @link http://flagbit.de
+  ~ @link https://www.inxmail.de/
+  ~ @copyright Copyright (c) 2017 Flagbit GmbH
+  -->
+
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
     <router id="standard">
         <route id="inxmail" frontName="inxmail">
