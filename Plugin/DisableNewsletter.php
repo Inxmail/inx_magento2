@@ -39,14 +39,15 @@ class DisableNewsletter
      *
      * @param \Magento\Customer\Block\Form\Register $register
      * @param \Closure $proceed
+     * @param array $args
      *
-     * @return boolean
+     * @return bool
      */
-    public function aroundIsNewsletterEnabled(Register $register, \Closure $proceed): boolean
+    public function aroundIsNewsletterEnabled(Register $register, \Closure $proceed, array ...$args): bool
     {
         if ($this->systemConfig->isInxmailEnabled()) {
             return true;
         }
-        $proceed();
+        return $proceed(...array_values($args));
     }
 }

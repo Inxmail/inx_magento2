@@ -59,7 +59,7 @@ class Subscriber
         $this->systemConfig = SystemConfig::getSystemConfig($config);
         $this->logger = $logger;
 
-        $this->inxEnabled = $this->scopeConfig->getValue(
+        $this->inxEnabled = $scopeConfig->getValue(
             'inxmail/general/enable',
             ScopeInterface::SCOPE_STORE
         );
@@ -68,39 +68,42 @@ class Subscriber
     /**
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
      * @param callable $proceed
+     * @param array $args
      */
-    public function aroundSendConfirmationRequestEmail(MageSubscriber $subscriber, callable $proceed)
+    public function aroundSendConfirmationRequestEmail(MageSubscriber $subscriber, callable $proceed, array ...$args)
     {
         if ($this->inxEnabled) {
             return;
         } else {
-            $proceed();
+            return $proceed(...array_values($args));
         }
     }
 
     /**
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
      * @param callable $proceed
+     * @param array $args
      */
-    public function aroundSendConfirmationSuccessEmail(MageSubscriber $subscriber, callable $proceed)
+    public function aroundSendConfirmationSuccessEmail(MageSubscriber $subscriber, callable $proceed, array ...$args)
     {
         if ($this->inxEnabled) {
             return;
         } else {
-            $proceed();
+            return $proceed(...array_values($args));
         }
     }
 
     /**
      * @param \Magento\Newsletter\Model\Subscriber $subscriber
      * @param callable $proceed
+     * @param array $args
      */
-    public function aroundSendUnsubscriptionEmail(MageSubscriber $subscriber, callable $proceed)
+    public function aroundSendUnsubscriptionEmail(MageSubscriber $subscriber, callable $proceed, array ...$args)
     {
         if ($this->inxEnabled) {
             return;
         } else {
-            $proceed();
+            return $proceed(...array_values($args));
         }
     }
 
@@ -111,6 +114,10 @@ class Subscriber
      */
     public function afterSave(MageSubscriber $subscriber): MageSubscriber
     {
+        if (!$this->inxEnabled) {
+            return $subscriber;
+        }
+
 //         FixMe: changeStatus true as requested by Ticket
 //        $changedStatus = $subscriber->isStatusChanged();
         $changedStatus = true;
