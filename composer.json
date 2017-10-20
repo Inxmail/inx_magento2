@@ -20,7 +20,6 @@
   ],
   "require": {
     "php": "~7.0.0",
-    "roave/security-advisories": "dev-master",
     "magento/product-community-edition": "^2.1.8"
   },
   "require-dev": {
