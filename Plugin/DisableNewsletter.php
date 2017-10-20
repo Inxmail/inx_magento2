@@ -1,4 +1,12 @@
 <?php
+/**
+ * Magento 2 Inxmail Module
+ *
+ * @link http://flagbit.de
+ * @link https://www.inxmail.de/
+ * @copyright Copyright (c) 2017 Flagbit GmbH
+ */
+
 namespace Flagbit\Inxmail\Plugin;
 
 use \Flagbit\Inxmail\Helper\Config;
@@ -31,15 +39,15 @@ class DisableNewsletter
      *
      * @param \Magento\Customer\Block\Form\Register $register
      * @param \Closure $proceed
+     * @param array $args
      *
-     * @return boolean
+     * @return bool
      */
-    public function aroundIsNewsletterEnabled(Register $register, \Closure $proceed): boolean
+    public function aroundIsNewsletterEnabled(Register $register, \Closure $proceed, array ...$args): bool
     {
         if ($this->systemConfig->isInxmailEnabled()) {
-            $proceed();
             return true;
         }
-        $proceed();
+        return $proceed(...array_values($args));
     }
 }

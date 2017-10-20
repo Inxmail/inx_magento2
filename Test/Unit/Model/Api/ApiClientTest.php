@@ -1,4 +1,11 @@
 <?php
+/**
+ * Magento 2 Inxmail Module
+ *
+ * @link http://flagbit.de
+ * @link https://www.inxmail.de/
+ * @copyright Copyright (c) 2017 Flagbit GmbH
+ */
 
 namespace Flagbit\Inxmail\Test\Unit\Model\Api;
 
@@ -9,6 +16,7 @@ use \Flagbit\Inxmail\Exception\Api\InvalidAuthenticationException;
 
 /**
  * Class ApiClientTest
+ *
  * @package Flagbit\Inxmail\Test\Unit\Model\Api
  * @runTestsInSeparateProcesses
  */
@@ -63,13 +71,13 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     public function testUrlException()
     {
         $this->expectException(MissingArgumentException::class);
-        $this->_apiClient->getResource('', '', null,null, true);
+        $this->_apiClient->getResource('', '', null, null, true);
     }
 
     public function testUrlExceptionMessage()
     {
         $this->expectExceptionMessage('URL Parameter missing');
-        $this->_apiClient->getResource('', '', null,null, true);
+        $this->_apiClient->getResource('', '', null, null, true);
     }
 
     public function testSetMethodException()
@@ -95,7 +103,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     public function testGetResourcesCredentialsExceptionMessage()
     {
         $this->expectExceptionMessage('Credentials not provided');
-        $this->_apiClient->getResource('http://example.com', '', null,null, true);
+        $this->_apiClient->getResource('http://example.com', '', null, null);
     }
 
     public function testGetResourcesCredentialsException()
@@ -110,7 +118,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     public function testAuthException()
     {
         $this->expectException(InvalidAuthenticationException::class);
-        $this->_apiClient->getResource('http://example.com', '', null, null, true );
+        $this->_apiClient->getResource('http://example.com', '', null, null);
     }
 
     /**
@@ -119,7 +127,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     public function testAuthExceptionMessage()
     {
         $this->expectExceptionMessage('Credentials not provided');
-        $this->_apiClient->getResource('http://example.com', '', null, null,true );
+        $this->_apiClient->getResource('http://example.com', '', null, null);
     }
 
     public function testSetCredentialsMethodSingle()
@@ -180,17 +188,19 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
         $this->_apiClient->setRequestUrl($url);
     }
 
-    public function testRequest(){
+    public function testRequest()
+    {
         $this->_apiClient->setRequestUrl('http://example.com');
         $this->_apiClient->setRequestMethod(\Zend_Http_Client::GET);
-        $response = $this->_apiClient->getResource('','',null,array('test','test'),true);
+        $response = $this->_apiClient->getResource('', '', null, array('test', 'test'));
         $this->assertNotEmpty($response);
     }
 
-    public function testRequestresponseCode(){
+    public function testRequestresponseCode()
+    {
         $this->_apiClient->setRequestUrl('http://example.com');
         $this->_apiClient->setRequestMethod(\Zend_Http_Client::GET);
-        $this->_apiClient->getResource('','',null,array('test','test'),true);
-        $this->assertEquals(200, $this->_apiClient->getResponseStatusCode(),'Wrong return, request failed');
+        $this->_apiClient->getResource('', '', null, array('test', 'test'));
+        $this->assertEquals(200, $this->_apiClient->getResponseStatusCode(), 'Wrong return, request failed');
     }
 }

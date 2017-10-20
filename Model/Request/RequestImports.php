@@ -1,4 +1,11 @@
 <?php
+/**
+ * Magento 2 Inxmail Module
+ *
+ * @link http://flagbit.de
+ * @link https://www.inxmail.de/
+ * @copyright Copyright (c) 2017 Flagbit GmbH
+ */
 
 namespace Flagbit\Inxmail\Model\Request;
 
@@ -75,7 +82,7 @@ class RequestImports extends AbstractRequest
         $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
         $client->setRequestMethod(\Zend_Http_Client::GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
-        $this->_response = $client->getResource('', '', null, null, false);
+        $this->_response = $client->getResource('', '', null, null);
 
         return json_decode($this->_response, true);
     }
@@ -99,7 +106,7 @@ class RequestImports extends AbstractRequest
 
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
             $client->setPostData($this->_file);
-            $this->_response = $client->postResource('', '', null, null, '', false);
+            $this->_response = $client->postResource('', '', null, null, '');
 
             return $client->getResponseStatusCode();
         }
