@@ -30,7 +30,7 @@ class Config extends AbstractHelper
     public function getConfig(string $config = ''): string
     {
         if ($config !== '') {
-            return $this->scopeConfig->getValue($config, self::$scope);
+            return ($this->scopeConfig->getValue($config, self::$scope)) ?? '';
         }
         return '';
     }
