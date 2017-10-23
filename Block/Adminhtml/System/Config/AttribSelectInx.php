@@ -9,10 +9,11 @@
 
 namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
 
-use \Magento\Framework\View\Element\Context;
 use \Flagbit\Inxmail\Model\Request;
 use \Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
-
+use \Flagbit\Inxmail\Helper\Config;
+use \Flagbit\Inxmail\Model\Config\SystemConfig;
+use \Magento\Framework\View\Element\Context;
 
 /**
  * Class AttribSelectInx
@@ -23,6 +24,8 @@ class AttribSelectInx extends MapSelect
 {
     /** @var \Flagbit\Inxmail\Model\Request\RequestRecipientAttributes */
     private $request;
+    /** @var bool */
+    private $isEnabled;
 
     /**
      * AttribSelectInx constructor
@@ -34,10 +37,12 @@ class AttribSelectInx extends MapSelect
     public function __construct(
         Context $context,
         Request $request,
+        Config $config,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->request = $request->getAttributesClient();
+        $this->isEnabled = SystemConfig::getSystemConfig($config)->isInxmailEnabled();
     }
 
     /**
@@ -50,9 +55,13 @@ class AttribSelectInx extends MapSelect
         $defAttributes = RequestSubscriptionRecipients::getStandardAttributes();
         $defAttributes = array_keys($defAttributes);
 
-        /** @var array $attributes */
-        $attributes = $this->request->sendRequest();
-        $attributes = $attributes['_embedded']['inx:attributes'];
+        if ($this->isEnabled) {
+            /** @var array $attributes */
+            $attributes = $this->request->sendRequest();
+            $attributes = $attributes['_embedded']['inx:attributes'];
+        } else {
+            $attributes = array();
+        }
 
         if (!$this->getOptions()) {
             foreach ($attributes as $key => $value) {
