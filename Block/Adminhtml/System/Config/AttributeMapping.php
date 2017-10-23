@@ -11,7 +11,9 @@ namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
 
 use \Magento\Framework\DataObject;
 use \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
-
+use \Magento\Backend\Block\Template\Context;
+use \Flagbit\Inxmail\Helper\Config;
+use \Flagbit\Inxmail\Model\Config\SystemConfig;
 /**
  * Class AttributeMapping
  *
@@ -24,6 +26,13 @@ class AttributeMapping extends AbstractFieldArray
     private $mapInx;
     /** @var \Flagbit\Inxmail\Block\Adminhtml\System\Config\AttribSelectMag */
     private $mapMag;
+    /** @var bool */
+    private $isEnabled;
+
+    public function __construct(Context $context, Config $config) {
+        parent::__construct($context);
+        $this->isEnabled = SystemConfig::getSystemConfig($config)->isInxmailEnabled();
+    }
 
     /**
      * @inheritdoc
@@ -81,16 +90,20 @@ class AttributeMapping extends AbstractFieldArray
      */
     protected function _prepareArrayRow(DataObject $row)
     {
-        $options = [];
-        $magAttribute = $row->getData('magAttrib');
-        $inxAttribute = $row->getData('inxAttrib');
+        if ($this->isEnabled) {
+            $options = [];
+            $magAttribute = $row->getData('magAttrib');
+            $inxAttribute = $row->getData('inxAttrib');
 
-        $magKey = 'option_' . $this->getAttribSelectMag()->calcOptionHash($magAttribute);
-        $options[$magKey] = 'selected="selected"';
+            $magKey = 'option_' . $this->getAttribSelectMag()->calcOptionHash($magAttribute);
+            $options[$magKey] = 'selected="selected"';
 
-        $inxKey = 'option_' . $this->getAttribSelectInx()->calcOptionHash($inxAttribute);
-        $options[$inxKey] = 'selected="selected"';
+            $inxKey = 'option_' . $this->getAttribSelectInx()->calcOptionHash($inxAttribute);
+            $options[$inxKey] = 'selected="selected"';
 
-        $row->setData('option_extra_attrs', $options);
+            $row->setData('option_extra_attrs', $options);
+        } else {
+
+        }
     }
 }
