@@ -90,7 +90,7 @@ class AttributeMapping extends AbstractFieldArray
      */
     protected function _prepareArrayRow(DataObject $row)
     {
-        if ($this->isEnabled) {
+        if ($this->isEnabled || $row->getData('magAttrib')) {
             $options = [];
             $magAttribute = $row->getData('magAttrib');
             $inxAttribute = $row->getData('inxAttrib');
