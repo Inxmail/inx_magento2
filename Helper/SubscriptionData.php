@@ -173,6 +173,11 @@ class SubscriptionData extends AbstractHelper
             $data['firstName'] = $customer->getFirstname();
             $data['lastName'] = $customer->getLastname();
             $data['birthday'] = $customer->getDob();
+            try {
+                $data['birthday'] = $data['birthday'] ? date_format(date_create($data['birthday']), 'Y-m-d') : '';
+            } catch (\Exception $e) {
+                $data['birthday'] = '';
+            }
             $data['gender'] = $customer->getGender();
             $data['group'] = $customer->getGroupId();
         }
