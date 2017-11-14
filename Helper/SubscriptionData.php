@@ -180,6 +180,7 @@ class SubscriptionData extends AbstractHelper
             }
             $data['gender'] = $customer->getGender();
             $data['group'] = $customer->getGroupId();
+            $data['prefix'] = $customer->getPrefix();
         }
 
         return $data;

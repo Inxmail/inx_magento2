@@ -126,6 +126,7 @@ class RequestSubscriptionRecipients extends AbstractRequest
     public static function getMapableAttributes(): array
     {
         return array(
+            'Prefix' => 'prefix',
             'Vorname' => 'firstName',
             'Nachname' => 'lastName',
             'magentoWebsiteName' => 'websiteName',
