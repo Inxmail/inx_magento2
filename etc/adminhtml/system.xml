@@ -71,7 +71,7 @@
                     <label>Username</label>
                     <comment/>
                 </field>
-                <field id="rest_password" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0"
+                <field id="rest_password" translate="label" type="obscure" sortOrder="20" showInDefault="1" showInWebsite="0"
                        showInStore="0">
                     <label>Password</label>
                     <comment/>
