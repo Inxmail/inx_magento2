@@ -17,6 +17,7 @@ use \Flagbit\Inxmail\Helper\SubscriptionData;
 use \Magento\Newsletter\Model\Subscriber as MageSubscriber;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 use \Magento\Store\Model\ScopeInterface;
+use \Magento\Framework\App\Request\Http;
 
 
 /**
@@ -36,6 +37,8 @@ class Subscriber
     private $logger;
     /** @var bool */
     protected $inxEnabled = false;
+    /** @var \Magento\Framework\App\Request\Http */
+    private $httpRequest;
 
     /**
      * Subscriber constructor.
@@ -51,13 +54,16 @@ class Subscriber
         SubscriptionData $subscriptionDataHelper,
         Request $request,
         Config $config,
-        Logger $logger
+        Logger $logger,
+        Http $httpRequest
     )
     {
         $this->subscriptionDataHelper = $subscriptionDataHelper;
         $this->request = $request;
         $this->systemConfig = SystemConfig::getSystemConfig($config);
         $this->logger = $logger;
+
+        $this->httpRequest = $httpRequest;
 
         $this->inxEnabled = $scopeConfig->getValue(
             'inxmail/general/enable',
@@ -114,15 +120,25 @@ class Subscriber
      */
     public function afterSave(MageSubscriber $subscriber): MageSubscriber
     {
-        if (!$this->inxEnabled) {
+        /** if not enabled or is confirm action #31 */
+        if (!$this->inxEnabled || !empty($this->httpRequest->get('code'))) {
             return $subscriber;
         }
 
-//         FixMe: changeStatus true as requested by Ticket
-//        $changedStatus = $subscriber->isStatusChanged();
-        $changedStatus = true;
-
+        $changedStatus = $subscriber->isStatusChanged();
+        $customerId = $subscriber->getCustomerId() ?? null;
         $status = $subscriber->getStatus();
+
+
+        /** explicit subscribe call request (guest) as requested #1 */
+        if (!$changedStatus && ( $customerId === null || $customerId < 1) && $status === MageSubscriber::STATUS_SUBSCRIBED) {
+            $changedStatus = true;
+        }
+
+        /** prevent subscribe request on customer save #32 */
+        if (!$changedStatus && $customerId > 0) {
+            $changedStatus = false;
+        }
 
         try {
             if ($changedStatus) {

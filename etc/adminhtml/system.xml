@@ -36,7 +36,7 @@
                     <label>API User</label>
                     <comment>API User</comment>
                 </field>
-                <field id="api_password" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
+                <field id="api_password" translate="label" type="obscure" sortOrder="1" showInDefault="1" showInWebsite="0"
                        showInStore="0">
                     <label>API Password</label>
                     <comment>API Password</comment>

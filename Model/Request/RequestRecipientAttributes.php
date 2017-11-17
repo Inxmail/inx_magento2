@@ -57,12 +57,39 @@ class RequestRecipientAttributes extends AbstractRequest
      */
     public function sendRequest(): array
     {
+
         $client = $this->getApiClient();
         $client->setCredentials($this->getCredentials());
         $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
         $client->setRequestMethod(\Zend_Http_Client::GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
         $this->_response = $client->getResource('','',null,null);
+
+        $tmpResponse = json_decode($this->_response, true);
+        $tmp = '';
+
+        /** Paging for attributes #33*/
+        while (isset($tmpResponse['_links']['next']['href']) && $tmpResponse['_links']['next']['href'] !== $tmp) {
+            $tmp = $tmpResponse['_links']['next']['href'];
+
+            $tmpPath = explode('?', $tmp);
+            $client->setRequestPath('?'.$tmpPath[1] ?? '/');
+            $client->setRequestUrl($tmpPath[0]);
+            $this->_response = $client->getResource('','',null,null);
+            $tmpArray = json_decode($this->_response, true);
+
+            // merge results and override link for comparsion
+            $tmpResponse['_embedded'] = array_merge_recursive($tmpArray['_embedded'], $tmpResponse['_embedded']);
+            $tmpResponse['_links'] = $tmpArray['_links'];
+
+            if ($tmp === '') {
+                break;
+            }
+        }
+
+        if (is_array($tmpResponse)) {
+            $this->_response = json_encode($tmpResponse);
+        }
 
         return json_decode($this->_response, true);
     }
