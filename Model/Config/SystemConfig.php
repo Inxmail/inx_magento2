@@ -139,7 +139,10 @@ class SystemConfig
     public function getApiKey($refresh = false): string
     {
         if (empty($this->_data[self::CONFIG_FIELD_KEY]) || $refresh) {
-            $this->_data[self::CONFIG_FIELD_KEY] = $this->_helper->getConfig(self::CONFIG_PATH_API_KEY);
+            $val = $this->_helper->getConfig(self::CONFIG_PATH_API_KEY);
+            if ($val) {
+                $this->_data[self::CONFIG_FIELD_KEY] = $this->_helper->getEncryptor()->decrypt($val);
+            }
         }
 
         return $this->_data[self::CONFIG_FIELD_KEY];
