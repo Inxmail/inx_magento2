@@ -40,6 +40,7 @@
                        showInStore="0">
                     <label>API Password</label>
                     <comment>API Password</comment>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
                 <field id="api_listid" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
                        showInStore="0">
