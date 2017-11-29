@@ -45,6 +45,7 @@ class Subscriber extends AbstractCommand
      * @param \Flagbit\Inxmail\Helper\Config $config
      * @param \Flagbit\Inxmail\Helper\SubscriberSync $subscriberSync
      * @param \Flagbit\Inxmail\Logger\Logger $logger
+     * @throws \LogicException
      */
     public function __construct(
         State $state,

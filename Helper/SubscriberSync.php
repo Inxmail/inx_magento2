@@ -14,10 +14,9 @@ use \Flagbit\Inxmail\Logger\Logger;
 use \Symfony\Component\Console\Output\OutputInterface;
 use \Magento\Framework\App\Helper\AbstractHelper;
 use \Magento\Framework\App\Helper\Context;
-use \Magento\Customer\Model\ResourceModel\CustomerRepository;
 use \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory;
 use \Magento\Newsletter\Model\Subscriber;
-
+use \Magento\Framework\ObjectManagerInterface;
 
 /**
  * Class SubscriberSync
@@ -44,30 +43,30 @@ class SubscriberSync extends AbstractHelper
     private $subscriberCollectionFactory;
     /** @var boolean */
     private $compressed;
+    /** @var \Magento\Framework\ObjectManagerInterface */
+    private $objectManager;
 
     /**
      * SubscriberSync constructor.
      *
-     * @param Context $context
-     * @param Logger $logger
-     * @param Request $request
-     * @param CollectionFactory $subscriberCollectionFactory
-     * @param CustomerRepository $customerRepository
-     * @param SubscriptionData $subscriptionData
+     * @param \Magento\Framework\App\Helper\Context $context
+     * @param \Flagbit\Inxmail\Logger\Logger $logger
+     * @param \Flagbit\Inxmail\Model\Request $request
+     * @param \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory $subscriberCollectionFactory
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
      */
     public function __construct(
         Context $context,
         Logger $logger,
         Request $request,
         CollectionFactory $subscriberCollectionFactory,
-        CustomerRepository $customerRepository,
-        SubscriptionData $subscriptionData
+        ObjectManagerInterface $objectManager
     )
     {
         $this->logger = $logger;
         $this->request = $request;
         $this->subscriberCollectionFactory = $subscriberCollectionFactory;
-        $this->subscriptionData = $subscriptionData;
+        $this->objectManager = $objectManager;
 
         parent::__construct($context);
     }
@@ -93,9 +92,14 @@ class SubscriberSync extends AbstractHelper
      * @param bool $compressed
      *
      * @throws \InvalidArgumentException When unknown output type is given
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function sync(string $type, bool $compressed = true)
     {
+        /** @var \Flagbit\Inxmail\Helper\SubscriptionData subscriptionData */
+        $this->subscriptionData = $this->objectManager->create(SubscriptionData::class);
+
         $this->compressed = $compressed;
         $baseData = array();
 
@@ -138,6 +142,8 @@ class SubscriberSync extends AbstractHelper
      * @return array
      *
      * @throws \InvalidArgumentException When unknown output type is given
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getSubscriberData(): array
     {
@@ -161,6 +167,8 @@ class SubscriberSync extends AbstractHelper
      * @return array
      *
      * @throws \InvalidArgumentException When unknown output type is given
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getUnsubscriberData(): array
     {
@@ -279,7 +287,7 @@ class SubscriberSync extends AbstractHelper
     private function writeOutput(string $message)
     {
         if ($this->output !== null) {
-            $message = date('[Y-m-d H:i:s] ', time()) . $message;
+            $message = date('[Y-m-d H:i:s] ') . $message;
             $this->output->writeln($message);
         }
     }
