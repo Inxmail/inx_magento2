@@ -16,6 +16,7 @@ use \Magento\Framework\App\Helper\AbstractHelper;
 use \Magento\Customer\Model\ResourceModel\CustomerRepository;
 use \Magento\Store\Model\StoreManagerInterface;
 use \Magento\Newsletter\Model\Subscriber;
+use \Magento\Customer\Model\Session;
 
 /**
  * Class Config
@@ -24,7 +25,8 @@ use \Magento\Newsletter\Model\Subscriber;
  */
 class SubscriptionData extends AbstractHelper
 {
-
+    /** @var \Magento\Customer\Model\Session */
+    protected $_customerSession;
     /** @var \Magento\Customer\Model\ResourceModel\CustomerRepository */
     protected $_customerRepository;
     /** @var \Magento\Store\Model\StoreManagerInterface */
@@ -39,17 +41,20 @@ class SubscriptionData extends AbstractHelper
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Customer\Model\ResourceModel\CustomerRepository $customerRepository
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Magento\Customer\Model\Session $customerSession
      * @param \Flagbit\Inxmail\Helper\Config $config
      */
     public function __construct(
         Context $context,
         CustomerRepository $customerRepository,
         StoreManagerInterface $storeManager,
+        Session $customerSession,
         Config $config
     )
     {
         $this->_customerRepository = $customerRepository;
         $this->_storeManager = $storeManager;
+        $this->_customerSession = $customerSession;
         $this->_sysConfig = SystemConfig::getSystemConfig($config);
 
         parent::__construct($context);
@@ -76,7 +81,7 @@ class SubscriptionData extends AbstractHelper
                 continue;
             }
             $keys = array_keys($data);
-            if (in_array($magKey, $keys, true) && isset($data[$magKey])) {
+            if (\in_array($magKey, $keys, true) && isset($data[$magKey])) {
                 $result[$inxKey] = $data[$magKey];
             }
         }
@@ -97,7 +102,7 @@ class SubscriptionData extends AbstractHelper
 
         if (!empty($addMap)) {
             foreach ($addMap as $attribute) {
-                if (in_array($attribute['magAttrib'], $map, true)) {
+                if (\in_array($attribute['magAttrib'], $map, true)) {
                     $result[$attribute['inxAttrib']] = $attribute['magAttrib'];
                 }
             }
@@ -141,17 +146,20 @@ class SubscriptionData extends AbstractHelper
     {
         $data = array();
 
+        /** @var \Magento\Store\Api\Data\StoreInterface $store */
         $store = $this->_storeManager->getStore($storeId);
         $data['websiteId'] = $store->getWebsiteId();
         $website = $this->_storeManager->getWebsite($data['websiteId']);
 
-        $data['storeName'] = $store->getName();
-        $data['storeCode'] = $store->getCode();
+        $data['storeViewName'] = $store->getName();
+        $data['storeViewId'] = $store->getCode();
 
         $data['websiteName'] = $website->getName();
-        $storeView = $this->_storeManager->getDefaultStoreView();
-        $data['storeViewName'] = $storeView->getName();
-        $data['storeViewId'] = $storeView->getId();
+        /** @var \Magento\Store\Api\Data\GroupInterface $storeView */
+        $storeView = $this->_storeManager->getGroup($store->getStoreGroupId());
+
+        $data['storeName'] = $storeView->getName();
+        $data['storeCode'] = $storeView->getId();
 
         return $data;
     }
@@ -167,16 +175,26 @@ class SubscriptionData extends AbstractHelper
     private function getCustomerData(int $customerId): array
     {
         $data = array();
-        if ($customerId > 0) {
+        if ($customerId > 0 || $this->_customerSession->getCustomerId() > 0) {
             /** @var \Magento\Customer\Model\Customer $customer */
-            $customer = $this->_customerRepository->getById($customerId);
+            $customer = null;
+            if ($this->_customerSession->isLoggedIn()) {
+                $customer = $this->_customerRepository->getById($this->_customerSession->getCustomerId());
+            } else {
+                $customer = $this->_customerRepository->getById($customerId);
+            }
+
             $data['firstName'] = $customer->getFirstname();
             $data['lastName'] = $customer->getLastname();
             $data['birthday'] = $customer->getDob();
             try {
                 $data['birthday'] = $data['birthday'] ? date_format(date_create($data['birthday']), 'Y-m-d') : '';
+                if (empty($data['birthday'])) {
+                    unset($data['birthday']);
+                }
             } catch (\Exception $e) {
                 $data['birthday'] = '';
+                unset($data['birthday']);
             }
             $data['gender'] = $customer->getGender();
             $data['group'] = $customer->getGroupId();
@@ -194,7 +212,7 @@ class SubscriptionData extends AbstractHelper
     private function cleanData(array $data): array
     {
         foreach ($data as $key => $value) {
-            $arr = is_array($value);
+            $arr = \is_array($value);
             if (!$arr && !empty($value)) {
                 $data[$key] = trim($value);
             } else if ($arr) {
