@@ -146,17 +146,20 @@ class SubscriptionData extends AbstractHelper
     {
         $data = array();
 
+        /** @var \Magento\Store\Api\Data\StoreInterface $store */
         $store = $this->_storeManager->getStore($storeId);
         $data['websiteId'] = $store->getWebsiteId();
         $website = $this->_storeManager->getWebsite($data['websiteId']);
 
-        $data['storeName'] = $store->getName();
-        $data['storeCode'] = $store->getCode();
+        $data['storeViewName'] = $store->getName();
+        $data['storeViewId'] = $store->getCode();
 
         $data['websiteName'] = $website->getName();
-        $storeView = $this->_storeManager->getDefaultStoreView();
-        $data['storeViewName'] = $storeView->getName();
-        $data['storeViewId'] = $storeView->getId();
+        /** @var \Magento\Store\Api\Data\GroupInterface $storeView */
+        $storeView = $this->_storeManager->getGroup($store->getStoreGroupId());
+
+        $data['storeName'] = $storeView->getName();
+        $data['storeCode'] = $storeView->getId();
 
         return $data;
     }
@@ -186,8 +189,12 @@ class SubscriptionData extends AbstractHelper
             $data['birthday'] = $customer->getDob();
             try {
                 $data['birthday'] = $data['birthday'] ? date_format(date_create($data['birthday']), 'Y-m-d') : '';
+                if (empty($data['birthday'])) {
+                    unset($data['birthday']);
+                }
             } catch (\Exception $e) {
                 $data['birthday'] = '';
+                unset($data['birthday']);
             }
             $data['gender'] = $customer->getGender();
             $data['group'] = $customer->getGroupId();
