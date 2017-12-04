@@ -15,6 +15,7 @@ use \Flagbit\Inxmail\Model\Config\SystemConfig;
 use \Flagbit\Inxmail\Helper\Config;
 use \Flagbit\Inxmail\Helper\SubscriptionData;
 use \Magento\Newsletter\Model\Subscriber as MageSubscriber;
+use \Magento\Newsletter\Model\ResourceModel\Subscriber as MageSubscriberResource;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
 use \Magento\Store\Model\ScopeInterface;
 use \Magento\Framework\App\Request\Http;
@@ -39,6 +40,8 @@ class Subscriber
     protected $inxEnabled = false;
     /** @var \Magento\Framework\App\Request\Http */
     private $httpRequest;
+    /** @var \Magento\Newsletter\Model\ResourceModel\Subscriber */
+    private $subscriberResource;
 
     /**
      * Subscriber constructor.
@@ -51,6 +54,7 @@ class Subscriber
      */
     public function __construct(
         ScopeConfigInterface $scopeConfig,
+        MageSubscriberResource $subscriberResource,
         SubscriptionData $subscriptionDataHelper,
         Request $request,
         Config $config,
@@ -64,6 +68,7 @@ class Subscriber
         $this->logger = $logger;
 
         $this->httpRequest = $httpRequest;
+        $this->subscriberResource = $subscriberResource;
 
         $this->inxEnabled = $scopeConfig->getValue(
             'inxmail/general/enable',
@@ -191,6 +196,8 @@ class Subscriber
                 str_replace('%s', isset($result['type']) ?? 'Undefined', 'Inxmail API Error: %s'),
                 array($reqData, $result)
             );
+            $subscriber->setSubscriberStatus(MageSubscriber::STATUS_UNSUBSCRIBED);
+            $this->subscriberResource->save($subscriber);
         }
 
         return (int)$response;
@@ -228,6 +235,8 @@ class Subscriber
                 str_replace('%s', isset($result['type']) ?? 'Undefined', 'Inxmail API Error: %s'),
                 array($reqData, $result)
             );
+            $subscriber->setSubscriberStatus(MageSubscriber::STATUS_SUBSCRIBED);
+            $this->subscriberResource->save($subscriber);
         }
 
         return (int)$response;
