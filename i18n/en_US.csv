@@ -11,7 +11,7 @@
 "Merge all subscribers from Magento with the given Inxmail list in context of Store-Views","Merge all subscribers from Magento with the given Inxmail list in context of Store-Views"
 "Please, by migration rerun, be aware of subscribed recepients who have not yet confirmed registration or deleted from Inxmail. In this case, subscriptions / unsubscriptions are automatically transferred to Inxmail.","Please, by migration rerun, be aware of subscribed recepients who have not yet confirmed registration or deleted from Inxmail. In this case, subscriptions / unsubscriptions are automatically transferred to Inxmail."
 "Select your Inxmail list","Select your Inxmail list"
-"Mapping <strong>{customer_attribute}:{inxmail_attribute}</strong><br/><span class="notice">If the {inxmail_attribute} is not defined, the value of {customer_attribute} will be taken</span>","Mapping <strong>{customer_attribute}:{inxmail_attribute}</strong><br/><span class="notice">If the {inxmail_attribute} is not defined, the value of {customer_attribute} will be taken</span>"
+"Mapping <strong>{customer_attribute}:{inxmail_attribute}</strong><br/><span class='notice'>If the {inxmail_attribute} is not defined, the value of {customer_attribute} will be taken</span>","Mapping <strong>{customer_attribute}:{inxmail_attribute}</strong><br/><span class='notice'>If the {inxmail_attribute} is not defined, the value of {customer_attribute} will be taken</span>"
 "Perform migration now","Perform migration now"
 "Synchronize now","Synchronize now"
 "Disabled","Disabled"

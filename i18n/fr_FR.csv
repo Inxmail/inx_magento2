@@ -9,7 +9,7 @@
 "Fields to synchronize","Champs à synchroniser"
 "Please, by migration rerun, be aware of subscribed recepients who have not yet confirmed registration or deleted from Inxmail. In this case, subscriptions / unsubscriptions are automatically transferred to Inxmail.","S'il vous plaît noter que la migration peut reprise Sont bénéficiaires inscrits qui ne l'ont pas encore confirmé votre inscription et ont été supprimés de Inxmail. Vous devez effectuer cette action qu'une seule fois chaque liste. Par la suite, les inscriptions / annulations sont automatiquement transférés à Inxmail."
 "Select your Inxmail list","Sélectionnez votre liste Inxmail"
-"Mapping <strong>{customer_attribute}:{inxmail_attribute}</strong><br/><span class="notice">If the {inxmail_attribute} is not defined, the value of {customer_attribute} will be taken</span>","Mappage <strong>{attribut_client}:{attribut_inxmail}</strong><br/><span class="notice">Si {attribut_inxmail} n'est pas renseigné, la valeur de {attribut_client} sera pris par défaut</span>"
+"Mapping <strong>{customer_attribute}:{inxmail_attribute}</strong><br/><span class='notice'>If the {inxmail_attribute} is not defined, the value of {customer_attribute} will be taken</span>","Mappage <strong>{attribut_client}:{attribut_inxmail}</strong><br/><span class='notice'>Si {attribut_inxmail} n'est pas renseigné, la valeur de {attribut_client} sera pris par défaut</span>"
 "Synchronize now","Synchroniser maintenant"
 "Disabled","Désactivé"
 "No list selected","Aucune liste séléctionnée"
