@@ -5,7 +5,7 @@ This repository contains the Inxmail extension code for Magento 2
 
 This extension requires an Inxmail Professional account and a corresponding Inxmail Professional REST-API user.
 
-Please contact your Inxmail account manager or write to sales@inxmail.de to get all information regarding this extension.
+Please contact your Inxmail account manager or get in [touch with us](https://www.inxmail.de/kontakt) to get all information regarding this extension.
 
 =======
 
@@ -13,11 +13,13 @@ Please contact your Inxmail account manager or write to sales@inxmail.de to get 
 
 You are welcome to contribute to the ongoing development of this extension! Your possibilities:
 
-* **Security issues**: please write an email to connected-solutions@inxmail.de. Please do NOT open a github issue.
+* **Security issues**: Please do NOT open a github issue. Get in touch with us to report (see above) such issues.
 
-* Report a bug: create an [issue](https://github.com/Inxmail/inx_magento2/issues/new) including description, repro steps, Magento and extension version numbers
+* Report a bug: create an [issue](https://github.com/Inxmail/inx_magento2/issues/new) including description, reproduction steps, Magento and extension version numbers
 * Fix a bug: please clone and use our contribution branch to submit your Pull Request
 * Request a feature: create an [issue](https://github.com/Inxmail/inx_magento2/issues/new) describing your desired feature.
+
+Thank you!
 
 =======
 V1.0.0
