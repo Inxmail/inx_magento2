@@ -22,7 +22,8 @@ You are welcome to contribute to the ongoing development of this extension! Your
 Thank you!
 
 =======
-V1.0.0
+
+*V1.0.0*
 
 This is the base-version of the module with the following feature-set
 * connect your Magento 2 installation with one Inxmail Professional list
