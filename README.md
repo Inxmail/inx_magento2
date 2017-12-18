@@ -23,6 +23,8 @@ Thank you!
 
 =======
 
+## Version History
+
 *V1.0.0*
 
 This is the base-version of the module with the following feature-set
