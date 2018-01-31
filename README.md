@@ -7,7 +7,6 @@ This extension requires an Inxmail Professional account and a corresponding Inxm
 
 Please contact your Inxmail account manager or get in [touch with us](https://www.inxmail.de/kontakt) to get all information regarding this extension.
 
-=======
 
 ## Contribution
 
@@ -21,7 +20,6 @@ You are welcome to contribute to the ongoing development of this extension! Your
 
 Thank you!
 
-=======
 
 ## Version History
 
