@@ -105,8 +105,6 @@ class AttributeMapping extends AbstractFieldArray
             $options[$inxKey] = 'selected="selected"';
 
             $row->setData('option_extra_attrs', $options);
-        } else {
-
         }
     }
 }

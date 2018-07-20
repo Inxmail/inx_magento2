@@ -54,7 +54,6 @@
                        showInStore="0">
                     <label>Current Version</label>
                     <frontend_model>Flagbit\Inxmail\Block\Adminhtml\System\Config\ModuleVersion</frontend_model>
-                    <backend_model>Flagbit\Inxmail\Model\Config\Backend\Version</backend_model>
                 </field>
             </group>
             <group id="mapcustomer" translate="label" type="text" showInDefault="1" showInWebsite="0" showInStore="0"
