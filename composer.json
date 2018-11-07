@@ -3,13 +3,18 @@
   "description": "Flagbit Magento 2 Inxmail Module",
   "type": "magento2-module",
   "license": [
-    "proprietary"
+    "OSL-3.0"
   ],
   "authors": [
     {
       "name": "Peter Lelewel",
       "email": "peter.lelewel@flagbit.de",
       "role": "Developer"
+    },
+    {
+      "name": "Björn Meyer",
+      "email": "bjoern.meyer@flagbit.de",
+      "role": "Projectmanager"
     }
   ],
   "repositories": [
