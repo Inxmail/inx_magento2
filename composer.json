@@ -1,6 +1,6 @@
 {
-  "name": "flagbit/module-inxmail2",
-  "description": "Flagbit Magento 2 Inxmail Module",
+  "name": "inxmail/magento2-module",
+  "description": "Inxmail Magento 2 Module",
   "type": "magento2-module",
   "license": [
     "OSL-3.0"
