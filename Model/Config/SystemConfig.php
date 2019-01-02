@@ -187,6 +187,14 @@ class SystemConfig
             $this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING] = $this->_helper->getConfig(self::CONFIG_PATH_CUSTOMER_MAPPING);
         }
 
+        if($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING] === '') {
+            return [];
+        }
+
+        if (interface_exists(\Magento\Framework\Serialize\SerializerInterface::class)) {
+            return \json_decode($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING], true) ?? [];
+        }
+
         return unserialize($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING]) ?? [];
     }
 
