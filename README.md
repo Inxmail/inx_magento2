@@ -23,6 +23,10 @@ Thank you!
 
 ## Version History
 
+**V1.0.2**
+* Compatibility for Magento 2.2.6
+* Compatibility for PHP 7.1
+
 **V1.0.0**
 
 This is the base-version of the module with the following feature-set
@@ -31,6 +35,7 @@ This is the base-version of the module with the following feature-set
 * synchronize bi-directional in real-time the opt-in and opt-out of the newsletter 
 * synchronize customer data regularly to Inxmail Professinal
 * reduce the editorial work of your newsletters by incorporating product information directly from your shop data 
+
 
 ## Licence Information
 This module is licensed under OSL 3.0.
