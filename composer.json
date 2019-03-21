@@ -24,7 +24,7 @@
     }
   ],
   "require": {
-    "php": "~7.0.0",
+    "php": "~7.1.0",
     "magento/product-community-edition": "^2.1.8"
   },
   "require-dev": {
