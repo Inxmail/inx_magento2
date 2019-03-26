@@ -52,7 +52,7 @@ abstract class AbstractCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->setAreaCode();
+        $this->setAreaCode(AREA::AREA_FRONTEND);
         $this->_execute($input, $output);
     }
 
