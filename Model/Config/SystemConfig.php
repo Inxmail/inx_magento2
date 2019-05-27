@@ -4,7 +4,10 @@
  *
  * @link http://flagbit.de
  * @link https://www.inxmail.de/
- * @copyright Copyright (c) 2017 Flagbit GmbH
+ * @author Flagbit GmbH
+ * @copyright Copyright © 2017-2018 Inxmail GmbH
+ * @license Licensed under the Open Software License version 3.0 (https://opensource.org/licenses/OSL-3.0)
+ *
  */
 
 namespace Flagbit\Inxmail\Model\Config;
@@ -182,6 +185,14 @@ class SystemConfig
     {
         if (empty($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING])) {
             $this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING] = $this->_helper->getConfig(self::CONFIG_PATH_CUSTOMER_MAPPING);
+        }
+
+        if($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING] === '') {
+            return [];
+        }
+
+        if (interface_exists(\Magento\Framework\Serialize\SerializerInterface::class)) {
+            return \json_decode($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING], true) ?? [];
         }
 
         return unserialize($this->_data[self::CONFIG_FIELD_CUSTOMER_MAPPING]) ?? [];

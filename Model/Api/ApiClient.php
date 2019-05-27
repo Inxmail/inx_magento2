@@ -4,7 +4,10 @@
  *
  * @link http://flagbit.de
  * @link https://www.inxmail.de/
- * @copyright Copyright (c) 2017 Flagbit GmbH
+ * @author Flagbit GmbH
+ * @copyright Copyright © 2017-2018 Inxmail GmbH
+ * @license Licensed under the Open Software License version 3.0 (https://opensource.org/licenses/OSL-3.0)
+ *
  */
 
 namespace Flagbit\Inxmail\Model\Api;
@@ -344,7 +347,7 @@ class ApiClient implements ApiClientInterface
 
             $response = $this->_requestClient->read();
             $this->_responseBody = \Zend_Http_Response::extractBody($response);
-            $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
+            $this->_responseHeader = $this->extractHeaders($response);
 
             return $this->_responseBody;
         } else {
@@ -427,7 +430,7 @@ class ApiClient implements ApiClientInterface
             $response = $this->_requestClient->read();
 
             $this->_responseBody = \Zend_Http_Response::extractBody($response);
-            $this->_responseHeader = \Zend_Http_Response::extractHeaders($response);
+            $this->_responseHeader = $this->extractHeaders($response);
 
             return $this->_responseBody;
         } else {
@@ -547,5 +550,90 @@ class ApiClient implements ApiClientInterface
     {
         $test = explode(':', $url);
         return (count($test) > 1 && in_array(strtolower($test[0]), array('http', 'https'), true));
+    }
+
+    /**
+     * Replaces \Zend_Http_Response::extractHeaders because of HTTP/2 incompatibility
+     *
+     * @param string $response
+     *
+     * @return array
+     */
+    private function extractHeaders(string $response): array
+    {
+        $headers = array();
+
+        // First, split body and headers. Headers are separated from the
+        // message at exactly the sequence "\r\n\r\n"
+        $parts = preg_split('|(?:\r\n){2}|m', $response, 2);
+        if (! $parts[0]) {
+            return $headers;
+        }
+
+        // Split headers part to lines; "\r\n" is the only valid line separator.
+        $lines = explode("\r\n", $parts[0]);
+        unset($parts);
+        $last_header = null;
+
+        foreach($lines as $index => $line) {
+            if ($index === 0 && preg_match('#^HTTP/\d+(?:\.\d+)? [1-5]\d+#', $line)) {
+                // Status line; ignore
+                continue;
+            }
+
+            if ($line == "") {
+                // Done processing headers
+                break;
+            }
+
+            // Locate headers like 'Location: ...' and 'Location:...' (note the missing space)
+            if (preg_match("|^([a-zA-Z0-9\'`#$%&*+.^_\|\~!-]+):\s*(.*)|s", $line, $m)) {
+                unset($last_header);
+                $h_name  = strtolower($m[1]);
+                $h_value = $m[2];
+                \Zend_Http_Header_HeaderValue::assertValid($h_value);
+
+                if (isset($headers[$h_name])) {
+                    if (! is_array($headers[$h_name])) {
+                        $headers[$h_name] = array($headers[$h_name]);
+                    }
+
+                    $headers[$h_name][] = ltrim($h_value);
+                    $last_header = $h_name;
+                    continue;
+                }
+
+                $headers[$h_name] = ltrim($h_value);
+                $last_header = $h_name;
+                continue;
+            }
+
+            // Identify header continuations
+            if (preg_match("|^[ \t](.+)$|s", $line, $m) && $last_header !== null) {
+                $h_value = trim($m[1]);
+                if (is_array($headers[$last_header])) {
+                    end($headers[$last_header]);
+                    $last_header_key = key($headers[$last_header]);
+
+                    $h_value = $headers[$last_header][$last_header_key] . $h_value;
+                    \Zend_Http_Header_HeaderValue::assertValid($h_value);
+
+                    $headers[$last_header][$last_header_key] = $h_value;
+                    continue;
+                }
+
+                $h_value = $headers[$last_header] . $h_value;
+                \Zend_Http_Header_HeaderValue::assertValid($h_value);
+
+                $headers[$last_header] = $h_value;
+                continue;
+            }
+
+            // Anything else is an error condition
+            #require_once 'Zend/Http/Exception.php';
+            throw new \Zend_Http_Exception('Invalid header line detected');
+        }
+
+        return $headers;
     }
 }

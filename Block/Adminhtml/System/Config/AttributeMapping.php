@@ -4,7 +4,10 @@
  *
  * @link http://flagbit.de
  * @link https://www.inxmail.de/
- * @copyright Copyright (c) 2017 Flagbit GmbH
+ * @author Flagbit GmbH
+ * @copyright Copyright © 2017-2018 Inxmail GmbH
+ * @license Licensed under the Open Software License version 3.0 (https://opensource.org/licenses/OSL-3.0)
+ *
  */
 
 namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
@@ -102,8 +105,6 @@ class AttributeMapping extends AbstractFieldArray
             $options[$inxKey] = 'selected="selected"';
 
             $row->setData('option_extra_attrs', $options);
-        } else {
-
         }
     }
 }
