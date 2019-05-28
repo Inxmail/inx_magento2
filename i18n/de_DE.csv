@@ -129,3 +129,4 @@
 "Add mapping","Zuordnung hinzufügen"
 "Synchronise unsubscriptions","Abmeldungen synchronisieren"
 "Hourly","Stündlich"
+"Last order only can be mapped to an date or datetime field.","Neueste Bestellung kann nur auf Datum oder Datum mit Uhrzeit verwendet werden."

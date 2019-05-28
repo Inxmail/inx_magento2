@@ -12,10 +12,12 @@
 
 namespace Flagbit\Inxmail\Helper;
 
-use \Magento\Store\Model\ScopeInterface;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
+use \Magento\Framework\App\Config\Storage\WriterInterface;
 use \Magento\Framework\App\Helper\AbstractHelper;
-use \Magento\Framework\Encryption\EncryptorInterface;
 use \Magento\Framework\App\Helper\Context;
+use \Magento\Framework\Encryption\EncryptorInterface;
+use \Magento\Store\Model\ScopeInterface;
 
 /**
  * Class Config
@@ -24,6 +26,11 @@ use \Magento\Framework\App\Helper\Context;
  */
 class Config extends AbstractHelper
 {
+    /**
+     * @var \Magento\Framework\App\Config\Storage\WriterInterface
+     */
+    private $configWriter;
+
     /** @var string */
     private static $scope = ScopeInterface::SCOPE_STORE;
 
@@ -33,11 +40,13 @@ class Config extends AbstractHelper
     /**
      * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Framework\Encryption\EncryptorInterface $enc
+     * @param \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
      */
-    public function __construct(Context $context, EncryptorInterface $enc)
+    public function __construct(Context $context, EncryptorInterface $enc, WriterInterface $configWriter)
     {
         parent::__construct($context);
         $this->_enc = $enc;
+        $this->configWriter = $configWriter;
     }
 
     /**
@@ -56,5 +65,15 @@ class Config extends AbstractHelper
     public function getEncryptor(): EncryptorInterface
     {
         return $this->_enc;
+    }
+
+    public function saveConfig(string $path, $value = null, $storeId = 0)
+    {
+        $this->configWriter->save(
+            $path,
+            $value,
+            ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            $storeId
+        );
     }
 }
