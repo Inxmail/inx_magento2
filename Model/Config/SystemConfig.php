@@ -39,6 +39,8 @@ class SystemConfig
     const CONFIG_PATH_REST_USER = 'inxmail/restauth/rest_user';
     /** Contains the path of the inxmail configuration for inxmail rest api password */
     const CONFIG_PATH_REST_PASSWORD = 'inxmail/restauth/rest_password';
+    /** Saves attribute data */
+    const CONFIG_PATH_ATTRIBUTES = 'inxmail/rest/attributes';
 
     /** Datafield key */
     const CONFIG_FIELD_URL = 'apiUrl';
@@ -232,5 +234,25 @@ class SystemConfig
         }
 
         return $this->_data[self::CONFIG_FIELD_REST_PASSWORD];
+    }
+
+    /**
+     * @return string
+     */
+    public function getAttributesConfig(): string
+    {
+        if (empty($this->_data[self::CONFIG_PATH_ATTRIBUTES])) {
+            $this->_data[self::CONFIG_PATH_ATTRIBUTES] = $this->_helper->getConfig(self::CONFIG_PATH_ATTRIBUTES);
+        }
+
+        return $this->_data[self::CONFIG_PATH_ATTRIBUTES];
+    }
+
+    /**
+     * @param string $config
+     */
+    public function setAttributesConfig(string $config)
+    {
+        $this->_helper->saveConfig(self::CONFIG_PATH_ATTRIBUTES, $config, 0);
     }
 }

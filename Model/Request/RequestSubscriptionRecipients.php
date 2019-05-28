@@ -140,7 +140,8 @@ class RequestSubscriptionRecipients extends AbstractRequest
             'Geschlecht' => 'gender',
             'magentoStoreId' => 'storeId',
             'magentoStoreViewId' => 'storeViewId',
-            'magentoCustomerGroup' => 'group'
+            'magentoCustomerGroup' => 'group',
+            'magentoCustomerLastOrder' => 'lastOrderDate'
         );
     }
 }
