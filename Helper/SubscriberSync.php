@@ -220,7 +220,7 @@ class SubscriberSync extends AbstractHelper
 
         // order for equal output
         foreach ($subscriberData as $key => $value) {
-            if (count($subscriberData) > 1 && count($fields) === count(array_keys($value))) {
+            if (count($subscriberData) > 0 && count($fields) === count(array_keys($value))) {
                 ksort($value);
                 $result[] = $value;
             }

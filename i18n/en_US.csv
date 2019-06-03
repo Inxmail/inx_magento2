@@ -136,3 +136,4 @@
 "Add mapping","Add mapping"
 "Synchronise unsubscriptions","Synchronise unsubscriptions"
 "Hourly","Hourly"
+"Last order only can be mapped to an date or datetime field.","Last order only can be mapped to an date or datetime field."

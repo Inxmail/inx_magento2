@@ -128,3 +128,4 @@
 "Add mapping","Ajouter une attribution"
 "Synchronise unsubscriptions","Synchroniser les désinscriptions"
 "Hourly","Par heure"
+"Last order only can be mapped to an date or datetime field.","La dernière ordre ne peut être mappée qu'avec le champ date ou date-heure."
