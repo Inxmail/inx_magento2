@@ -22,6 +22,13 @@ Thank you!
 
 
 ## Version History
+**V1.1.0**
+* added support for "last order date"
+
+**V1.0.3**
+* allow PHP > 7.1
+* Workaround for Invalid header line detected: #49
+* add fallback for different M2 versions (serializer)
 
 **V1.0.2**
 * Compatibility for Magento 2.2.6
