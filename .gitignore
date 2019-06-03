@@ -1,3 +1,4 @@
 .idea/
+.directory
 vendor
 composer.lock
