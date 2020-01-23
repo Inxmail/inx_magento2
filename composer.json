@@ -25,6 +25,7 @@
   ],
   "require": {
     "php": "^7.1",
+    "ext-json": "*",
     "magento/product-community-edition": "^2.1.8"
   },
   "require-dev": {

@@ -12,16 +12,28 @@
 
 namespace Flagbit\Inxmail\Helper;
 
+use DateTimeZone;
+use Exception;
+use Flagbit\Inxmail\Logger\Logger;
+use Flagbit\Inxmail\Model\Config\SystemConfig;
 use Flagbit\Inxmail\Model\Request\RequestRecipientAttributes;
-use \Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
-use \Flagbit\Inxmail\Model\Config\SystemConfig;
-use \Magento\Framework\App\Helper\Context;
-use \Magento\Framework\App\Helper\AbstractHelper;
-use \Magento\Customer\Model\ResourceModel\CustomerRepository;
-use \Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
-use \Magento\Store\Model\StoreManagerInterface;
-use \Magento\Newsletter\Model\Subscriber;
-use \Magento\Customer\Model\Session;
+use Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
+use Magento\Customer\Model\Customer;
+use Magento\Customer\Model\ResourceModel\CustomerRepository;
+use Magento\Customer\Model\Session;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Newsletter\Model\Subscriber;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
+use Magento\Store\Api\Data\GroupInterface;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use function in_array;
+use function is_array;
+use function json_decode;
 
 /**
  * Class Config
@@ -31,33 +43,44 @@ use \Magento\Customer\Model\Session;
 class SubscriptionData extends AbstractHelper
 {
 
-    const FORMAT_DATE_TIME = 'Y-m-d\TH:i:s\Z';
-    const FORMAT_DATE_ONLY = 'Y-m-d';
-    const FORMAT_TIME_ONLY = 'H:i:s\Z';
+    private const FORMAT_DATE_TIME = 'Y-m-d\TH:i:s\Z';
+    private const FORMAT_DATE_ONLY = 'Y-m-d';
 
-    /** @var \Magento\Customer\Model\Session */
+    /**
+     * @var Session
+     */
     protected $_customerSession;
-    /** @var \Magento\Customer\Model\ResourceModel\CustomerRepository */
+    /**
+     * @var CustomerRepository
+     */
     protected $_customerRepository;
-    /** @var \Magento\Store\Model\StoreManagerInterface */
+    /**
+     * @var StoreManagerInterface
+     */
     protected $_storeManager;
-
-    /** @var \Flagbit\Inxmail\Model\Config\SystemConfig */
+    /**
+     * @var SystemConfig
+     */
     protected $_sysConfig;
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+     * @var CollectionFactory
      */
     private $orderCollectionFactory;
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * Config constructor.
      *
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Customer\Model\ResourceModel\CustomerRepository $customerRepository
-     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
-     * @param \Magento\Customer\Model\Session $customerSession
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
-     * @param \Flagbit\Inxmail\Helper\Config $config
+     * @param Context $context
+     * @param CustomerRepository $customerRepository
+     * @param StoreManagerInterface $storeManager
+     * @param Session $customerSession
+     * @param CollectionFactory $orderCollectionFactory
+     * @param Config $config
+     * @param Logger $logger
      */
     public function __construct(
         Context $context,
@@ -65,25 +88,27 @@ class SubscriptionData extends AbstractHelper
         StoreManagerInterface $storeManager,
         Session $customerSession,
         CollectionFactory $orderCollectionFactory,
-        Config $config
+        Config $config,
+        Logger $logger
     )
     {
         $this->_customerRepository = $customerRepository;
         $this->_storeManager = $storeManager;
         $this->_customerSession = $customerSession;
         $this->_sysConfig = SystemConfig::getSystemConfig($config);
+        $this->logger = $logger;
 
         parent::__construct($context);
         $this->orderCollectionFactory = $orderCollectionFactory;
     }
 
     /**
-     * @param \Magento\Newsletter\Model\Subscriber $subscriber
+     * @param Subscriber $subscriber
      *
      * @return array
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function getSubscriptionFields(Subscriber $subscriber): array
     {
@@ -98,7 +123,7 @@ class SubscriptionData extends AbstractHelper
                 continue;
             }
             $keys = array_keys($data);
-            if (\in_array($magKey, $keys, true) && isset($data[$magKey])) {
+            if (isset($data[$magKey]) && in_array($magKey, $keys, true)) {
                 $result[$inxKey] = $data[$magKey];
             }
         }
@@ -107,34 +132,12 @@ class SubscriptionData extends AbstractHelper
     }
 
     /**
-     * @return array
-     */
-    public function getMapping(): array
-    {
-        $defaults = RequestSubscriptionRecipients::getStandardAttributes();
-        unset($defaults['email']);
-        $map = array_merge(RequestSubscriptionRecipients::getMapableAttributes(), $defaults);
-        $addMap = $this->_sysConfig->getMapConfig();
-        $result = array();
-
-        if (!empty($addMap)) {
-            foreach ($addMap as $attribute) {
-                if (\in_array($attribute['magAttrib'], $map, true)) {
-                    $result[$attribute['inxAttrib']] = $attribute['magAttrib'];
-                }
-            }
-        }
-
-        return array_merge($defaults, $result);
-    }
-
-    /**
-     * @param \Magento\Newsletter\Model\Subscriber $subscriber
+     * @param Subscriber $subscriber
      *
      * @return array
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     private function getSubscriptionStaticData(Subscriber $subscriber): array
     {
@@ -153,47 +156,18 @@ class SubscriptionData extends AbstractHelper
     }
 
     /**
-     * @param int $storeId
-     *
-     * @return array
-     *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    private function getStoreData(int $storeId): array
-    {
-        $data = array();
-
-        /** @var \Magento\Store\Api\Data\StoreInterface $store */
-        $store = $this->_storeManager->getStore($storeId);
-        $data['websiteId'] = $store->getWebsiteId();
-        $website = $this->_storeManager->getWebsite($data['websiteId']);
-
-        $data['storeViewName'] = $store->getName();
-        $data['storeViewId'] = $store->getCode();
-
-        $data['websiteName'] = $website->getName();
-        /** @var \Magento\Store\Api\Data\GroupInterface $storeView */
-        $storeView = $this->_storeManager->getGroup($store->getStoreGroupId());
-
-        $data['storeName'] = $storeView->getName();
-        $data['storeCode'] = $storeView->getId();
-
-        return $data;
-    }
-
-    /**
      * @param int $customerId
      *
      * @return array
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     private function getCustomerData(int $customerId): array
     {
         $data = array();
         if ($customerId > 0 || $this->_customerSession->getCustomerId() > 0) {
-            /** @var \Magento\Customer\Model\Customer $customer */
+            /** @var Customer $customer */
             $customer = null;
             if ($this->_customerSession->isLoggedIn()) {
                 $customer = $this->_customerRepository->getById($this->_customerSession->getCustomerId());
@@ -205,16 +179,12 @@ class SubscriptionData extends AbstractHelper
 
             $data['firstName'] = $customer->getFirstname();
             $data['lastName'] = $customer->getLastname();
-            $data['birthday'] = $customer->getDob();
-            try {
-                $data['birthday'] = $data['birthday'] ? date_format(date_create($data['birthday']), 'Y-m-d') : '';
-                if (empty($data['birthday'])) {
-                    unset($data['birthday']);
-                }
-            } catch (\Exception $e) {
-                $data['birthday'] = '';
-                unset($data['birthday']);
+
+            $customerDob = $this->formatBirthday($customer->getDob());
+            if ('' !== $customerDob) {
+                $data['birthday'] = $customerDob;
             }
+
             $data['gender'] = $customer->getGender();
             $data['group'] = $customer->getGroupId();
             $data['prefix'] = $customer->getPrefix();
@@ -238,7 +208,7 @@ class SubscriptionData extends AbstractHelper
             ->setPageSize(1);
 
         if ($collection->getSize() > 0) {
-            /** @var \Magento\Sales\Model\Order $order */
+            /** @var Order $order */
             $order = $collection->getFirstItem();
 
             if ($order) {
@@ -260,7 +230,7 @@ class SubscriptionData extends AbstractHelper
     private function formatOrderDate($date): string
     {
         $date = date_create($date);
-        $date->setTimezone(new \DateTimeZone('UTC'));
+        $date->setTimezone(new DateTimeZone('UTC'));
         $datetime = $this->getAttributeConfig();
 
         if ($datetime) {
@@ -277,13 +247,60 @@ class SubscriptionData extends AbstractHelper
      */
     private function getAttributeConfig(): bool
     {
-        $attributes = \json_decode($this->_sysConfig->getAttributesConfig(), true);
+        $attributes = json_decode($this->_sysConfig->getAttributesConfig(), true);
 
         if (isset($attributes['lastOrderDate'])) {
             return $attributes['lastOrderDate'] === RequestRecipientAttributes::LIST_TYPE_DATE_AND_TIME;
         }
 
         return false;
+    }
+
+    /**
+     * @param string $birthday
+     * @return string
+     */
+    private function formatBirthday(string $birthday): string
+    {
+        try {
+            $newDateFormat = date_format(date_create($birthday), self::FORMAT_DATE_ONLY);
+        } catch (Exception $e) {
+            $this->logger->critical(
+                'ErrorMessage: ' . $e->getMessage(),
+                ['Stacktrace' => $e->getTraceAsString()]
+            );
+        }
+
+        return $newDateFormat ?? '';
+    }
+
+    /**
+     * @param int $storeId
+     *
+     * @return array
+     *
+     * @throws LocalizedException
+     */
+    private function getStoreData(int $storeId): array
+    {
+        $data = array();
+
+        /** @var StoreInterface $store */
+        $store = $this->_storeManager->getStore($storeId);
+        $data['websiteId'] = $store->getWebsiteId();
+        $website = $this->_storeManager->getWebsite($data['websiteId']);
+
+        $data['storeViewName'] = $store->getName();
+        $data['storeViewId'] = $store->getCode();
+
+        $data['websiteName'] = $website->getName();
+        /** @var GroupInterface $storeView */
+        $storeView = $this->_storeManager->getGroup($store->getStoreGroupId());
+
+        $data['storeName'] = $storeView->getName();
+        $data['storeCode'] = $storeView->getId();
+
+        return $data;
     }
 
     /**
@@ -294,16 +311,37 @@ class SubscriptionData extends AbstractHelper
     private function cleanData(array $data): array
     {
         foreach ($data as $key => $value) {
-            $arr = \is_array($value);
-            if (!$arr && !empty($value)) {
+            if (false === is_array($value) && false === empty($value)) {
                 $data[$key] = trim($value);
-            } else if ($arr) {
+            } else if (true === is_array($value)) {
                 foreach ($value as $key2 => $value2) {
-                    $data[$key][$key2] = empty($value2) ?? trim($value2);
+                    $data[$key][$key2] = empty($value2) ? $value2 : trim($value2);
                 }
             }
         }
 
         return $data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMapping(): array
+    {
+        $defaults = RequestSubscriptionRecipients::getStandardAttributes();
+        unset($defaults['email']);
+        $map = array_merge(RequestSubscriptionRecipients::getMapableAttributes(), $defaults);
+        $addMap = $this->_sysConfig->getMapConfig();
+        $result = array();
+
+        if (!empty($addMap)) {
+            foreach ($addMap as $attribute) {
+                if (in_array($attribute['magAttrib'], $map, true)) {
+                    $result[$attribute['inxAttrib']] = $attribute['magAttrib'];
+                }
+            }
+        }
+
+        return array_merge($defaults, $result);
     }
 }
