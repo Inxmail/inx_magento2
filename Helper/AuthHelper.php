@@ -12,7 +12,7 @@
 
 namespace Flagbit\Inxmail\Helper;
 
-use \Flagbit\Inxmail\Model\Config\SystemConfig;
+use Flagbit\Inxmail\Model\Config\SystemConfig;
 
 /**
  * Class AuthHelper

@@ -257,10 +257,10 @@ class SubscriptionData extends AbstractHelper
     }
 
     /**
-     * @param string $birthday
+     * @param $birthday
      * @return string
      */
-    private function formatBirthday(string $birthday): string
+    private function formatBirthday($birthday): string
     {
         try {
             $newDateFormat = date_format(date_create($birthday), self::FORMAT_DATE_ONLY);

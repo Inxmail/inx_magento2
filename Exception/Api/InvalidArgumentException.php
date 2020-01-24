@@ -12,7 +12,7 @@
 
 namespace Flagbit\Inxmail\Exception\Api;
 
-use \Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Class InvalidArgumentException

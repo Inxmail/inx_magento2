@@ -12,9 +12,9 @@
 
 namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
 
-use \Magento\Framework\Data\Form\Element\AbstractElement;
-use \Flagbit\Inxmail\Helper\Version;
-use \Magento\Backend\Block\Template\Context;
+use Flagbit\Inxmail\Helper\Version;
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\Data\Form\Element\AbstractElement;
 
 /**
  * Class ModuleVersion
