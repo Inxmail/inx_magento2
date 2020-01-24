@@ -34,7 +34,7 @@ class AttributeMapping extends AbstractFieldArray
 
     public function __construct(Context $context, Config $config) {
         parent::__construct($context);
-        $this->isEnabled = SystemConfig::getSystemConfig($config)->isInxmailEnabled();
+        $this->isEnabled = SystemConfig::getSystemConfig($config)->isEnabled();
     }
 
     /**

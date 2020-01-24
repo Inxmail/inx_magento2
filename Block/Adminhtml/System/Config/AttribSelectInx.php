@@ -45,7 +45,7 @@ class AttribSelectInx extends MapSelect
     ) {
         parent::__construct($context, $data);
         $this->request = $request->getAttributesClient();
-        $this->isEnabled = SystemConfig::getSystemConfig($config)->isInxmailEnabled();
+        $this->isEnabled = SystemConfig::getSystemConfig($config)->isEnabled();
     }
 
     /**

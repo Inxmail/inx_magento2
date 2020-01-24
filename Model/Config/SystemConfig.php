@@ -12,7 +12,7 @@
 
 namespace Flagbit\Inxmail\Model\Config;
 
-use \Flagbit\Inxmail\Helper\Config;
+use Flagbit\Inxmail\Helper\Config as ConfigHelper;
 
 /**
  * Class SystemConfig
@@ -21,72 +21,58 @@ use \Flagbit\Inxmail\Helper\Config;
  */
 class SystemConfig
 {
-    /** Contains the path of the inxmail configuration for the api url */
-    const CONFIG_PATH_URL = 'inxmail/general/api_url';
-    /** Contains the path of the inxmail configuration for the api user */
-    const CONFIG_PATH_API_USER = 'inxmail/general/api_user';
-    /** Contains the path of the inxmail configuration for the api secret */
-    const CONFIG_PATH_API_KEY = 'inxmail/general/api_password';
-    /** Contains the path of the inxmail configuration for the list to sync to */
-    const CONFIG_PATH_API_LIST = 'inxmail/general/api_listid';
-    /** Contains the path of the inxmail configuration for debug setting */
-    const CONFIG_PATH_DEBUG = 'inxmail/general/debug';
-    /** Contains the path of the inxmail configuration for the list to sync to */
-    const CONFIG_PATH_CUSTOMER_MAPPING = 'inxmail/mapcustomer/mapping';
-    /** Contains the path of the inxmail configuration for module enabled or not */
-    const CONFIG_PATH_ENABLED = 'inxmail/general/enable';
-    /** Contains the path of the inxmail configuration for inxmail rest api user */
-    const CONFIG_PATH_REST_USER = 'inxmail/restauth/rest_user';
-    /** Contains the path of the inxmail configuration for inxmail rest api password */
-    const CONFIG_PATH_REST_PASSWORD = 'inxmail/restauth/rest_password';
+    private const CONFIG_PATH = 'inxmail/general/';
+    private const CONFIG_PATH_RESTAUTH = 'inxmail/restauth/';
+    private const CONFIG_FIELD_URL = 'api_url';
+    private const CONFIG_FIELD_USER = 'api_user';
+    private const CONFIG_FIELD_PASSWORD = 'api_password';
+    private const CONFIG_FIELD_LIST = 'api_listid';
+    private const CONFIG_FIELD_DEBUG = 'debug';
+    private const CONFIG_FIELD_INXMAIL_ENABLED = 'enable';
+    private const CONFIG_FIELD_REST_USER = 'rest_user';
+    private const CONFIG_FIELD_REST_PASSWORD = 'rest_password';
+    private const CONFIG_FIELD_CUSTOMER_MAPPING = 'customer_mapping';
+
+    /** Path for the rest api user  (inxmail/restauth/rest_user) */
+    private const CONFIG_PATH_REST_USER = self::CONFIG_PATH_RESTAUTH . self::CONFIG_FIELD_REST_USER;
+    /** Path for inxmail rest api password  (inxmail/restauth/rest_password) */
+    private const CONFIG_PATH_REST_PASSWORD = self::CONFIG_PATH_RESTAUTH . self::CONFIG_FIELD_REST_USER;
     /** Saves attribute data */
-    const CONFIG_PATH_ATTRIBUTES = 'inxmail/rest/attributes';
-
-    /** Datafield key */
-    const CONFIG_FIELD_URL = 'apiUrl';
-    /** Datafield key */
-    const CONFIG_FIELD_USER = 'apiUser';
-    /** Datafield key */
-    const CONFIG_FIELD_KEY = 'apiKey';
-    /** Datafield key */
-    const CONFIG_FIELD_LIST = 'apiList';
-    /** Datafield key */
-    const CONFIG_FIELD_DEBUG = 'debug';
-    /** Datafield key */
-    const CONFIG_FIELD_CUSTOMER_MAPPING = 'customerMapping';
-    /** Datafield key */
-    const CONFIG_FIELD_INXMAIL_ENABLED = 'enabled';
-    /** Datafield key */
-    const CONFIG_FIELD_REST_USER = 'restUser';
-    /** Datafield key */
-    const CONFIG_FIELD_REST_PASSWORD = 'restPassword';
-
-    /** @var \Flagbit\Inxmail\Model\Config\SystemConfig */
+    private const CONFIG_PATH_ATTRIBUTES = 'inxmail/rest/attributes';
+    /** Contains the path of the inxmail configuration for the list to sync to */
+    private const CONFIG_PATH_CUSTOMER_MAPPING = 'inxmail/mapcustomer/mapping';
+    /**
+     * @var SystemConfig
+     */
     protected static $_config;
-    /** @var \Flagbit\Inxmail\Helper\Config|null */
+    /**
+     * @var ConfigHelper|null
+     */
     protected $_helper;
-
-    /** @var array */
-    protected $_data = array();
+    /**
+     * @var array
+     */
+    protected $_data = [];
 
     /**
      * SystemConfig constructor.
      *
-     * @param \Flagbit\Inxmail\Helper\Config $helper
+     * @param ConfigHelper $helper
      */
-    protected function __construct(Config $helper)
-    {
+    protected function __construct(
+        ConfigHelper $helper
+    ) {
         $this->_helper = $helper;
     }
 
     /**
      * Singleton
      *
-     * @param \Flagbit\Inxmail\Helper\Config $helper
+     * @param ConfigHelper $helper
      *
      * @return SystemConfig
      */
-    public static function getSystemConfig(Config $helper): SystemConfig
+    public static function getSystemConfig(ConfigHelper $helper): SystemConfig
     {
         if (self::$_config === null) {
             self::$_config = new self($helper);
@@ -96,88 +82,100 @@ class SystemConfig
     }
 
     /**
-     * @return array
+     * @return string
      */
-    public function getData(): array
+    public function getApiUrl(): string
     {
-        $this->getApiUrl();
-        $this->getApiUser();
-        $this->getApiKey();
-        $this->getApiList();
-
-        return $this->_data;
+        return $this->getDataString(self::CONFIG_FIELD_URL);
     }
 
     /**
-     * @param bool $refresh
-     *
+     * @param string $configField
+     * @param string $configPath
      * @return string
      */
-    public function getApiUrl($refresh = false): string
-    {
-        if (empty($this->_data[self::CONFIG_FIELD_URL]) || $refresh) {
-            $this->_data[self::CONFIG_FIELD_URL] = $this->_helper->getConfig(self::CONFIG_PATH_URL);
+    private function getDataString(
+        string $configField,
+        string $configPath = self::CONFIG_PATH
+    ): string {
+        if (empty($this->_data[$configField])) {
+            $this->_data[$configField] = $this->_helper->getConfig($configPath . $configField);
         }
 
-        return $this->_data[self::CONFIG_FIELD_URL];
-    }
-
-    /**
-     * @param bool $refresh
-     *
-     * @return string
-     */
-    public function getApiUser($refresh = false): string
-    {
-        if (empty($this->_data[self::CONFIG_FIELD_USER]) || $refresh) {
-            $this->_data[self::CONFIG_FIELD_USER] = $this->_helper->getConfig(self::CONFIG_PATH_API_USER);
+        if (isset($this->_data[$configField]) && false === empty($this->_data[$configField])) {
+            $data = (string) $this->_data[$configField];
         }
 
-        return $this->_data[self::CONFIG_FIELD_USER];
+        return $data ?? '';
     }
 
     /**
-     * @param bool $refresh
-     *
      * @return string
      */
-    public function getApiKey($refresh = false): string
+    public function getApiUser(): string
     {
-        if (empty($this->_data[self::CONFIG_FIELD_KEY]) || $refresh) {
-            $val = $this->_helper->getConfig(self::CONFIG_PATH_API_KEY);
+        return $this->getDataString(self::CONFIG_FIELD_USER);
+    }
+
+    /**
+     * @return string
+     */
+    public function getApiKey(): string
+    {
+        return $this->getApiPassword(self::CONFIG_FIELD_PASSWORD);
+    }
+
+    /**
+     * @param string $config
+     * @return string
+     */
+    private function getApiPassword(string $config): string
+    {
+        if (empty($this->_data[$config])) {
+            $val = $this->_helper->getConfig(self::CONFIG_PATH . $config);
             if ($val) {
-                $this->_data[self::CONFIG_FIELD_KEY] = $this->_helper->getEncryptor()->decrypt($val);
+                $this->_data[$config] = $this->_helper->getEncryptor()->decrypt($val);
             }
         }
 
-        return $this->_data[self::CONFIG_FIELD_KEY];
+        if (isset($this->_data[$config]) && false === empty($this->_data[$config])) {
+            $data = (string) $this->_data[$config];
+        }
+
+        return $data ?? '';
     }
 
     /**
-     * @param bool $refresh
-     *
      * @return string
      */
-    public function getApiList($refresh = false): string
+    public function getApiList(): string
     {
-        if (empty($this->_data[self::CONFIG_FIELD_LIST]) || $refresh) {
-            $this->_data[self::CONFIG_FIELD_LIST] = $this->_helper->getConfig(self::CONFIG_PATH_API_LIST);
-        }
-
-        return $this->_data[self::CONFIG_FIELD_LIST];
+        return $this->getDataString(self::CONFIG_FIELD_LIST);
     }
 
     /**
      * @return bool
      */
-    public function getInxDebug(): bool
+    public function getDebug(): bool
     {
+        return $this->getDataBool(self::CONFIG_FIELD_DEBUG);
+    }
 
-        if (empty($this->_data[self::CONFIG_FIELD_DEBUG])) {
-            $this->_data[self::CONFIG_FIELD_DEBUG] = $this->_helper->getConfig(self::CONFIG_PATH_DEBUG);
+    /**
+     * @param string $config
+     * @return bool
+     */
+    private function getDataBool(string $config): bool
+    {
+        if (empty($this->_data[$config])) {
+            $this->_data[$config] = $this->_helper->getConfig(self::CONFIG_PATH . $config);
         }
 
-        return (bool)$this->_data[self::CONFIG_FIELD_DEBUG];
+        if (isset($this->_data[$config]) && false === empty($this->_data[$config])) {
+            $data = (bool) $this->_data[$config];
+        }
+
+        return $data ?? false;
     }
 
     /**
@@ -203,13 +201,9 @@ class SystemConfig
     /**
      * @return bool
      */
-    public function isInxmailEnabled(): bool
+    public function isEnabled(): bool
     {
-        if (empty($this->_data[self::CONFIG_FIELD_INXMAIL_ENABLED])) {
-            $this->_data[self::CONFIG_FIELD_INXMAIL_ENABLED] = $this->_helper->getConfig(self::CONFIG_PATH_ENABLED);
-        }
-
-        return $this->_data[self::CONFIG_FIELD_INXMAIL_ENABLED];
+        return $this->getDataBool(self::CONFIG_FIELD_INXMAIL_ENABLED);
     }
 
     /**
@@ -217,11 +211,7 @@ class SystemConfig
      */
     public function getRestApiUser(): string
     {
-        if (empty($this->_data[self::CONFIG_FIELD_REST_USER])) {
-            $this->_data[self::CONFIG_FIELD_REST_USER] = $this->_helper->getConfig(self::CONFIG_PATH_REST_USER);
-        }
-
-        return $this->_data[self::CONFIG_FIELD_REST_USER];
+        return $this->getDataString(self::CONFIG_FIELD_REST_USER, self::CONFIG_PATH_REST_USER);
     }
 
     /**
@@ -229,11 +219,7 @@ class SystemConfig
      */
     public function getRestApiPassword(): string
     {
-        if (empty($this->_data[self::CONFIG_FIELD_REST_PASSWORD])) {
-            $this->_data[self::CONFIG_FIELD_REST_PASSWORD] = $this->_helper->getConfig(self::CONFIG_PATH_REST_PASSWORD);
-        }
-
-        return $this->_data[self::CONFIG_FIELD_REST_PASSWORD];
+        return $this->getDataString(self::CONFIG_FIELD_REST_PASSWORD, self::CONFIG_PATH_REST_PASSWORD);
     }
 
     /**
@@ -241,18 +227,6 @@ class SystemConfig
      */
     public function getAttributesConfig(): string
     {
-        if (empty($this->_data[self::CONFIG_PATH_ATTRIBUTES])) {
-            $this->_data[self::CONFIG_PATH_ATTRIBUTES] = $this->_helper->getConfig(self::CONFIG_PATH_ATTRIBUTES);
-        }
-
-        return $this->_data[self::CONFIG_PATH_ATTRIBUTES];
-    }
-
-    /**
-     * @param string $config
-     */
-    public function setAttributesConfig(string $config)
-    {
-        $this->_helper->saveConfig(self::CONFIG_PATH_ATTRIBUTES, $config, 0);
+        return $this->getDataString(self::CONFIG_PATH_ATTRIBUTES, self::CONFIG_PATH_ATTRIBUTES);
     }
 }
