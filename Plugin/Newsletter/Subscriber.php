@@ -188,7 +188,7 @@ class Subscriber
         $result = $subscribeRequest->getResponseArray();
 
         if ($response === 200) {
-            if ($this->systemConfig->getInxDebug()) {
+            if ($this->systemConfig->getDebug()) {
                 $this->logger->info(
                     'Subscribed: ' . $reqData['email'], array($reqData, $result)
                 );
@@ -227,7 +227,7 @@ class Subscriber
         $result = $unsubscribeRequest->getResponseArray();
 
         if ($response === 200) {
-            if ($this->systemConfig->getInxDebug()) {
+            if ($this->systemConfig->getDebug()) {
                 $this->logger->info(
                     'Unsubscribed: ' . $reqData['email'], array($reqData, $result)
                 );
