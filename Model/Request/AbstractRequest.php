@@ -12,11 +12,11 @@
 
 namespace Flagbit\Inxmail\Model\Request;
 
+use Flagbit\Inxmail\Helper\Config;
 use Flagbit\Inxmail\Model\Api\ApiClient;
-use \Flagbit\Inxmail\Model\Api\ApiClientFactory;
-use \Flagbit\Inxmail\Model\Api\ApiClientInterface;
-use \Flagbit\Inxmail\Model\Config\SystemConfig;
-use \Flagbit\Inxmail\Helper\Config;
+use Flagbit\Inxmail\Model\Api\ApiClientFactory;
+use Flagbit\Inxmail\Model\Api\ApiClientInterface;
+use Flagbit\Inxmail\Model\Config\SystemConfig;
 
 /**
  * Class AbstractRequest

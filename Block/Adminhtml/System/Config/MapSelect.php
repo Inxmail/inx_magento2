@@ -12,7 +12,7 @@
 
 namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
 
-use \Magento\Framework\View\Element\Html\Select;
+use Magento\Framework\View\Element\Html\Select;
 
 /**
  * Class MapSelect

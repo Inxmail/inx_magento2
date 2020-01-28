@@ -12,11 +12,11 @@
 
 namespace Flagbit\Inxmail\Model\Api;
 
-use \Flagbit\Inxmail\Exception\Api\MissingArgumentException;
-use \Flagbit\Inxmail\Exception\Api\InvalidArgumentException;
-use \Flagbit\Inxmail\Exception\Api\InvalidAuthenticationException;
-use \Magento\Framework\HTTP\Adapter\Curl;
-use \Zend_Uri;
+use Flagbit\Inxmail\Exception\Api\InvalidArgumentException;
+use Flagbit\Inxmail\Exception\Api\InvalidAuthenticationException;
+use Flagbit\Inxmail\Exception\Api\MissingArgumentException;
+use Magento\Framework\HTTP\Adapter\Curl;
+use Zend_Uri;
 
 /**
  * Class ApiClient

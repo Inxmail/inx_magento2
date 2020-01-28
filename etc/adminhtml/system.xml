@@ -58,7 +58,7 @@
             </group>
             <group id="mapcustomer" translate="label" type="text" showInDefault="1" showInWebsite="0" showInStore="0"
                    sortOrder="20">
-                <label>Mapping</label>
+                <label>Customer Attribute Mapping</label>
                 <field id="mapping" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
                        showInStore="0">
                     <label>Mapping Customer Fields</label>
@@ -68,7 +68,7 @@
             </group>
             <group id="restauth" translate="label" type="text" showInDefault="1" showInStore="0" showInWebsite="0"
                    sortOrder="30">
-                <label>Products Api Auth</label>
+                <label>Products API Auth (Rest)</label>
                 <field id="rest_user" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
                        showInStore="0">
                     <label>Username</label>
