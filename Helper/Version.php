@@ -12,9 +12,9 @@
 
 namespace Flagbit\Inxmail\Helper;
 
+use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Module\ModuleListInterface;
-use \Magento\Framework\App\Helper\AbstractHelper;
 
 /**
  * Class Version

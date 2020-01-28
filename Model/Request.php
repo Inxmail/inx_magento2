@@ -12,14 +12,14 @@
 
 namespace Flagbit\Inxmail\Model;
 
-use \Flagbit\Inxmail\Model\Request\RequestLists;
-use \Flagbit\Inxmail\Model\Request\RequestImports;
-use \Flagbit\Inxmail\Model\Request\RequestBounces;
-use \Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
-use \Flagbit\Inxmail\Model\Request\RequestUnsubscriptionRecipients;
-use \Flagbit\Inxmail\Model\Request\RequestRecipientAttributes;
-use \Flagbit\Inxmail\Model\Request\RequestRecipients;
-use \Flagbit\Inxmail\Model\Request\RequestFactory;
+use Flagbit\Inxmail\Model\Request\RequestBounces;
+use Flagbit\Inxmail\Model\Request\RequestFactory;
+use Flagbit\Inxmail\Model\Request\RequestImports;
+use Flagbit\Inxmail\Model\Request\RequestLists;
+use Flagbit\Inxmail\Model\Request\RequestRecipientAttributes;
+use Flagbit\Inxmail\Model\Request\RequestRecipients;
+use Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
+use Flagbit\Inxmail\Model\Request\RequestUnsubscriptionRecipients;
 
 /**
  * Class Request

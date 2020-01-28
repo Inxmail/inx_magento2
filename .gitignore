@@ -1,4 +1,11 @@
+.github
 .idea/
 .directory
 vendor
 composer.lock
+.htaccess
+.htaccess.sample
+.php_cs.dist
+.travis.yml.sample
+.user.ini
+CHANGELOG.md

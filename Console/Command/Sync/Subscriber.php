@@ -12,16 +12,16 @@
 
 namespace Flagbit\Inxmail\Console\Command\Sync;
 
-use \Flagbit\Inxmail\Console\Command\AbstractCommand;
-use \Flagbit\Inxmail\Helper\Config;
-use \Flagbit\Inxmail\Helper\SubscriberSync;
-use \Flagbit\Inxmail\Model\Config\SystemConfig;
-use \Flagbit\Inxmail\Logger\Logger;
-use \Magento\Framework\App\State;
-use \Symfony\Component\Console\Input\InputArgument;
-use \Symfony\Component\Console\Input\InputInterface;
-use \Symfony\Component\Console\Output\OutputInterface;
+use Flagbit\Inxmail\Console\Command\AbstractCommand;
+use Flagbit\Inxmail\Helper\Config;
+use Flagbit\Inxmail\Helper\SubscriberSync;
+use Flagbit\Inxmail\Logger\Logger;
+use Flagbit\Inxmail\Model\Config\SystemConfig;
+use Magento\Framework\App\State;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class Subscriber

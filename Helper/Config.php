@@ -12,12 +12,12 @@
 
 namespace Flagbit\Inxmail\Helper;
 
-use \Magento\Framework\App\Config\ScopeConfigInterface;
-use \Magento\Framework\App\Config\Storage\WriterInterface;
-use \Magento\Framework\App\Helper\AbstractHelper;
-use \Magento\Framework\App\Helper\Context;
-use \Magento\Framework\Encryption\EncryptorInterface;
-use \Magento\Store\Model\ScopeInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Store\Model\ScopeInterface;
 
 /**
  * Class Config
@@ -26,24 +26,25 @@ use \Magento\Store\Model\ScopeInterface;
  */
 class Config extends AbstractHelper
 {
+    /** @var string */
+    private static $scope = ScopeInterface::SCOPE_STORE;
+    /** @var EncryptorInterface */
+    protected $_enc;
     /**
-     * @var \Magento\Framework\App\Config\Storage\WriterInterface
+     * @var WriterInterface
      */
     private $configWriter;
 
-    /** @var string */
-    private static $scope = ScopeInterface::SCOPE_STORE;
-
-    /** @var \Magento\Framework\Encryption\EncryptorInterface */
-    protected $_enc;
-
     /**
-     * @param \Magento\Framework\App\Helper\Context $context
-     * @param \Magento\Framework\Encryption\EncryptorInterface $enc
-     * @param \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
+     * @param Context $context
+     * @param EncryptorInterface $enc
+     * @param WriterInterface $configWriter
      */
-    public function __construct(Context $context, EncryptorInterface $enc, WriterInterface $configWriter)
-    {
+    public function __construct(
+        Context $context,
+        EncryptorInterface $enc,
+        WriterInterface $configWriter
+    ) {
         parent::__construct($context);
         $this->_enc = $enc;
         $this->configWriter = $configWriter;
@@ -67,7 +68,7 @@ class Config extends AbstractHelper
         return $this->_enc;
     }
 
-    public function saveConfig(string $path, $value = null, $storeId = 0)
+    public function saveConfig(string $path, $value = null, $storeId = 0): void
     {
         $this->configWriter->save(
             $path,

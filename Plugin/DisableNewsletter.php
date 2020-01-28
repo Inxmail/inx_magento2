@@ -48,7 +48,7 @@ class DisableNewsletter
      */
     public function aroundIsNewsletterEnabled(Register $register, \Closure $proceed, array ...$args): bool
     {
-        if ($this->systemConfig->isInxmailEnabled()) {
+        if ($this->systemConfig->isEnabled()) {
             return true;
         }
         return $proceed(...array_values($args));
