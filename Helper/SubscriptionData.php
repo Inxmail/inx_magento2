@@ -171,13 +171,12 @@ class SubscriptionData extends AbstractHelper
             $data['group'] = $customer->getGroupId();
             $data['prefix'] = $customer->getPrefix();
 
-            if (null !== $customer->getDob() && null !== $this->formatBirthday($customer->getDob())) {
-                $data['birthday'] = $this->formatBirthday($customer->getDob());
+            $lastOrderDate = $this->getLastOrderDate($customer->getId());
+            if (null !== $lastOrderDate) {
+                $data['lastOrderDate'] = $lastOrderDate;
             }
 
-            if (null !== $this->getLastOrderDate($customer->getId())) {
-                $data['lastOrderDate'] = $this->getLastOrderDate($customer->getId());
-            }
+            $data = $this->getCustomerBirthday($customer->getDob(), $data);
         }
 
         return $data;
@@ -211,24 +210,6 @@ class SubscriptionData extends AbstractHelper
         }
 
         return $customer ?? null;
-    }
-
-    /**
-     * @param $birthday
-     * @return null|string
-     */
-    private function formatBirthday($birthday): ?string
-    {
-        try {
-            $newDateFormat = date_format(date_create($birthday), self::FORMAT_DATE_ONLY);
-        } catch (Exception $e) {
-            $this->logger->critical(
-                'ErrorMessage: ' . $e->getMessage(),
-                ['Stacktrace' => $e->getTraceAsString()]
-            );
-        }
-
-        return $newDateFormat ?? null;
     }
 
     /**
@@ -292,6 +273,41 @@ class SubscriptionData extends AbstractHelper
         }
 
         return false;
+    }
+
+    /**
+     * @param $customerDob
+     * @param array $data
+     * @return array
+     */
+    private function getCustomerBirthday($customerDob, array $data): array
+    {
+        if (null !== $customerDob) {
+            $customerBirthday = $this->formatBirthday($customerDob);
+            if (null !== $customerBirthday) {
+                $data['birthday'] = $customerBirthday;
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param $birthday
+     * @return null|string
+     */
+    private function formatBirthday($birthday): ?string
+    {
+        try {
+            $newDateFormat = date_format(date_create($birthday), self::FORMAT_DATE_ONLY);
+        } catch (Exception $e) {
+            $this->logger->critical(
+                'ErrorMessage: ' . $e->getMessage(),
+                ['Stacktrace' => $e->getTraceAsString()]
+            );
+        }
+
+        return $newDateFormat ?? null;
     }
 
     /**

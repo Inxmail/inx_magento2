@@ -101,7 +101,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     public function testSingleton()
     {
         $this->expectException(\Error::class);
-        $this->test = new ApiClientFactory();
+        $this->test = new ApiClient();
     }
 
     public function testGetResourcesCredentialsExceptionMessage()
