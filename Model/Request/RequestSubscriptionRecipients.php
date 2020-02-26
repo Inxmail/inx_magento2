@@ -31,15 +31,15 @@ class RequestSubscriptionRecipients extends AbstractRequest
     const REQUEST_END_DATE = 'endDate';
     const REQUEST_TYPES = 'types';
 
-    const EVENTS_SUCCESSFUL = array(
+    const EVENTS_SUCCESSFUL = [
         'PENDING_SUBSCRIPTION',
         'PENDING_SUBSCRIPTION_DONE',
         'VERIFIED_SUBSCRIPTION',
         'MANUAL_SUBSCRIPTION',
         'DUPLICATE_SUBSCRIPTION'
-    );
+    ];
 
-    const EVENTS_FAIL = array(
+    const EVENTS_FAIL = [
         'SUBSCRIPTION_TIMED_OUT',
         'SUBSCRIPTION_ID_NOT_VALID',
         'SUBSCRIPTION_EMAIL_MISSMATCH',
@@ -47,7 +47,7 @@ class RequestSubscriptionRecipients extends AbstractRequest
         'INVALID_ADDRESS_ERROR',
         'SUBSCRIPTION_VERIFICATION_BOUNCED',
         'SUBSCRIPTION_INTERNAL_ERROR'
-    );
+    ];
 
     /**
      * RequestSubscriptionRecipients constructor
@@ -104,11 +104,11 @@ class RequestSubscriptionRecipients extends AbstractRequest
      */
     public function getStandardOptions(): array
     {
-        return array(
+        return [
             'listId' => 0,
             'email' => '',
-            'attributes' => array()
-        );
+            'attributes' => []
+        ];
     }
 
     /**
@@ -116,11 +116,11 @@ class RequestSubscriptionRecipients extends AbstractRequest
      */
     public static function getStandardAttributes(): array
     {
-        return array(
+        return [
             'email' => 'email',
             'magentoSubscriberId' => 'subscriberId',
             'magentoSubscriberToken' => 'subscriberToken'
-        );
+        ];
     }
 
     /**
@@ -128,7 +128,7 @@ class RequestSubscriptionRecipients extends AbstractRequest
      */
     public static function getMapableAttributes(): array
     {
-        return array(
+        return [
             'Prefix' => 'prefix',
             'Vorname' => 'firstName',
             'Nachname' => 'lastName',
@@ -142,6 +142,6 @@ class RequestSubscriptionRecipients extends AbstractRequest
             'magentoStoreViewId' => 'storeViewId',
             'magentoCustomerGroup' => 'group',
             'magentoCustomerLastOrder' => 'lastOrderDate'
-        );
+        ];
     }
 }

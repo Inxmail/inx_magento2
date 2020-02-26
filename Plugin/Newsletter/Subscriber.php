@@ -177,11 +177,11 @@ class Subscriber
         $subscribeRequest = $this->request->getSubscriptionsClient();
 
         $listId = $this->systemConfig->getApiList();
-        $reqData = array(
+        $reqData = [
             'email' => $subscriber->getEmail(),
             'listId' => $listId,
             'attributes' => $attribData
-        );
+        ];
 
         $subscribeRequest->setRequestData(json_encode($reqData));
         $response = $subscribeRequest->writeRequest();
@@ -190,14 +190,15 @@ class Subscriber
         if ($response === 200) {
             if ($this->systemConfig->getDebug()) {
                 $this->logger->info(
-                    'Subscribed: ' . $reqData['email'], array($reqData, $result)
+                    'Subscribed: ' . $reqData['email'],
+                    [$reqData, $result]
                 );
             }
         } else {
             $this->logger->alert(
                 'Not Subscribed: ' . $reqData['email'] .
-                str_replace('%s', isset($result['type']) ?? 'Undefined', 'Inxmail API Error: %s'),
-                array($reqData, $result)
+                str_replace('%s', $result['type'] ?? 'Undefined', 'Inxmail API Error: %s'),
+                [$reqData, $result]
             );
             $subscriber->setSubscriberStatus(MageSubscriber::STATUS_UNSUBSCRIBED);
             $this->subscriberResource->save($subscriber);
@@ -216,10 +217,10 @@ class Subscriber
         /** @var \Flagbit\Inxmail\Model\Request\RequestUnsubscriptionRecipients */
         $unsubscribeRequest = $this->request->getUnsubscriptionsClient();
 
-        $reqData = array(
+        $reqData = [
             'email' => $subscriber->getEmail(),
             'listId' => $this->systemConfig->getApiList()
-        );
+        ];
 
         $unsubscribeRequest->setRequestData(json_encode($reqData));
 
@@ -229,14 +230,15 @@ class Subscriber
         if ($response === 200) {
             if ($this->systemConfig->getDebug()) {
                 $this->logger->info(
-                    'Unsubscribed: ' . $reqData['email'], array($reqData, $result)
+                    'Unsubscribed: ' . $reqData['email'],
+                    [$reqData, $result]
                 );
             }
         } else {
             $this->logger->alert(
                 'Not Unsubscribed: ' . $reqData['email'] .
-                str_replace('%s', isset($result['type']) ?? 'Undefined', 'Inxmail API Error: %s'),
-                array($reqData, $result)
+                str_replace('%s', $result['type'] ?? 'Undefined', 'Inxmail API Error: %s'),
+                [$reqData, $result]
             );
             $subscriber->setSubscriberStatus(MageSubscriber::STATUS_SUBSCRIBED);
             $this->subscriberResource->save($subscriber);

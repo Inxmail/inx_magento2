@@ -117,7 +117,7 @@ class RequestLists extends AbstractRequest
             $client->setRequestPath(self::REQUEST_PATH . $id);
             $client->setRequestMethod(\Zend_Http_Client::DELETE);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
-            $this->_response = $client->deleteResource('', '', null, null, '');
+            $this->_response = $client->deleteResource('', '', null, null);
             $returnValue = $client->getResponseStatusCode();
         }
 
@@ -131,10 +131,10 @@ class RequestLists extends AbstractRequest
      */
     public function getStandardListOptions(): array
     {
-        return array(
+        return [
             self::PARAMETER_NAME => '',
             self::PARAMETER_TYPE => self::LIST_TYPE_STANDARD,
             self::PARAMETER_SENDER_ADDRESS => ''
-        );
+        ];
     }
 }
