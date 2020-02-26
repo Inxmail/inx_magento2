@@ -18,7 +18,6 @@ use Flagbit\Inxmail\Logger\Logger;
 use Flagbit\Inxmail\Model\Config\SystemConfig;
 use Flagbit\Inxmail\Model\Request\RequestRecipientAttributes;
 use Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
-use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\ResourceModel\CustomerRepository;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\Helper\AbstractHelper;
@@ -90,8 +89,7 @@ class SubscriptionData extends AbstractHelper
         CollectionFactory $orderCollectionFactory,
         Config $config,
         Logger $logger
-    )
-    {
+    ) {
         $this->_customerRepository = $customerRepository;
         $this->_storeManager = $storeManager;
         $this->_customerSession = $customerSession;
@@ -108,7 +106,6 @@ class SubscriptionData extends AbstractHelper
      * @return array
      *
      * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     public function getSubscriptionFields(Subscriber $subscriber): array
     {
@@ -117,7 +114,7 @@ class SubscriptionData extends AbstractHelper
 
         $map = $this->getMapping();
 
-        $result = array();
+        $result = [];
         foreach ($map as $inxKey => $magKey) {
             if ($inxKey === 'email') {
                 continue;
@@ -137,12 +134,11 @@ class SubscriptionData extends AbstractHelper
      * @return array
      *
      * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     private function getSubscriptionStaticData(Subscriber $subscriber): array
     {
 
-        $data = array();
+        $data = [];
         $data['subscriberId'] = $subscriber->getId();
         $data['status'] = $subscriber->getSubscriberStatus();
         $data['subscriberToken'] = $subscriber->getSubscriberConfirmCode();
@@ -160,45 +156,87 @@ class SubscriptionData extends AbstractHelper
      *
      * @return array
      *
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
      */
     private function getCustomerData(int $customerId): array
     {
-        $data = array();
-        if ($customerId > 0 || $this->_customerSession->getCustomerId() > 0) {
-            /** @var Customer $customer */
-            $customer = null;
-            if ($this->_customerSession->isLoggedIn()) {
-                $customer = $this->_customerRepository->getById($this->_customerSession->getCustomerId());
-            } else {
-                $customer = $this->_customerRepository->getById($customerId);
-            }
+        $data = [];
+        /** @var \Magento\Customer\Api\Data\CustomerInterface $customer */
+        $customer = $this->getCustomerById($customerId);
 
-            $data['lastOrderDate'] = $this->getLastOrderDate($customer->getId());
-
+        if (null !== $customer) {
             $data['firstName'] = $customer->getFirstname();
             $data['lastName'] = $customer->getLastname();
-
-            $customerDob = $this->formatBirthday($customer->getDob());
-            if ('' !== $customerDob) {
-                $data['birthday'] = $customerDob;
-            }
 
             $data['gender'] = $customer->getGender();
             $data['group'] = $customer->getGroupId();
             $data['prefix'] = $customer->getPrefix();
+
+            if (null !== $customer->getDob() && null !== $this->formatBirthday($customer->getDob())) {
+                $data['birthday'] = $this->formatBirthday($customer->getDob());
+            }
+
+            if (null !== $this->getLastOrderDate($customer->getId())) {
+                $data['lastOrderDate'] = $this->getLastOrderDate($customer->getId());
+            }
         }
 
         return $data;
     }
 
     /**
+     * @param int $customerId
+     * @return \Magento\Customer\Api\Data\CustomerInterface|null
+     */
+    private function getCustomerById(int $customerId): ?\Magento\Customer\Api\Data\CustomerInterface
+    {
+        if ($customerId > 0) {
+            $loadingCustomerId = $customerId;
+        }
+
+        if ($this->_customerSession->getCustomerId() > 0 && $this->_customerSession->isLoggedIn()) {
+            $loadingCustomerId = $this->_customerSession->getCustomerId();
+        }
+
+        if (isset($loadingCustomerId)) {
+            try {
+                $customer = $this->_customerRepository->getById($loadingCustomerId);
+            } catch (NoSuchEntityException $noSuchEntityException) {
+                $this->logger->info('Could not load customer with id: ' . $loadingCustomerId, []);
+            } catch (LocalizedException $localizedException) {
+                $this->logger->critical(
+                    'ErrorMessage: ' . $localizedException->getMessage(),
+                    ['Stacktrace' => $localizedException->getTraceAsString()]
+                );
+            }
+        }
+
+        return $customer ?? null;
+    }
+
+    /**
+     * @param $birthday
+     * @return null|string
+     */
+    private function formatBirthday($birthday): ?string
+    {
+        try {
+            $newDateFormat = date_format(date_create($birthday), self::FORMAT_DATE_ONLY);
+        } catch (Exception $e) {
+            $this->logger->critical(
+                'ErrorMessage: ' . $e->getMessage(),
+                ['Stacktrace' => $e->getTraceAsString()]
+            );
+        }
+
+        return $newDateFormat ?? null;
+    }
+
+    /**
      * @param $customerId
      *
-     * @return string
+     * @return null|string
      */
-    private function getLastOrderDate($customerId): string
+    private function getLastOrderDate($customerId): ?string
     {
         $collection = $this->orderCollectionFactory->create();
         $collection
@@ -214,12 +252,12 @@ class SubscriptionData extends AbstractHelper
             if ($order) {
                 $date = $order->getCreatedAt();
                 if (!empty($date)) {
-                    return $this->formatOrderDate($date);
+                    $lastOrderDate = $this->formatOrderDate($date);
                 }
             }
         }
 
-        return '';
+        return $lastOrderDate ?? null;
     }
 
     /**
@@ -257,24 +295,6 @@ class SubscriptionData extends AbstractHelper
     }
 
     /**
-     * @param $birthday
-     * @return string
-     */
-    private function formatBirthday($birthday): string
-    {
-        try {
-            $newDateFormat = date_format(date_create($birthday), self::FORMAT_DATE_ONLY);
-        } catch (Exception $e) {
-            $this->logger->critical(
-                'ErrorMessage: ' . $e->getMessage(),
-                ['Stacktrace' => $e->getTraceAsString()]
-            );
-        }
-
-        return $newDateFormat ?? '';
-    }
-
-    /**
      * @param int $storeId
      *
      * @return array
@@ -283,7 +303,7 @@ class SubscriptionData extends AbstractHelper
      */
     private function getStoreData(int $storeId): array
     {
-        $data = array();
+        $data = [];
 
         /** @var StoreInterface $store */
         $store = $this->_storeManager->getStore($storeId);
@@ -332,7 +352,7 @@ class SubscriptionData extends AbstractHelper
         unset($defaults['email']);
         $map = array_merge(RequestSubscriptionRecipients::getMapableAttributes(), $defaults);
         $addMap = $this->_sysConfig->getMapConfig();
-        $result = array();
+        $result = [];
 
         if (!empty($addMap)) {
             foreach ($addMap as $attribute) {
