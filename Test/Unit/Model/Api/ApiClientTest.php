@@ -16,6 +16,7 @@ use Flagbit\Inxmail\Model\Api\ApiClient;
 use \Flagbit\Inxmail\Exception\Api\MissingArgumentException;
 use \Flagbit\Inxmail\Exception\Api\InvalidArgumentException;
 use \Flagbit\Inxmail\Exception\Api\InvalidAuthenticationException;
+use Flagbit\Inxmail\Model\Api\ApiClientFactory;
 
 /**
  * Class ApiClientTest
@@ -100,7 +101,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     public function testSingleton()
     {
         $this->expectException(\Error::class);
-        $this->test = new ApiClient();
+        $this->test = new ApiClientFactory();
     }
 
     public function testGetResourcesCredentialsExceptionMessage()
@@ -135,7 +136,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
 
     public function testSetCredentialsMethodSingle()
     {
-        $cred = array('user:password');
+        $cred = ['user:password'];
         $this->_apiClient->setCredentials($cred);
         $this->assertAttributeEquals(
             'user:password',
@@ -145,7 +146,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
 
     public function testSetCredentialsMethodMultiple()
     {
-        $cred = array('user' => 'username', 'password' => 'passwordhash');
+        $cred = ['user' => 'username', 'password' => 'passwordhash'];
         $this->_apiClient->setCredentials($cred);
         $this->assertAttributeEquals(
             'username:passwordhash',
@@ -155,14 +156,14 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
 
     public function testSetCredentialsException()
     {
-        $cred = array(1, 2, 3);
+        $cred = [1, 2, 3];
         $this->expectException(InvalidArgumentException::class);
         $this->_apiClient->setCredentials($cred);
     }
 
     public function testSetCredentialsExceptionMessage()
     {
-        $cred = array(1, 2, 3);
+        $cred = [1, 2, 3];
         $this->expectExceptionMessage('Parameters cannot be parsed');
         $this->_apiClient->setCredentials($cred);
     }
@@ -195,7 +196,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     {
         $this->_apiClient->setRequestUrl('http://example.com');
         $this->_apiClient->setRequestMethod(\Zend_Http_Client::GET);
-        $response = $this->_apiClient->getResource('', '', null, array('test', 'test'));
+        $response = $this->_apiClient->getResource('', '', null, ['test', 'test']);
         $this->assertNotEmpty($response);
     }
 
@@ -203,7 +204,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     {
         $this->_apiClient->setRequestUrl('http://example.com');
         $this->_apiClient->setRequestMethod(\Zend_Http_Client::GET);
-        $this->_apiClient->getResource('', '', null, array('test', 'test'));
+        $this->_apiClient->getResource('', '', null, ['test', 'test']);
         $this->assertEquals(200, $this->_apiClient->getResponseStatusCode(), 'Wrong return, request failed');
     }
 }

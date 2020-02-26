@@ -27,17 +27,17 @@ class RequestImportsTest extends TestCase
     private $requestClient;
     protected static $testListId = 7;
 
-    private $testCsvFile = array(
+    private $testCsvFile = [
         'email;Vorname;Nachname;magentoSubscriberId,magentoSubscriberToken,magentoWebsiteName,magentoWebsiteId,magentoStoreName,magentoStoreViewName,Geburtsdatum,Geschlecht',
         '"dummy@example.com";"dummy";"doo";"4";"a36emacqpz96qe8hdyyl8g5qaqv8yyaa";"demo";"1";"Main Website","1";"Default Store View;"1990-02-04","Male"',
         '"dommy@example.com";"dommy";"duu";"5";"a36emacqpz96qe8hdyyl8g5qaqv8yyaa";"demo";"1";"Main Website","1";"Default Store View;"1995-01-15","Male"'
-    );
+    ];
 
-    private $testCsvFile2 = array(
-        array('email', 'Vorname', 'Nachname', 'magentoSubscriberId', 'magentoSubscriberToken', 'magentoWebsiteName', 'magentoWebsiteId', 'magentoStoreViewName', 'Geburtsdatum', 'Geschlecht'),
-        array('dummy@example.com', 'dummy','doo','4', 'a36emacqpz96qe8hdyyl8g5qaqv8yyaa','demo', '1','Main Website', '1990-02-04','Male'),
-        array('dommy@example.com', 'dommy','duu', '5','a36emacqpz\96qe8hdyyl8g5qaqv8yyaa','demo', '1','Main Website', '1995-01-15','Male'),
-    );
+    private $testCsvFile2 = [
+        ['email', 'Vorname', 'Nachname', 'magentoSubscriberId', 'magentoSubscriberToken', 'magentoWebsiteName', 'magentoWebsiteId', 'magentoStoreViewName', 'Geburtsdatum', 'Geschlecht'],
+        ['dummy@example.com', 'dummy','doo','4', 'a36emacqpz96qe8hdyyl8g5qaqv8yyaa','demo', '1','Main Website', '1990-02-04','Male'],
+        ['dommy@example.com', 'dommy','duu', '5','a36emacqpz\96qe8hdyyl8g5qaqv8yyaa','demo', '1','Main Website', '1995-01-15','Male'],
+    ];
 
     public function setUp()
     {
@@ -49,7 +49,9 @@ class RequestImportsTest extends TestCase
             unset($app);
 
             $this->om = \Magento\Framework\App\ObjectManager::getInstance();
-            $this->requestClient = (new \Flagbit\Inxmail\Model\Request\RequestFactory($this->om))->create(RequestImports::class, array());
+            $this->requestClient = (new \Flagbit\Inxmail\Model\Request\RequestFactory($this->om))->create(
+                RequestImports::class
+            );
         }
     }
 
@@ -67,12 +69,12 @@ class RequestImportsTest extends TestCase
         $delimiter = '----' . 'Inxmail';
         $data = '';
 
-        $fileFields = array(
-            'file' => array(
+        $fileFields = [
+            'file' => [
                 'type' => 'text/csv',
                 'content' => $csv_data,
-            ),
-        );
+            ],
+        ];
 
         foreach ($fileFields as $name => $file) {
             $data .= "--" . $delimiter . "\r\n";

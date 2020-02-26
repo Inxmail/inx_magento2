@@ -104,7 +104,7 @@ class SubscriberSync extends AbstractHelper
         $this->subscriptionData = $this->objectManager->create(SubscriptionData::class);
 
         $this->compressed = $compressed;
-        $baseData = array();
+        $baseData = [];
 
         switch ($type) {
             case self::ARG_TYPE_SUBSCRIBED:
@@ -119,7 +119,7 @@ class SubscriberSync extends AbstractHelper
                 $baseData['unsubscribed'] = $this->getUnsubscriberData();
         }
 
-        $csvData = array();
+        $csvData = [];
         if (isset($baseData['subscribed'])) {
             $this->writeOutput('Prepare csv data for subscribed users');
             $csvData = $this->getCsvData($baseData['subscribed']);
@@ -151,7 +151,7 @@ class SubscriberSync extends AbstractHelper
     private function getSubscriberData(): array
     {
         $this->writeOutput('Get subscriber data');
-        $result = array();
+        $result = [];
         /** @var \Magento\Newsletter\Model\ResourceModel\Subscriber\Collection $subscriberCollection */
         $subscriberCollection = $this->subscriberCollectionFactory->create()
             ->addFilter('subscriber_status', Subscriber::STATUS_SUBSCRIBED);
@@ -177,7 +177,7 @@ class SubscriberSync extends AbstractHelper
     {
         $this->writeOutput('Get unsubscribed data');
 
-        $result = array();
+        $result = [];
         /** @var \Magento\Newsletter\Model\ResourceModel\Subscriber\Collection $subscriberCollection */
         $subscriberCollection = $this->subscriberCollectionFactory->create()
             ->addFilter('subscriber_status', Subscriber::STATUS_UNSUBSCRIBED)
@@ -201,7 +201,7 @@ class SubscriberSync extends AbstractHelper
      */
     private function getCsvData(array $subscriberData): array
     {
-        $result = array();
+        $result = [];
 
         $mapData = $this->subscriptionData->getMapping();
         $mapData['email'] = 'email';
@@ -255,12 +255,18 @@ class SubscriberSync extends AbstractHelper
             $response = $client->writeRequest();
         } catch (\Exception $e) {
             $this->writeOutput('<error>Exception: Something went wrong, see log for information</error>');
-            $this->logger->alert('Inxmail Api Error' . PHP_EOL, array($e->getFile(), $e->getLine(), $e->getMessage(), $e->getTrace()));
+            $this->logger->alert(
+                'Inxmail Api Error' . PHP_EOL,
+                [$e->getFile(), $e->getLine(), $e->getMessage(), $e->getTrace()]
+            );
         }
 
         if ($response !== 201) {
             $this->writeOutput('<question>Info: Something went wrong, see log for information</question>');
-            $this->logger->alert('Inxmail Api Error' . PHP_EOL, array($client->getResponseHeader(), $client->getResponseArray()));
+            $this->logger->alert(
+                'Inxmail Api Error' . PHP_EOL,
+                [$client->getResponseHeader(), $client->getResponseArray()]
+            );
         }
 
         return $response > 0 ?? 0;

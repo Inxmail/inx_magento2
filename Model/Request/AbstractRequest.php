@@ -30,7 +30,7 @@ class AbstractRequest implements RequestInterface
     /** @var string */
     protected $_requestUrl = '';
     /** @var  array */
-    protected $_requestData = array();
+    protected $_requestData = [];
     /** @var ApiClientInterface */
     protected $_apiClient;
     /** @var \Flagbit\Inxmail\Model\Config\SystemConfig */
@@ -38,20 +38,20 @@ class AbstractRequest implements RequestInterface
     /** @var string */
     protected $_requestHeader = '';
     /** @var array */
-    protected $_credentials = array();
+    protected $_credentials = [];
     /** @var string */
     protected $_requestParam = '';
     /** @var string */
     protected $_response = '';
 
-    const ERROR_CODES = array(
+    const ERROR_CODES = [
         400 => 'Bad Request', 401 => 'Unauthorized', 403 => 'Forbidden',
         404 => 'Not Found', 405 => 'Method Not Allowed', 406 => 'Not Acceptable',
         409 => 'Conflict', 413 => 'Payload Too Large', 415 => 'Unsupported Media Type',
         429 => 'Too many requests', 500 => 'Internal Server Error'
-    );
+    ];
 
-    const STATUS_CODES = array(200 => 'OK', 201 => 'Created', 204 => 'No Content');
+    const STATUS_CODES = [200 => 'OK', 201 => 'Created', 204 => 'No Content'];
 
     /**
      * AbstractRequest constructor
@@ -127,9 +127,9 @@ class AbstractRequest implements RequestInterface
     protected function getCredentials(): array
     {
         if (empty($this->_credentials)) {
-            $this->_credentials = array(
+            $this->_credentials = [
                 $this->_systemConfig->getApiUser(), $this->_systemConfig->getApiKey()
-            );
+            ];
         }
 
         return $this->_credentials;
@@ -142,7 +142,7 @@ class AbstractRequest implements RequestInterface
     {
         $result = null;
         $client = $this->getApiClient();
-        if ($client !== null && $client instanceof ApiClientInterface) {
+        if ($client instanceof ApiClientInterface) {
             $client->setRequestMethod(\Zend_Http_Client::GET);
             $result = $this->_apiClient->getResource($this->_systemConfig->getApiUrl(),
                 self::REQUEST_PATH, $this->_requestHeader, $this->getCredentials());
