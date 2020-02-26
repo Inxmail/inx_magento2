@@ -12,14 +12,14 @@
 
 namespace Flagbit\Inxmail\Controller\Rest;
 
-use \Flagbit\Inxmail\Helper\ServiceHelper;
-use \Flagbit\Inxmail\Helper\AuthHelper;
-use \Magento\Framework\Webapi\Rest\Response as RestResponse;
-use \Magento\Catalog\Model\ProductRepository;
-use \Magento\Framework\App\Action\Context;
-use \Magento\Framework\Controller\Result\Raw;
-use \Magento\Framework\App\RouterInterface;
-use \Magento\Framework\App\Action\Action;
+use Flagbit\Inxmail\Helper\AuthHelper;
+use Flagbit\Inxmail\Helper\ServiceHelper;
+use Magento\Catalog\Model\ProductRepository;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\RouterInterface;
+use Magento\Framework\Controller\Result\Raw;
+use Magento\Framework\Webapi\Rest\Response as RestResponse;
 
 class Products extends Action
 {

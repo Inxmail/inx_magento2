@@ -79,9 +79,10 @@ class RequestRecipientAttributes extends AbstractRequest
             $client->setRequestPath('?'.$tmpPath[1] ?? '/');
             $client->setRequestUrl($tmpPath[0]);
             $this->_response = $client->getResource('','',null,null);
+            $responseCode = $client->getResponseStatusCode();
             $tmpArray = json_decode($this->_response, true);
 
-            // merge results and override link for comparsion
+            // merge results and override link for comparison
             $tmpResponse['_embedded'] = array_merge_recursive($tmpArray['_embedded'], $tmpResponse['_embedded']);
             $tmpResponse['_links'] = $tmpArray['_links'];
 
@@ -94,7 +95,12 @@ class RequestRecipientAttributes extends AbstractRequest
             $this->_response = json_encode($tmpResponse);
         }
 
-        return json_decode($this->_response, true);
+        $tempJson = json_decode($this->_response, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            $validResponse = $tempJson;
+        }
+
+        return $validResponse ?? [];
     }
 
     /**

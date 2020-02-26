@@ -12,7 +12,7 @@
 
 namespace Flagbit\Inxmail\Model\Request;
 
-use \Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\ObjectManagerInterface;
 
 /**
  * Class RequestFactory

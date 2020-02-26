@@ -12,11 +12,12 @@
 
 namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
 
-use \Magento\Framework\DataObject;
-use \Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
-use \Magento\Backend\Block\Template\Context;
-use \Flagbit\Inxmail\Helper\Config;
-use \Flagbit\Inxmail\Model\Config\SystemConfig;
+use Flagbit\Inxmail\Helper\Config;
+use Flagbit\Inxmail\Model\Config\SystemConfig;
+use Magento\Backend\Block\Template\Context;
+use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
+use Magento\Framework\DataObject;
+
 /**
  * Class AttributeMapping
  *

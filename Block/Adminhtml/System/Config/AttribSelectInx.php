@@ -12,11 +12,11 @@
 
 namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
 
-use \Flagbit\Inxmail\Model\Request;
-use \Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
-use \Flagbit\Inxmail\Helper\Config;
-use \Flagbit\Inxmail\Model\Config\SystemConfig;
-use \Magento\Framework\View\Element\Context;
+use Flagbit\Inxmail\Helper\Config;
+use Flagbit\Inxmail\Model\Config\SystemConfig;
+use Flagbit\Inxmail\Model\Request;
+use Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
+use Magento\Framework\View\Element\Context;
 
 /**
  * Class AttribSelectInx

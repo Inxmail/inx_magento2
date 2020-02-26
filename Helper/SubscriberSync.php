@@ -12,14 +12,14 @@
 
 namespace Flagbit\Inxmail\Helper;
 
-use \Flagbit\Inxmail\Model\Request;
-use \Flagbit\Inxmail\Logger\Logger;
-use \Symfony\Component\Console\Output\OutputInterface;
-use \Magento\Framework\App\Helper\AbstractHelper;
-use \Magento\Framework\App\Helper\Context;
-use \Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory;
-use \Magento\Newsletter\Model\Subscriber;
-use \Magento\Framework\ObjectManagerInterface;
+use Flagbit\Inxmail\Logger\Logger;
+use Flagbit\Inxmail\Model\Request;
+use Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Newsletter\Model\ResourceModel\Subscriber\CollectionFactory;
+use Magento\Newsletter\Model\Subscriber;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class SubscriberSync

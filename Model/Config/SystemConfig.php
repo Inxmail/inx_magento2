@@ -21,8 +21,10 @@ use Flagbit\Inxmail\Helper\Config as ConfigHelper;
  */
 class SystemConfig
 {
+    private const CONFIG_FIELD_ATTRIBUTES = 'attributes';
     private const CONFIG_PATH = 'inxmail/general/';
     private const CONFIG_PATH_RESTAUTH = 'inxmail/restauth/';
+    private const CONFIG_PATH_ATTRIBUTES = 'inxmail/rest/';
     private const CONFIG_FIELD_URL = 'api_url';
     private const CONFIG_FIELD_USER = 'api_user';
     private const CONFIG_FIELD_PASSWORD = 'api_password';
@@ -32,14 +34,6 @@ class SystemConfig
     private const CONFIG_FIELD_REST_USER = 'rest_user';
     private const CONFIG_FIELD_REST_PASSWORD = 'rest_password';
     private const CONFIG_FIELD_CUSTOMER_MAPPING = 'customer_mapping';
-
-    /** Path for the rest api user  (inxmail/restauth/rest_user) */
-    private const CONFIG_PATH_REST_USER = self::CONFIG_PATH_RESTAUTH . self::CONFIG_FIELD_REST_USER;
-    /** Path for inxmail rest api password  (inxmail/restauth/rest_password) */
-    private const CONFIG_PATH_REST_PASSWORD = self::CONFIG_PATH_RESTAUTH . self::CONFIG_FIELD_REST_USER;
-    /** Saves attribute data */
-    private const CONFIG_PATH_ATTRIBUTES = 'inxmail/rest/attributes';
-    /** Contains the path of the inxmail configuration for the list to sync to */
     private const CONFIG_PATH_CUSTOMER_MAPPING = 'inxmail/mapcustomer/mapping';
     /**
      * @var SystemConfig
@@ -59,7 +53,7 @@ class SystemConfig
      *
      * @param ConfigHelper $helper
      */
-    protected function __construct(
+    public function __construct(
         ConfigHelper $helper
     ) {
         $this->_helper = $helper;
@@ -211,7 +205,7 @@ class SystemConfig
      */
     public function getRestApiUser(): string
     {
-        return $this->getDataString(self::CONFIG_FIELD_REST_USER, self::CONFIG_PATH_REST_USER);
+        return $this->getDataString(self::CONFIG_FIELD_REST_USER, self::CONFIG_PATH_RESTAUTH);
     }
 
     /**
@@ -219,7 +213,7 @@ class SystemConfig
      */
     public function getRestApiPassword(): string
     {
-        return $this->getDataString(self::CONFIG_FIELD_REST_PASSWORD, self::CONFIG_PATH_REST_PASSWORD);
+        return $this->getDataString(self::CONFIG_FIELD_REST_PASSWORD, self::CONFIG_PATH_RESTAUTH);
     }
 
     /**
@@ -227,6 +221,14 @@ class SystemConfig
      */
     public function getAttributesConfig(): string
     {
-        return $this->getDataString(self::CONFIG_PATH_ATTRIBUTES, self::CONFIG_PATH_ATTRIBUTES);
+        return $this->getDataString(self::CONFIG_FIELD_ATTRIBUTES, self::CONFIG_PATH_ATTRIBUTES);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAttributesConfigPath(): string
+    {
+        return self::CONFIG_PATH_ATTRIBUTES. self::CONFIG_FIELD_ATTRIBUTES;
     }
 }
