@@ -32,7 +32,7 @@ class ApiClient implements ApiClientInterface
     /**
      * @var array
      */
-    protected $_header = array();
+    protected $_header = [];
     /**
      * @var string
      */
@@ -81,53 +81,52 @@ class ApiClient implements ApiClientInterface
      *
      * @var array
      */
-    protected static $_allowedAcceptTypes = array(
+    protected static $_allowedAcceptTypes = [
         'application/hal+json',
         'application/problem+json',
         'multipart/form-data',
         'multipart/mixed',
         'text/csv',
         'application/gzip'
-
-    );
+    ];
 
     /**
      * Post request header types
      *
      * @var array
      */
-    protected static $_allowedPostTypes = array(
+    protected static $_allowedPostTypes = [
         'default' => 'application/hal+json',
         'fallback' => 'application/json'
-    );
+    ];
 
     /**
      * Request allowed methods
      *
      * @var array
      */
-    protected $_allowedMethods = array(
+    protected $_allowedMethods = [
         \Zend_Http_Client::GET, \Zend_Http_Client::POST, \Zend_Http_Client::PUT, \Zend_Http_Client::DELETE
-    );
+    ];
 
     /**
      * Provide default header for get requests
      *
      * @var array
      */
-    protected $_defaultHeader = array(
+    protected $_defaultHeader = [
         'Accept: application/hal+json,application/problem+json'
-    );
+    ];
 
     /**
      * Provide default header for post/put/delete requests
      *
      * @var array
      */
-    protected $_defaultPostHeader = array(
+    protected $_defaultPostHeader = [
         'Accept: application/hal+json,application/problem+json',
         'Content-type: application/hal+json;charset=UTF-8'
-    );
+    ];
 
     /**
      * ApiClient constructor.
@@ -549,7 +548,7 @@ class ApiClient implements ApiClientInterface
     private function validateProtocol(string $url): bool
     {
         $test = explode(':', $url);
-        return (count($test) > 1 && in_array(strtolower($test[0]), array('http', 'https'), true));
+        return (count($test) > 1 && in_array(strtolower($test[0]), ['http', 'https'], true));
     }
 
     /**
@@ -558,10 +557,11 @@ class ApiClient implements ApiClientInterface
      * @param string $response
      *
      * @return array
+     * @throws \Zend_Http_Exception
      */
     private function extractHeaders(string $response): array
     {
-        $headers = array();
+        $headers = [];
 
         // First, split body and headers. Headers are separated from the
         // message at exactly the sequence "\r\n\r\n"
@@ -595,7 +595,7 @@ class ApiClient implements ApiClientInterface
 
                 if (isset($headers[$h_name])) {
                     if (! is_array($headers[$h_name])) {
-                        $headers[$h_name] = array($headers[$h_name]);
+                        $headers[$h_name] = [$headers[$h_name]];
                     }
 
                     $headers[$h_name][] = ltrim($h_value);
