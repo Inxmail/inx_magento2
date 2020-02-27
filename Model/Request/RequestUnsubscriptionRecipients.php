@@ -31,21 +31,21 @@ class RequestUnsubscriptionRecipients extends AbstractRequest
     const REQUEST_END_DATE = 'endDate';
     const REQUEST_TYPES = 'types';
 
-    const EVENTS_SUCCESSFUL = array(
+    const EVENTS_SUCCESSFUL = [
         'PENDING_UNSUBSCRIPTION',
         'PENDING_UNSUBSCRIPTION_DONE',
         'VERIFIED_UNSUBSCRIPTION',
         'MANUAL_UNSUBSCRIPTION',
         'DUPLICATE_UNSUBSCRIPTION'
-    );
+    ];
 
-    const EVENTS_FAIL = array(
+    const EVENTS_FAIL = [
         'UNSUBSCRIPTION_TIMED_OUT',
         'UNSUBSCRIPTION_ID_NOT_VALID',
         'UNSUBSCRIPTION_EMAIL_MISSMATCH',
         'UNSUBSCRIPTION_VERIFICATION_BOUNCED',
         'UNSUBSCRIPTION_INTERNAL_ERROR'
-    );
+    ];
 
     /**
      * RequestUnsubscriptionRecipients constructor
@@ -101,10 +101,10 @@ class RequestUnsubscriptionRecipients extends AbstractRequest
      */
     public function getStandardOptions(): array
     {
-        return array(
+        return [
             'listId' => 0,
             'email' => '',
             'attributes' => array ()
-        );
+        ];
     }
 }

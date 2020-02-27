@@ -42,7 +42,9 @@ class RequestRecipientAttributesTest extends \PHPUnit\Framework\TestCase
             $this->om = $objectManager;
 
 
-            $this->requestClient = (new \Flagbit\Inxmail\Model\Request\RequestFactory($this->om))->create(RequestRecipientAttributes::class, array());
+            $this->requestClient = (new \Flagbit\Inxmail\Model\Request\RequestFactory($this->om))->create(
+                RequestRecipientAttributes::class
+            );
         }
     }
 

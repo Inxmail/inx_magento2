@@ -130,9 +130,9 @@ class RequestRecipientAttributes extends AbstractRequest
      */
     public function getStandardAttributeOptions(): array
     {
-        return array(
+        return [
             self::PARAMETER_NAME => '',
             self::PARAMETER_TYPE => ''
-        );
+        ];
     }
 }

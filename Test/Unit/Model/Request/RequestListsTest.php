@@ -43,7 +43,9 @@ class RequestListsTest extends \PHPUnit\Framework\TestCase
             $this->om = $objectManager;
 
 
-            $this->requestClient = (new \Flagbit\Inxmail\Model\Request\RequestFactory($this->om))->create(RequestLists::class, array());
+            $this->requestClient = (new \Flagbit\Inxmail\Model\Request\RequestFactory($this->om))->create(
+                RequestLists::class
+            );
         }
     }
 
@@ -116,8 +118,8 @@ class RequestListsTest extends \PHPUnit\Framework\TestCase
         $this->requestClient->setRequestParam(self::$testListId);
         $this->requestResponse = $this->requestClient->sendRequest();
 
-        $test = array();
-        $comp = array('name', 'senderAddress', 'senderName', 'replyToAddress', 'replyToName', 'description');
+        $test = [];
+        $comp = ['name', 'senderAddress', 'senderName', 'replyToAddress', 'replyToName', 'description'];
         foreach ($this->requestResponse as $key => $value) {
             if (in_array($key, $comp)) {
                 $test[$key] = $value;

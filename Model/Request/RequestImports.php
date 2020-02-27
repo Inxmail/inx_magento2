@@ -178,11 +178,11 @@ class RequestImports extends AbstractRequest
      */
     private function setHeaderCompressed($client)
     {
-        $header = array(
+        $header = [
             'Accept: application/hal+json,application/problem+json',
             'Content-Disposition: form-data; name="file"; filename="datafile.csv.gz"',
             'Content-Type: multipart/form-data; boundary=----Inxmail'
-        );
+        ];
 
         $client->setHeader($header);
     }
@@ -192,11 +192,11 @@ class RequestImports extends AbstractRequest
      */
     private function setHeaderCsv($client)
     {
-        $header = array(
+        $header = [
             'Accept: application/hal+json,application/problem+json',
             'Content-Disposition: form-data; name="file"; filename="datafile.csv"',
             'Content-Type: multipart/form-data; boundary=----Inxmail'
-        );
+        ];
 
         $client->setHeader($header);
     }

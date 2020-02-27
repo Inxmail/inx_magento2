@@ -63,9 +63,11 @@ class AttribSelectInx extends MapSelect
                 /** @var array $attributes */
                 $attributes = $this->request->sendRequest();
                 $attributes = $attributes['_embedded']['inx:attributes'];
-            } catch (\Exception $e) {  $attributes = array(); }
+            } catch (\Exception $e) {
+                $attributes = [];
+            }
         } else {
-            $attributes = array();
+            $attributes = [];
         }
 
         if (!$this->getOptions()) {
