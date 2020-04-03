@@ -12,40 +12,49 @@
 
 namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
 
-use Flagbit\Inxmail\Helper\Config;
+use Flagbit\Inxmail\Logger\Logger;
 use Flagbit\Inxmail\Model\Config\SystemConfig;
 use Flagbit\Inxmail\Model\Request;
 use Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
 use Magento\Framework\View\Element\Context;
 
-/**
- * Class AttribSelectInx
- *
- * @package Flagbit\Inxmail\Block\Adminhtml\System\Config
- */
 class AttribSelectInx extends MapSelect
 {
-    /** @var \Flagbit\Inxmail\Model\Request\RequestRecipientAttributes */
+    /**
+     * @var \Flagbit\Inxmail\Model\Request\RequestRecipientAttributes
+     */
     private $request;
-    /** @var bool */
-    private $isEnabled;
+
+    /**
+     * @var SystemConfig
+     */
+    private $systemConfig;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * AttribSelectInx constructor
      *
      * @param Context $context
      * @param Request $request
+     * @param SystemConfig $systemConfig
+     * @param Logger $logger
      * @param array $data
      */
     public function __construct(
         Context $context,
         Request $request,
-        Config $config,
+        SystemConfig $systemConfig,
+        Logger $logger,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->request = $request->getAttributesClient();
-        $this->isEnabled = SystemConfig::getSystemConfig($config)->isEnabled();
+        $this->systemConfig = $systemConfig;
+        $this->logger = $logger;
     }
 
     /**
@@ -58,16 +67,13 @@ class AttribSelectInx extends MapSelect
         $defAttributes = RequestSubscriptionRecipients::getStandardAttributes();
         $defAttributes = array_keys($defAttributes);
 
-        if ($this->isEnabled) {
-            try {
-                /** @var array $attributes */
-                $attributes = $this->request->sendRequest();
-                $attributes = $attributes['_embedded']['inx:attributes'];
-            } catch (\Exception $e) {
-                $attributes = [];
-            }
-        } else {
-            $attributes = [];
+        try {
+            /** @var array $attributes */
+            $attributes = $this->request->sendRequest();
+            $attributes = $attributes['_embedded']['inx:attributes'];
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            $attributes = $this->getAlreadySavedAttributeMapping();
         }
 
         if (!$this->getOptions()) {
@@ -78,5 +84,21 @@ class AttribSelectInx extends MapSelect
             }
         }
         return parent::_toHtml();
+    }
+
+    /**
+     * @return array
+     */
+    private function getAlreadySavedAttributeMapping()
+    {
+        $alreadySavedAttributeMapping = $this->systemConfig->getMapConfig();
+
+        foreach ($alreadySavedAttributeMapping as $attribute) {
+            if (isset($attribute['inxAttrib'])) {
+                $attributes[]['name'] = $attribute['inxAttrib'];
+            }
+        }
+
+        return $attributes ?? [];
     }
 }

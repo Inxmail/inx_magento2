@@ -14,11 +14,6 @@ namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
 
 use Flagbit\Inxmail\Model\Request\RequestSubscriptionRecipients;
 
-/**
- * Class AttribSelectMag
- *
- * @package Flagbit\Inxmail\Block\Adminhtml\System\Config
- */
 class AttribSelectMag extends MapSelect
 {
     /**

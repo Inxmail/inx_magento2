@@ -13,6 +13,7 @@
 namespace Flagbit\Inxmail\Block\Adminhtml\System\Config;
 
 use Flagbit\Inxmail\Helper\Config;
+use Flagbit\Inxmail\Logger\Logger;
 use Flagbit\Inxmail\Model\Config\SystemConfig;
 use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field\FieldArray\AbstractFieldArray;
@@ -25,17 +26,39 @@ use Magento\Framework\DataObject;
  */
 class AttributeMapping extends AbstractFieldArray
 {
-
-    /** @var \Flagbit\Inxmail\Block\Adminhtml\System\Config\AttribSelectInx */
+    /**
+     * @var \Flagbit\Inxmail\Block\Adminhtml\System\Config\AttribSelectInx
+     */
     private $mapInx;
-    /** @var \Flagbit\Inxmail\Block\Adminhtml\System\Config\AttribSelectMag */
+
+    /**
+     * @var \Flagbit\Inxmail\Block\Adminhtml\System\Config\AttribSelectMag
+     */
     private $mapMag;
-    /** @var bool */
+
+    /**
+     * @var bool
+     */
     private $isEnabled;
 
-    public function __construct(Context $context, Config $config) {
+    /**
+     * @var \Magento\Framework\View\LayoutInterface|null
+     */
+    private $layout;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    public function __construct(
+        Context $context,
+        Config $config,
+        Logger $logger
+    ) {
         parent::__construct($context);
         $this->isEnabled = SystemConfig::getSystemConfig($config)->isEnabled();
+        $this->logger = $logger;
     }
 
     /**
@@ -43,30 +66,16 @@ class AttributeMapping extends AbstractFieldArray
      */
     protected function _prepareToRender()
     {
-        $this->addColumn('magAttrib', ['label' => __('Magento customer attribute'), 'renderer' => $this->getAttribSelectMag()]);
-        $this->addColumn('inxAttrib', ['label' => __('Inxmail Professional recipient attribute'), 'renderer' => $this->getAttribSelectInx()]);
+        $attributeSelectMagento = $this->getAttribSelectMag();
+        $attributeSelectInxmail = $this->getAttribSelectInx();
+
+        if (null !== $attributeSelectMagento && null !== $attributeSelectInxmail) {
+            $this->addColumn('magAttrib', ['label' => __('Magento customer attribute'), 'renderer' => $attributeSelectMagento]);
+            $this->addColumn('inxAttrib', ['label' => __('Inxmail Professional recipient attribute'), 'renderer' => $attributeSelectInxmail]);
+        }
 
         $this->_addAfter = false;
         $this->_addButtonLabel = __('Add');
-    }
-
-
-    /**
-     * Get mapping options select
-     *
-     * @return \Flagbit\Inxmail\Block\Adminhtml\System\Config\AttribSelectInx
-     */
-    private function getAttribSelectInx(): AttribSelectInx
-    {
-        if (!$this->mapInx) {
-            $this->mapInx = $this->getLayout()->createBlock(
-                AttribSelectInx::class,
-                '',
-                ['data' => ['is_render_to_js_template' => true]]
-            );
-        }
-
-        return $this->mapInx;
     }
 
     /**
@@ -76,15 +85,58 @@ class AttributeMapping extends AbstractFieldArray
      */
     private function getAttribSelectMag(): AttribSelectMag
     {
-        if (!$this->mapMag) {
-            $this->mapMag = $this->getLayout()->createBlock(
-                AttribSelectMag::class,
-                '',
-                ['data' => ['is_render_to_js_template' => true]]
-            );
+        if (null === $this->mapMag) {
+            $layout = $this->getInitializedLayout();
+            if (null !== $layout) {
+                $this->mapMag = $layout->createBlock(
+                    AttribSelectMag::class,
+                    '',
+                    ['data' => ['is_render_to_js_template' => true]]
+                );
+            }
         }
 
         return $this->mapMag;
+    }
+
+    /**
+     * @return \Magento\Framework\View\LayoutInterface|null
+     */
+    private function getInitializedLayout()
+    {
+        if (null === $this->layout) {
+            try {
+                $this->layout = $this->getLayout();
+            } catch (\Magento\Framework\Exception\LocalizedException $localizedException) {
+                $this->logger->error(
+                    $localizedException->getMessage(),
+                    ['trace' => $localizedException->getTraceAsString()]
+                );
+            }
+        }
+
+        return $this->layout;
+    }
+
+    /**
+     * Get mapping options select
+     *
+     * @return \Flagbit\Inxmail\Block\Adminhtml\System\Config\AttribSelectInx
+     */
+    private function getAttribSelectInx(): AttribSelectInx
+    {
+        if (null === $this->mapInx) {
+            $layout = $this->getInitializedLayout();
+            if (null !== $layout) {
+                $this->mapInx = $layout->createBlock(
+                    AttribSelectInx::class,
+                    '',
+                    ['data' => ['is_render_to_js_template' => true]]
+                );
+            }
+        }
+
+        return $this->mapInx;
     }
 
     /**
