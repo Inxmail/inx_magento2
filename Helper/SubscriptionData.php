@@ -372,7 +372,8 @@ class SubscriptionData extends AbstractHelper
 
         if (!empty($addMap)) {
             foreach ($addMap as $attribute) {
-                if (in_array($attribute['magAttrib'], $map, true)) {
+                if (isset($attribute['inxAttrib'], $attribute['magAttrib']) &&
+                    in_array($attribute['magAttrib'], $map, true)) {
                     $result[$attribute['inxAttrib']] = $attribute['magAttrib'];
                 }
             }
