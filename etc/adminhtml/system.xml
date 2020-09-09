@@ -31,8 +31,8 @@
                 </field>
                 <field id="api_url" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
                        showInStore="0">
-                    <label>API Url</label>
-                    <comment>API Url</comment>
+                    <label>API URL</label>
+                    <comment>API URL (e.g. https://api.inxmail.com/customer_name/rest/v1)</comment>
                 </field>
                 <field id="api_user" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
                        showInStore="0">
@@ -48,7 +48,7 @@
                 <field id="api_listid" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
                        showInStore="0">
                     <label>Inxmail List</label>
-                    <comment>Select your Inxmail list</comment>
+                    <comment>Select your Inxmail list (numeric list ID)</comment>
                 </field>
                 <field id="version" translate="label" type="label" sortOrder="1" showInDefault="1" showInWebsite="0"
                        showInStore="0">
