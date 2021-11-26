@@ -144,7 +144,7 @@ class SubscriptionData extends AbstractHelper
         $data['subscriberToken'] = $subscriber->getSubscriberConfirmCode();
 
         $customerId = $subscriber->getCustomerId();
-        $customerData = $this->getCustomerData($customerId);
+        $customerData = $customerId ? $this->getCustomerData($customerId): [];
 
         $data['storeId'] = $subscriber->getStoreId();
         $storeData = $this->getStoreData($data['storeId']);
