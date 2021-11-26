@@ -22,6 +22,9 @@ Thank you!
 
 
 ## Version History
+**V1.1.4**
+* compatibility check and updates for Magento2 CE v2.4.3-p1
+
 **V1.1.0**
 * added support for "last order date"
 
