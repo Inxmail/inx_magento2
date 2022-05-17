@@ -22,6 +22,10 @@ Thank you!
 
 
 ## Version History
+**V1.2.0**
+* Compatibility check and updates for Magento2 CE v2.4.4
+* Compatibility check for PHP Version 8.1
+
 **V1.1.4**
 * compatibility check and updates for Magento2 CE v2.4.3-p1
 
