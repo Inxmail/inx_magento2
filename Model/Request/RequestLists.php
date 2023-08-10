@@ -53,7 +53,7 @@ class RequestLists extends AbstractRequest
         $client = $this->getApiClient();
         $client->setCredentials($this->getCredentials());
         $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
-        $client->setRequestMethod(\Zend_Http_Client::GET);
+        $client->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
         $this->_response = $client->getResource('', '', null, null);
 
@@ -69,7 +69,7 @@ class RequestLists extends AbstractRequest
             $client = $this->getApiClient();
             $client->setCredentials($this->getCredentials());
             $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
-            $client->setRequestMethod(\Zend_Http_Client::POST);
+            $client->setRequestMethod(\Laminas\Http\Request::METHOD_POST);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
             $client->setPostData(is_array($this->_requestData) ? json_encode($this->_requestData) : $this->_requestData);
             $this->_response = $client->postResource('', '', null, null, '');
@@ -91,7 +91,7 @@ class RequestLists extends AbstractRequest
             $client = $this->getApiClient();
             $client->setCredentials($this->getCredentials());
             $client->setRequestPath(self::REQUEST_PATH . $id);
-            $client->setRequestMethod(\Zend_Http_Client::PUT);
+            $client->setRequestMethod(\Laminas\Http\Request::METHOD_PUT);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
             $client->setPostData(is_array($this->_requestData) ? json_encode($this->_requestData) : $this->_requestData);
             $this->_response = $client->putResource('', '', null, null, '');
@@ -115,7 +115,7 @@ class RequestLists extends AbstractRequest
             $client = $this->getApiClient();
             $client->setCredentials($this->getCredentials());
             $client->setRequestPath(self::REQUEST_PATH . $id);
-            $client->setRequestMethod(\Zend_Http_Client::DELETE);
+            $client->setRequestMethod(\Laminas\Http\Request::METHOD_DELETE);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
             $this->_response = $client->deleteResource('', '', null, null);
             $returnValue = $client->getResponseStatusCode();
