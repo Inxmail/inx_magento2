@@ -16,12 +16,10 @@
         <plugin name="disableNewsletter" type="\Flagbit\Inxmail\Plugin\DisableNewsletter"/>
     </type>
     <type name="Magento\Newsletter\Model\Subscriber">
-        <plugin name="Inxmail::subscriber" type="Flagbit\Inxmail\Plugin\Newsletter\Subscriber" sortOrder="1"
-                disabled="false"/>
+        <plugin name="Inxmail::subscriber" type="Flagbit\Inxmail\Plugin\Newsletter\Subscriber" sortOrder="1"/>
     </type>
     <type name="Magento\Framework\Webapi\Request">
-        <plugin name="Inxmail::request" type="Flagbit\Inxmail\Plugin\Webapi\Request" sortOrder="1"
-                disabled="false"/>
+        <plugin name="Inxmail::request" type="Flagbit\Inxmail\Plugin\Webapi\Request" sortOrder="1"/>
     </type>
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
