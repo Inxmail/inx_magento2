@@ -23,7 +23,7 @@ Thank you!
 
 ## Version History
 **V1.3.0**
-* Replaced ZEND_HTTP Framework for Compatibility with Magento2 CE v2.4.4
+* Replaced ZEND_HTTP Framework for Compatibility with Magento2 CE v2.4.6
 
 **V1.2.0**
 * Compatibility check and updates for Magento2 CE v2.4.4
