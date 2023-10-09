@@ -16,7 +16,6 @@ use Flagbit\Inxmail\Exception\Api\InvalidArgumentException;
 use Flagbit\Inxmail\Exception\Api\InvalidAuthenticationException;
 use Flagbit\Inxmail\Exception\Api\MissingArgumentException;
 use Magento\Framework\HTTP\Adapter\Curl;
-use Zend_Uri;
 
 /**
  * Class ApiClient
@@ -48,7 +47,7 @@ class ApiClient implements ApiClientInterface
     /**
      * @var string
      */
-    protected $_requestMethod = \Zend_Http_Client::POST;
+    protected $_requestMethod = \Laminas\Http\Request::METHOD_POST;
     /**
      * @var string
      */
@@ -106,7 +105,7 @@ class ApiClient implements ApiClientInterface
      * @var array
      */
     protected $_allowedMethods = [
-        \Zend_Http_Client::GET, \Zend_Http_Client::POST, \Zend_Http_Client::PUT, \Zend_Http_Client::DELETE
+        \Laminas\Http\Request::METHOD_GET, \Laminas\Http\Request::METHOD_POST, \Laminas\Http\Request::METHOD_PUT, \Laminas\Http\Request::METHOD_DELETE
     ];
 
     /**
@@ -160,16 +159,16 @@ class ApiClient implements ApiClientInterface
             $this->_header = $header;
         } else if (empty($this->_header) || $this->_header === $this->_defaultPostHeader || $this->_header === $this->_defaultHeader) {
             switch ($this->_requestMethod) {
-                case \Zend_Http_Client::GET:
+                case \Laminas\Http\Request::METHOD_GET:
                     $this->_header = $this->_defaultHeader;
                     break;
-                case \Zend_Http_Client::DELETE:
+                case \Laminas\Http\Request::METHOD_DELETE:
                     $this->_header = $this->_defaultHeader;
                     break;
-                case \Zend_Http_Client::POST:
+                case \Laminas\Http\Request::METHOD_POST:
                     $this->_header = $this->_defaultPostHeader;
                     break;
-                case \Zend_Http_Client::PUT:
+                case \Laminas\Http\Request::METHOD_PUT:
                     $this->_header = $this->_defaultPostHeader;
                     break;
             }
@@ -237,7 +236,8 @@ class ApiClient implements ApiClientInterface
     public function setRequestUrl(string $requestUrl)
     {
         $url = trim($requestUrl);
-        if (Zend_Uri::check($url) && $this->validateProtocol($url)) {
+        $uri = new \Laminas\Uri\Uri($url);
+        if ($uri->isValid() && $this->validateProtocol($url)) {
             $url .= (substr($url, strlen($url) - 1) === '/') ? '' : '/';
             $this->_requestUrl = $url;
         } else {
@@ -310,8 +310,8 @@ class ApiClient implements ApiClientInterface
                 $this->setRequestPath($requestPath);
             }
 
-            if ($this->_requestMethod !== \Zend_Http_Client::GET && $this->_requestMethod !== \Zend_Http_Client::DELETE) {
-                $this->setRequestMethod(\Zend_Http_Client::GET);
+            if ($this->_requestMethod !== \Laminas\Http\Request::METHOD_GET && $this->_requestMethod !== \Laminas\Http\Request::METHOD_DELETE) {
+                $this->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
             }
 
             $this->setHeader($header);
@@ -330,7 +330,7 @@ class ApiClient implements ApiClientInterface
                 throw new InvalidAuthenticationException(__('Credentials not provided'));
             }
 
-            if ($this->_requestMethod === \Zend_Http_Client::DELETE) {
+            if ($this->_requestMethod === \Laminas\Http\Request::METHOD_DELETE) {
                 $this->_requestClient->addOption(CURLOPT_CUSTOMREQUEST, $this->_requestMethod);
                 $this->_requestClient->addOption(CURLOPT_RETURNTRANSFER, true);
             }
@@ -340,13 +340,13 @@ class ApiClient implements ApiClientInterface
             $this->_requestClient->write(
                 $this->_requestMethod,
                 $this->_requestUrl . $this->_requestPath,
-                \Zend_Http_Client::HTTP_1,
+                '1.1',
                 $requestHeader
             );
 
             $response = $this->_requestClient->read();
-            $this->_responseBody = \Zend_Http_Response::extractBody($response);
-            $this->_responseHeader = $this->extractHeaders($response);
+            $this->_responseBody = \Laminas\Http\Response::fromString($response)->getBody();
+            $this->_responseHeader = \Laminas\Http\Response::fromString($response)->getHeaders();
 
             return $this->_responseBody;
         } else {
@@ -386,8 +386,8 @@ class ApiClient implements ApiClientInterface
                 $this->setPostData($postData);
             }
 
-            if ($this->_requestMethod !== \Zend_Http_Client::POST && $this->_requestMethod !== \Zend_Http_Client::PUT) {
-                $this->setRequestMethod(\Zend_Http_Client::POST);
+            if ($this->_requestMethod !== \Laminas\Http\Request::METHOD_POST && $this->_requestMethod !== \Laminas\Http\Request::METHOD_PUT) {
+                $this->setRequestMethod(\Laminas\Http\Request::METHOD_POST);
             }
 
             $this->setHeader($header);
@@ -410,7 +410,7 @@ class ApiClient implements ApiClientInterface
             $this->_requestClient->addOption(CURLOPT_NOPROGRESS, FALSE);
             $this->_requestClient->addOption(CURLINFO_HEADER_OUT, true);
 
-            if ($this->_requestMethod === \Zend_Http_Client::PUT) {
+            if ($this->_requestMethod === \Laminas\Http\Request::METHOD_PUT) {
                 $this->_requestClient->addOption(CURLOPT_CUSTOMREQUEST, $this->_requestMethod);
                 $this->_requestClient->addOption(CURLOPT_POSTFIELDS, $this->_postData);
                 $this->_requestClient->addOption(CURLOPT_RETURNTRANSFER, true);
@@ -421,15 +421,15 @@ class ApiClient implements ApiClientInterface
             $this->_requestClient->write(
                 $this->_requestMethod,
                 $url,
-                \Zend_Http_Client::HTTP_1,
+                '1.1',
                 $requestHeader,
                 $this->_postData
             );
 
             $response = $this->_requestClient->read();
 
-            $this->_responseBody = \Zend_Http_Response::extractBody($response);
-            $this->_responseHeader = $this->extractHeaders($response);
+            $this->_responseBody = \Laminas\Http\Response::fromString($response)->getBody();
+            $this->_responseHeader = \Laminas\Http\Response::fromString($response)->getHeaders();
 
             return $this->_responseBody;
         } else {
@@ -452,7 +452,7 @@ class ApiClient implements ApiClientInterface
         string $requestUrl = '', string $requestPath = '',
         string $header = null, array $credentials = null, string $postData = ''
     ){
-        $this->setRequestMethod(\Zend_Http_Client::PUT);
+        $this->setRequestMethod(\Laminas\Http\Request::METHOD_PUT);
         return $this->postResource($requestUrl, $requestPath, $header, $credentials, $postData);
     }
 
@@ -471,7 +471,7 @@ class ApiClient implements ApiClientInterface
         string $header = null, array $credentials = null
     )
     {
-        $this->setRequestMethod(\Zend_Http_Client::DELETE);
+        $this->setRequestMethod(\Laminas\Http\Request::METHOD_DELETE);
         return $this->getResource($requestUrl, $requestPath, $header, $credentials);
     }
 
@@ -551,89 +551,5 @@ class ApiClient implements ApiClientInterface
         return (count($test) > 1 && in_array(strtolower($test[0]), ['http', 'https'], true));
     }
 
-    /**
-     * Replaces \Zend_Http_Response::extractHeaders because of HTTP/2 incompatibility
-     *
-     * @param string $response
-     *
-     * @return array
-     * @throws \Zend_Http_Exception
-     */
-    private function extractHeaders(string $response): array
-    {
-        $headers = [];
 
-        // First, split body and headers. Headers are separated from the
-        // message at exactly the sequence "\r\n\r\n"
-        $parts = preg_split('|(?:\r\n){2}|m', $response, 2);
-        if (! $parts[0]) {
-            return $headers;
-        }
-
-        // Split headers part to lines; "\r\n" is the only valid line separator.
-        $lines = explode("\r\n", $parts[0]);
-        unset($parts);
-        $last_header = null;
-
-        foreach($lines as $index => $line) {
-            if ($index === 0 && preg_match('#^HTTP/\d+(?:\.\d+)? [1-5]\d+#', $line)) {
-                // Status line; ignore
-                continue;
-            }
-
-            if ($line == "") {
-                // Done processing headers
-                break;
-            }
-
-            // Locate headers like 'Location: ...' and 'Location:...' (note the missing space)
-            if (preg_match("|^([a-zA-Z0-9\'`#$%&*+.^_\|\~!-]+):\s*(.*)|s", $line, $m)) {
-                unset($last_header);
-                $h_name  = strtolower($m[1]);
-                $h_value = $m[2];
-                \Zend_Http_Header_HeaderValue::assertValid($h_value);
-
-                if (isset($headers[$h_name])) {
-                    if (! is_array($headers[$h_name])) {
-                        $headers[$h_name] = [$headers[$h_name]];
-                    }
-
-                    $headers[$h_name][] = ltrim($h_value);
-                    $last_header = $h_name;
-                    continue;
-                }
-
-                $headers[$h_name] = ltrim($h_value);
-                $last_header = $h_name;
-                continue;
-            }
-
-            // Identify header continuations
-            if (preg_match("|^[ \t](.+)$|s", $line, $m) && $last_header !== null) {
-                $h_value = trim($m[1]);
-                if (is_array($headers[$last_header])) {
-                    end($headers[$last_header]);
-                    $last_header_key = key($headers[$last_header]);
-
-                    $h_value = $headers[$last_header][$last_header_key] . $h_value;
-                    \Zend_Http_Header_HeaderValue::assertValid($h_value);
-
-                    $headers[$last_header][$last_header_key] = $h_value;
-                    continue;
-                }
-
-                $h_value = $headers[$last_header] . $h_value;
-                \Zend_Http_Header_HeaderValue::assertValid($h_value);
-
-                $headers[$last_header] = $h_value;
-                continue;
-            }
-
-            // Anything else is an error condition
-            #require_once 'Zend/Http/Exception.php';
-            throw new \Zend_Http_Exception('Invalid header line detected');
-        }
-
-        return $headers;
-    }
 }

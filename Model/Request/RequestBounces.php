@@ -52,7 +52,7 @@ class RequestBounces extends AbstractRequest
         $client = $this->getApiClient();
         $client->setCredentials($this->getCredentials());
         $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
-        $client->setRequestMethod(\Zend_Http_Client::GET);
+        $client->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
         $this->_response = $client->getResource('', '', null, null);
 

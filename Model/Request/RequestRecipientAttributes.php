@@ -64,7 +64,7 @@ class RequestRecipientAttributes extends AbstractRequest
         $client = $this->getApiClient();
         $client->setCredentials($this->getCredentials());
         $client->setRequestPath(self::REQUEST_PATH.$this->_requestParam);
-        $client->setRequestMethod(\Zend_Http_Client::GET);
+        $client->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
         $client->setRequestUrl($this->_systemConfig->getApiUrl());
         $this->_response = $client->getResource('','',null,null);
 
@@ -112,7 +112,7 @@ class RequestRecipientAttributes extends AbstractRequest
             $client = $this->getApiClient();
             $client->setCredentials($this->getCredentials());
             $client->setRequestPath(self::REQUEST_PATH . $this->_requestParam);
-            $client->setRequestMethod(\Zend_Http_Client::POST);
+            $client->setRequestMethod(\Laminas\Http\Request::METHOD_POST);
             $client->setRequestUrl($this->_systemConfig->getApiUrl());
             $client->setPostData( is_array($this->_requestData) ? json_encode($this->_requestData) : $this->_requestData);
             $this->_response = $client->postResource('', '', null, null, '');

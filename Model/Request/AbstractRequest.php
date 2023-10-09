@@ -143,7 +143,7 @@ class AbstractRequest implements RequestInterface
         $result = null;
         $client = $this->getApiClient();
         if ($client instanceof ApiClientInterface) {
-            $client->setRequestMethod(\Zend_Http_Client::GET);
+            $client->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
             $result = $this->_apiClient->getResource($this->_systemConfig->getApiUrl(),
                 self::REQUEST_PATH, $this->_requestHeader, $this->getCredentials());
         }
