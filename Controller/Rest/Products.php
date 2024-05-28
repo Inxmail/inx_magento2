@@ -25,7 +25,7 @@ class Products extends Action
 {
 
     const ROUTE_PATH = '/V1/products/:sku';
-    const ROUTE_METHOD = \Zend_Http_Client::GET;
+    const ROUTE_METHOD = \Laminas\Http\Request::METHOD_GET;
 
     /** @var \Flagbit\Inxmail\Helper\AuthHelper */
     private $authHelper;

@@ -38,7 +38,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
 
     public function testSetHeaderDefault()
     {
-        $this->_apiClient->setRequestMethod(\Zend_Http_Client::POST);
+        $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_POST);
         $this->_apiClient->setHeader();
         $header = $this->getObjectAttribute($this->_apiClient, '_defaultPostHeader');
         $this->assertAttributeEquals(
@@ -50,8 +50,8 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
 
     public function testSetMethodGet()
     {
-        $this->_apiClient->setRequestMethod(\Zend_Http_Client::GET);
-        $this->assertAttributeEquals(\Zend_Http_Client::GET,
+        $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
+        $this->assertAttributeEquals(\Laminas\Http\Request::METHOD_GET,
             '_requestMethod',
             $this->_apiClient
         );
@@ -62,7 +62,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
      */
     public function testSetHeaderGet()
     {
-        $this->_apiClient->setRequestMethod(\Zend_Http_Client::GET);
+        $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
         $this->_apiClient->setHeader();
         $header = $this->getObjectAttribute($this->_apiClient, '_defaultHeader');
         $this->assertAttributeEquals(
@@ -195,7 +195,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     public function testRequest()
     {
         $this->_apiClient->setRequestUrl('http://example.com');
-        $this->_apiClient->setRequestMethod(\Zend_Http_Client::GET);
+        $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
         $response = $this->_apiClient->getResource('', '', null, ['test', 'test']);
         $this->assertNotEmpty($response);
     }
@@ -203,7 +203,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     public function testRequestresponseCode()
     {
         $this->_apiClient->setRequestUrl('http://example.com');
-        $this->_apiClient->setRequestMethod(\Zend_Http_Client::GET);
+        $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
         $this->_apiClient->getResource('', '', null, ['test', 'test']);
         $this->assertEquals(200, $this->_apiClient->getResponseStatusCode(), 'Wrong return, request failed');
     }
