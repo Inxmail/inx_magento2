@@ -81,7 +81,7 @@ class Subscriber extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function _execute(InputInterface $input, OutputInterface $output)
+    protected function _execute(InputInterface $input, OutputInterface $output): int
     {
         $args = $input->getArgument(self::ARGUMENT_TYPE);
         $compressed = $input->getOption('compressed');
@@ -92,8 +92,10 @@ class Subscriber extends AbstractCommand
             $this->subscriberSync->setOutputInterface($output);
             $this->subscriberSync->setListId($this->systemConfig->getApiList());
             $this->subscriberSync->sync($type, $compressed ?? true);
+            return self::SUCCESS;
         } catch (\Exception $e) {
             $this->logger->critical($e->getMessage(), $e->getTrace());
+            return self::FAILURE;
         }
     }
 }
