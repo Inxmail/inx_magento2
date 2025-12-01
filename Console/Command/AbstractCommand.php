@@ -45,15 +45,16 @@ abstract class AbstractCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      */
-    abstract protected function _execute(InputInterface $input, OutputInterface $output);
+    abstract protected function _execute(InputInterface $input, OutputInterface $output): int;
 
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->setAreaCode();
-        $this->_execute($input, $output);
+
+        return $this->_execute($input, $output);
     }
 
     /**
