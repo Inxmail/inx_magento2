@@ -153,7 +153,7 @@ class ApiClient implements ApiClientInterface
     /**
      * @param array|null $header
      */
-    public function setHeader(array $header = null)
+    public function setHeader(?array $header = null)
     {
         if (!empty($header)) {
             $this->_header = $header;
@@ -287,9 +287,9 @@ class ApiClient implements ApiClientInterface
      * Get resource answer from server
      *
      * @param string $requestUrl
-     * @param string $requestPath
-     * @param string|null $header
-     * @param array|null $credentials
+    * @param string $requestPath
+    * @param array|null $header
+    * @param array|null $credentials
      *
      * @return bool|string
      *
@@ -299,7 +299,7 @@ class ApiClient implements ApiClientInterface
      */
     public function getResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null)
+        ?array $header = null, ?array $credentials = null)
     {
         if (!empty($requestUrl) || !empty($this->_requestUrl)) {
             if (empty($this->_requestUrl)) {
@@ -358,9 +358,9 @@ class ApiClient implements ApiClientInterface
      * Post data to server
      *
      * @param string $requestUrl
-     * @param string $requestPath
-     * @param string|null $header
-     * @param array|null $credentials
+    * @param string $requestPath
+    * @param array|null $header
+    * @param array|null $credentials
      * @param string $postData
      *
      * @return bool|string
@@ -370,7 +370,7 @@ class ApiClient implements ApiClientInterface
      */
     public function postResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null, string $postData = ''
+        ?array $header = null, ?array $credentials = null, string $postData = ''
     )
     {
         if ((!empty($requestUrl) || !empty($this->_requestUrl)) && (!empty($this->_postData) || !empty($postData))) {
@@ -441,16 +441,16 @@ class ApiClient implements ApiClientInterface
      * Put data to server
      *
      * @param string $requestUrl
-     * @param string $requestPath
-     * @param string|null $header
-     * @param array|null $credentials
+    * @param string $requestPath
+    * @param array|null $header
+    * @param array|null $credentials
      * @param string $postData
      *
      * @return bool|string
      */
     public function putResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null, string $postData = ''
+        ?array $header = null, ?array $credentials = null, string $postData = ''
     ){
         $this->setRequestMethod(\Laminas\Http\Request::METHOD_PUT);
         return $this->postResource($requestUrl, $requestPath, $header, $credentials, $postData);
@@ -460,15 +460,15 @@ class ApiClient implements ApiClientInterface
      * Delete request to server
      *
      * @param string $requestUrl
-     * @param string $requestPath
-     * @param string|null $header
-     * @param array|null $credentials
+    * @param string $requestPath
+    * @param array|null $header
+    * @param array|null $credentials
      *
      * @return bool|string
      */
     public function deleteResource(
         string $requestUrl = '', string $requestPath = '',
-        string $header = null, array $credentials = null
+        ?array $header = null, ?array $credentials = null
     )
     {
         $this->setRequestMethod(\Laminas\Http\Request::METHOD_DELETE);

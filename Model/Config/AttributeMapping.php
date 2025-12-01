@@ -81,9 +81,9 @@ class AttributeMapping extends ArraySerialized
         ConfigHelper $inxConfig,
         SystemConfig $inxSystemConfig,
         ManagerInterface $messageManager,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null, array $data = [],
-        Json $serializer = null
+        ?AbstractResource $resource = null,
+        ?AbstractDb $resourceCollection = null, array $data = [],
+        ?Json $serializer = null
     ) {
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data, $serializer);
         $this->request = $request;
