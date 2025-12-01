@@ -22,6 +22,10 @@ Thank you!
 
 
 ## Version History
+**V1.3.2**
+* Corrected incompatibilities with php 8.4
+* Tested on Magento2 CE v2.4.8-p3 with PHP 8.3 and 8.4
+
 **V1.3.1**
 * Tested compatibility with Magento2 CE v2.4.7-p3 and php 8.3
 * Tested compatibility with Magento2 CE v2.4.8
