@@ -29,7 +29,7 @@ class RequestListsTest extends \PHPUnit\Framework\TestCase
     private $requestResponse;
     protected static $testListId;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         if (!$this->requestClient) {

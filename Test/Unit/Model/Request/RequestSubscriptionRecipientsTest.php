@@ -27,7 +27,7 @@ class RequestSubscriptionRecipientsTest extends TestCase
     private $requestClient;
     private $requestResponse;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         if (!$this->requestClient) {

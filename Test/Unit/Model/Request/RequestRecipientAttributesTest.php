@@ -28,7 +28,7 @@ class RequestRecipientAttributesTest extends \PHPUnit\Framework\TestCase
 
     private $requestResponse;
 
-    public function setUp()
+    public function setUp(): void
     {
 
         if (!$this->requestClient) {

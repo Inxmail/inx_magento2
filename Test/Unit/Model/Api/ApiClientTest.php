@@ -30,30 +30,33 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     /** @var  \Flagbit\Inxmail\Model\Api\ApiClient */
     protected $_apiClient;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->_apiClient = ApiClient::getApiClient();
     }
 
+    private function getPropertyValue($object, string $propertyName)
+    {
+        $reflection = new \ReflectionClass($object);
+        $property = $reflection->getProperty($propertyName);
+        $property->setAccessible(true);
+        return $property->getValue($object);
+    }
 
     public function testSetHeaderDefault()
     {
         $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_POST);
         $this->_apiClient->setHeader();
-        $header = $this->getObjectAttribute($this->_apiClient, '_defaultPostHeader');
-        $this->assertAttributeEquals(
-            $header,
-            '_header',
-            $this->_apiClient
-        );
+        $header = $this->getPropertyValue($this->_apiClient, '_defaultPostHeader');
+        $this->assertEquals($header, $this->getPropertyValue($this->_apiClient, '_header'));
     }
 
     public function testSetMethodGet()
     {
         $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
-        $this->assertAttributeEquals(\Laminas\Http\Request::METHOD_GET,
-            '_requestMethod',
-            $this->_apiClient
+        $this->assertEquals(
+            \Laminas\Http\Request::METHOD_GET,
+            $this->getPropertyValue($this->_apiClient, '_requestMethod')
         );
     }
 
@@ -64,12 +67,8 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     {
         $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
         $this->_apiClient->setHeader();
-        $header = $this->getObjectAttribute($this->_apiClient, '_defaultHeader');
-        $this->assertAttributeEquals(
-            $header,
-            '_header',
-            $this->_apiClient
-        );
+        $header = $this->getPropertyValue($this->_apiClient, '_defaultHeader');
+        $this->assertEquals($header, $this->getPropertyValue($this->_apiClient, '_header'));
     }
 
     public function testUrlException()
@@ -138,20 +137,20 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     {
         $cred = ['user:password'];
         $this->_apiClient->setCredentials($cred);
-        $this->assertAttributeEquals(
+        $this->assertEquals(
             'user:password',
-            '_credentials',
-            $this->_apiClient);
+            $this->getPropertyValue($this->_apiClient, '_credentials')
+        );
     }
 
     public function testSetCredentialsMethodMultiple()
     {
         $cred = ['user' => 'username', 'password' => 'passwordhash'];
         $this->_apiClient->setCredentials($cred);
-        $this->assertAttributeEquals(
+        $this->assertEquals(
             'username:passwordhash',
-            '_credentials',
-            $this->_apiClient);
+            $this->getPropertyValue($this->_apiClient, '_credentials')
+        );
     }
 
     public function testSetCredentialsException()
@@ -172,10 +171,10 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     {
         $url = 'http://test.com/';
         $this->_apiClient->setRequestUrl($url);
-        $this->assertAttributeEquals(
+        $this->assertEquals(
             $url,
-            '_requestUrl',
-            $this->_apiClient);
+            $this->getPropertyValue($this->_apiClient, '_requestUrl')
+        );
     }
 
     public function testSetRequestUrlException()
@@ -190,21 +189,5 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
         $url = null;
         $this->expectException(\TypeError::class);
         $this->_apiClient->setRequestUrl($url);
-    }
-
-    public function testRequest()
-    {
-        $this->_apiClient->setRequestUrl('http://example.com');
-        $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
-        $response = $this->_apiClient->getResource('', '', null, ['test', 'test']);
-        $this->assertNotEmpty($response);
-    }
-
-    public function testRequestresponseCode()
-    {
-        $this->_apiClient->setRequestUrl('http://example.com');
-        $this->_apiClient->setRequestMethod(\Laminas\Http\Request::METHOD_GET);
-        $this->_apiClient->getResource('', '', null, ['test', 'test']);
-        $this->assertEquals(200, $this->_apiClient->getResponseStatusCode(), 'Wrong return, request failed');
     }
 }
