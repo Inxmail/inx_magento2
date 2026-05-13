@@ -25,6 +25,7 @@ class RequestImportsTest extends TestCase
      * @var \Flagbit\Inxmail\Model\Request\RequestImports
      */
     private $requestClient;
+    private $om;
     protected static $testListId = 7;
 
     private $testCsvFile = [
@@ -39,7 +40,7 @@ class RequestImportsTest extends TestCase
         ['dommy@example.com', 'dommy','duu', '5','a36emacqpz\96qe8hdyyl8g5qaqv8yyaa','demo', '1','Main Website', '1995-01-15','Male'],
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         if (!$this->requestClient) {
             $params = $_SERVER;

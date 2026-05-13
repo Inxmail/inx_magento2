@@ -1,6 +1,7 @@
 .github
 .idea/
 .directory
+.claude
 vendor
 composer.lock
 .htaccess

@@ -21,16 +21,31 @@ use Flagbit\Inxmail\Model\Config\SystemConfig;
  */
 class SystemConfigTest extends \PHPUnit\Framework\TestCase
 {
-    protected $config;
+    private $configHelper;
+    private $configModel;
 
-    public function setUp()
+    public function setUp(): void
     {
+        $this->resetSystemConfigSingleton();
 
-        $this->configHelper = $this->getMockBuilder('Flagbit\Inxmail\Helper\Config')
+        $this->configHelper = $this->getMockBuilder(\Flagbit\Inxmail\Helper\Config::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->configModel =  SystemConfig::getSystemConfig($this->configHelper);
+        $this->configModel = SystemConfig::getSystemConfig($this->configHelper);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->resetSystemConfigSingleton();
+    }
+
+    private function resetSystemConfigSingleton(): void
+    {
+        $reflection = new \ReflectionClass(SystemConfig::class);
+        $property = $reflection->getProperty('_config');
+        $property->setAccessible(true);
+        $property->setValue(null, null);
     }
 
     public function testGetConfigUrl()
@@ -38,9 +53,9 @@ class SystemConfigTest extends \PHPUnit\Framework\TestCase
         $this->configHelper->expects($this->once())
             ->method('getConfig')
             ->with('inxmail/general/api_url')
-            ->will($this->returnValue('http://tes.example.com/testing'));
+            ->willReturn('http://tes.example.com/testing');
 
         $modelReturn = $this->configModel->getApiUrl();
-        $this->assertEquals($modelReturn, 'http://tes.example.com/testing');
+        $this->assertEquals('http://tes.example.com/testing', $modelReturn);
     }
 }
