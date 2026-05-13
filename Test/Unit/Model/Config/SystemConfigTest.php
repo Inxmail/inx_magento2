@@ -26,11 +26,26 @@ class SystemConfigTest extends \PHPUnit\Framework\TestCase
 
     public function setUp(): void
     {
+        $this->resetSystemConfigSingleton();
+
         $this->configHelper = $this->getMockBuilder(\Flagbit\Inxmail\Helper\Config::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->configModel = SystemConfig::getSystemConfig($this->configHelper);
+    }
+
+    protected function tearDown(): void
+    {
+        $this->resetSystemConfigSingleton();
+    }
+
+    private function resetSystemConfigSingleton(): void
+    {
+        $reflection = new \ReflectionClass(SystemConfig::class);
+        $property = $reflection->getProperty('_config');
+        $property->setAccessible(true);
+        $property->setValue(null, null);
     }
 
     public function testGetConfigUrl()
