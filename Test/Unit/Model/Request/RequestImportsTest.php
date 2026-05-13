@@ -25,6 +25,7 @@ class RequestImportsTest extends TestCase
      * @var \Flagbit\Inxmail\Model\Request\RequestImports
      */
     private $requestClient;
+    private $om;
     protected static $testListId = 7;
 
     private $testCsvFile = [

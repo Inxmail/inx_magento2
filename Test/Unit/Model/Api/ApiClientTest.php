@@ -85,14 +85,14 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
 
     public function testSetMethodException()
     {
-        $method = \Zend_Http_Client::OPTIONS;
+        $method = \Laminas\Http\Request::METHOD_OPTIONS;
         $this->expectException(InvalidArgumentException::class);
         $this->_apiClient->setRequestMethod($method);
     }
 
     public function testSetMethodExceptionMessage()
     {
-        $method = \Zend_Http_Client::OPTIONS;
+        $method = \Laminas\Http\Request::METHOD_OPTIONS;
         $this->expectExceptionMessage('Parameter for method not allowed');
         $this->_apiClient->setRequestMethod($method);
     }
@@ -100,7 +100,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
     public function testSingleton()
     {
         $this->expectException(\Error::class);
-        $this->test = new ApiClient();
+        new ApiClient();
     }
 
     public function testGetResourcesCredentialsExceptionMessage()
@@ -111,7 +111,7 @@ class ApiClientTest extends \PHPUnit\Framework\TestCase
 
     public function testGetResourcesCredentialsException()
     {
-        $this->expectException(MissingArgumentException::class);
+        $this->expectException(InvalidAuthenticationException::class);
         $this->_apiClient->getResource();
     }
 

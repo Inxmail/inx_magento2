@@ -42,11 +42,7 @@ vendor/bin/phpunit -c vendor/inxmail/magento2-module/Test/Unit/phpunit.xml
 vendor/bin/phpunit -c app/code/Flagbit/Inxmail/Test/Unit/phpunit.xml
 ```
 
-Two testsuites are defined:
-- `Flagbit Inxmail Model` — only the `Model/` tests
-- `Flagbit Inxmail All` — everything under `Test/Unit/`
-
-Pick one with `--testsuite "Flagbit Inxmail Model"`.
+One testsuite is defined: `Flagbit Inxmail` (all tests under `Model/`).
 
 ### Running just the real unit test (no Magento DB / no Inxmail API needed)
 
@@ -71,8 +67,7 @@ vendor/bin/phpunit -c app/code/Flagbit/Inxmail/Test/Unit/phpunit.xml \
 
 ```bash
 # from Magento root, vendor install
-vendor/bin/phpunit -c vendor/inxmail/magento2-module/Test/Unit/phpunit.xml \
-    --testsuite "Flagbit Inxmail All"
+vendor/bin/phpunit -c vendor/inxmail/magento2-module/Test/Unit/phpunit.xml
 ```
 
 A green run gives reasonable confidence that the API client, list CRUD and recipient endpoints still work end-to-end against the live Inxmail API.

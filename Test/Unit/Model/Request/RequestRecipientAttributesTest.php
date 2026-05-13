@@ -27,6 +27,7 @@ class RequestRecipientAttributesTest extends \PHPUnit\Framework\TestCase
     private $requestClient;
 
     private $requestResponse;
+    private $om;
 
     public function setUp(): void
     {

@@ -27,6 +27,7 @@ class RequestListsTest extends \PHPUnit\Framework\TestCase
     /** @var  RequestRecipientAttributes */
     private $requestClient;
     private $requestResponse;
+    private $om;
     protected static $testListId;
 
     public function setUp(): void

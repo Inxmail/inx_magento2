@@ -21,7 +21,8 @@ use Flagbit\Inxmail\Model\Config\SystemConfig;
  */
 class SystemConfigTest extends \PHPUnit\Framework\TestCase
 {
-    protected $config;
+    private $configHelper;
+    private $configModel;
 
     public function setUp(): void
     {

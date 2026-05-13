@@ -15,11 +15,8 @@
          bootstrap="./bootstrap.php"
 >
     <testsuites>
-        <testsuite name="Flagbit Inxmail Model">
+        <testsuite name="Flagbit Inxmail">
             <directory suffix="Test.php">./Model</directory>
-        </testsuite>
-        <testsuite name="Flagbit Inxmail All">
-            <directory suffix="Test.php">./</directory>
         </testsuite>
     </testsuites>
     <php>

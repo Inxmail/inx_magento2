@@ -26,6 +26,7 @@ class RequestSubscriptionRecipientsTest extends TestCase
     /** @var  RequestRecipientAttributes */
     private $requestClient;
     private $requestResponse;
+    private $om;
 
     public function setUp(): void
     {
