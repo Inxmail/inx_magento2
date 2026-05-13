@@ -22,6 +22,10 @@ Thank you!
 
 
 ## Version History
+**V1.3.3**
+* Updated phpunit
+* Tested on Magento2 CE v2.4.9 with PHP 8.4.21
+
 **V1.3.2**
 * Corrected incompatibilities with php 8.4
 * Tested on Magento2 CE v2.4.8-p3 with PHP 8.3 and 8.4

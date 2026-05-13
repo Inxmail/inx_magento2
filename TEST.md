@@ -1,63 +1,78 @@
 ## Running the tests
 
-The module ships with a small test suite under [Test/Unit/](Test/Unit/). Despite the name, only one of the files is a true unit test — the rest are integration tests that require a running Magento instance and valid Inxmail Professional API credentials configured in the Magento admin (`Stores → Configuration → Inxmail`).
+The module ships with a small test suite under [Test/Unit/](Test/Unit/). Despite the name, only one of the files is a true unit test (`SystemConfigTest`) — the rest are integration tests that require a running Magento instance and valid Inxmail Professional API credentials configured in the Magento admin (`Stores → Configuration → Inxmail`).
 
-The tests are intended to be executed from inside a Magento installation that has this module checked out at `app/code/Flagbit/Inxmail/`. Both PHPUnit and the Magento test bootstrap come from the parent Magento project — this module's `composer.json` only declares the version constraint.
+The PHPUnit binary and the Magento test framework both come from the parent Magento project's `vendor/`. This module's `composer.json` only declares the version constraint.
+
+### Supported PHPUnit versions
+
+The test suite is compatible with **PHPUnit 9.5+** and **PHPUnit 12.x** (Magento 2.4.9 ships PHPUnit 12). The `phpunit.xml` uses the PHPUnit 12 schema; older PHPUnit 9 versions still accept it.
 
 ### Prerequisites on the test environment
 
-1. A working Magento 2.4.x installation (e.g. on your DigitalOcean droplet) with PHP 8.1+
-2. This module installed at `<magento-root>/app/code/Flagbit/Inxmail/` (either via `git clone` directly into that path, or via Composer with a path repository)
-3. Module enabled and Magento setup run:
+1. A working Magento 2.4.x installation (e.g. on a DigitalOcean droplet) with PHP 8.1+ (PHP 8.3+ for PHPUnit 12)
+2. This module installed in one of two supported locations — both work out of the box:
+   - **`vendor/inxmail/magento2-module/`** — when installed via Composer (e.g. via `install-module.sh` which configures a VCS repository against `github.com/Inxmail/inx_magento2`)
+   - **`app/code/Flagbit/Inxmail/`** — when installed by cloning the repo directly into the Magento source tree
+3. Module enabled and Magento setup run (the install script does this):
    ```bash
    bin/magento module:enable Flagbit_Inxmail
    bin/magento setup:upgrade
    bin/magento setup:di:compile
    ```
-4. Magento dev-dependencies installed (this pulls in PHPUnit):
+4. Magento dev-dependencies installed (provides PHPUnit):
    ```bash
    composer install
    ```
-5. For the integration tests: a valid Inxmail Professional REST API user configured under `Stores → Configuration → Inxmail → General` (API URL, username, password) and a list whose ID matches the one used in the test (see warnings below)
+5. For the integration tests: a valid Inxmail Professional REST API user configured under `Stores → Configuration → Inxmail → General` (API URL, username, password). See caveats below regarding hard-coded list IDs.
 
-### Running only the real unit test
+### How the bootstrap finds Magento
 
-From the Magento root:
+The suite uses [Test/Unit/bootstrap.php](Test/Unit/bootstrap.php) which auto-detects whether the module lives in `vendor/` or `app/code/` and pulls in Composer's autoloader plus Magento's unit-test framework bootstrap from the right relative path. No manual path tweaking is needed.
+
+### Running the suite
+
+Run from the **Magento root** (`/var/www/html` in a typical install), pointing at the module's `phpunit.xml`:
+
 ```bash
-vendor/bin/phpunit app/code/Flagbit/Inxmail/Test/Unit/Model/Config/SystemConfigTest.php
-```
-This one needs no external services.
+# vendor install (Composer VCS / Marketplace)
+vendor/bin/phpunit -c vendor/inxmail/magento2-module/Test/Unit/phpunit.xml
 
-### Running the full suite
-
-From inside the module's `Test/Unit/` directory (the bootstrap path in `phpunit.xml` is relative to that location):
-```bash
-cd app/code/Flagbit/Inxmail/Test/Unit
-../../../../../../vendor/bin/phpunit
-```
-
-Or by referencing the config explicitly from the Magento root:
-```bash
+# app/code install
 vendor/bin/phpunit -c app/code/Flagbit/Inxmail/Test/Unit/phpunit.xml
 ```
 
-The `phpunit.xml` defines two suites:
+Two testsuites are defined:
 - `Flagbit Inxmail Model` — only the `Model/` tests
 - `Flagbit Inxmail All` — everything under `Test/Unit/`
 
-Select one with `--testsuite "Flagbit Inxmail Model"`.
+Pick one with `--testsuite "Flagbit Inxmail Model"`.
 
-### Caveats / known issues with the integration tests
-
-- **`RequestImportsTest`** uses a hard-coded list ID (`$testListId = 7`). It will only pass if a list with that exact ID exists in your Inxmail account. Edit the value or replace it with a list ID from your test environment before running.
-- **`RequestListsTest`** runs a full create → read → update → delete lifecycle on a list named `test-x` and shares state across test methods via `self::$testListId`. Run the methods in declared order (PHPUnit's default).
-- **`ApiClientTest`** is mostly pure logic but uses Reflection to inspect protected properties; if internals are renamed in the production code, those assertions need to be updated.
-
-### Recommended smoke-test workflow after a Magento version bump
+### Running just the real unit test (no Magento DB / no Inxmail API needed)
 
 ```bash
-# from Magento root
+# vendor install
+vendor/bin/phpunit -c vendor/inxmail/magento2-module/Test/Unit/phpunit.xml \
+    --filter SystemConfigTest
+
+# app/code install
 vendor/bin/phpunit -c app/code/Flagbit/Inxmail/Test/Unit/phpunit.xml \
+    --filter SystemConfigTest
+```
+
+### Caveats with the integration tests
+
+- **`RequestImportsTest`** uses a hard-coded list ID (`$testListId = 7`). It will only pass if a list with that exact ID exists in your Inxmail account. Edit the value or replace it before running.
+- **`RequestListsTest`** runs a full create → read → update → delete lifecycle on a list named `test-x` and shares state across test methods via `self::$testListId`. PHPUnit's default declaration order works.
+- **`ApiClientTest`** is mostly pure logic but uses Reflection to inspect protected properties; if internals get renamed in the production code, those assertions need to be updated.
+- The integration tests instantiate `\Magento\Framework\App\Bootstrap` and make real HTTP calls — they require the same DB state and Inxmail connectivity as a running shop.
+
+### Smoke-test workflow after a Magento version bump
+
+```bash
+# from Magento root, vendor install
+vendor/bin/phpunit -c vendor/inxmail/magento2-module/Test/Unit/phpunit.xml \
     --testsuite "Flagbit Inxmail All"
 ```
-A green run gives you reasonable confidence that the API client, list CRUD and recipient endpoints still work end-to-end against the live Inxmail API.
+
+A green run gives reasonable confidence that the API client, list CRUD and recipient endpoints still work end-to-end against the live Inxmail API.
